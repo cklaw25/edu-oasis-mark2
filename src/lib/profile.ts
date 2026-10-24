@@ -47,6 +47,7 @@ export function defaultProfile(): Profile {
 const STARTER_LOOK = {
   ownedItems: [] as string[],
   avatar: { shirt: "shirt-blue", hat: "hat-none" },
+  pip: "pip-classic",
   theme: "theme-classic",
   font: "font-mono",
 };

@@ -9,7 +9,7 @@ import PipPanel from "@/components/PipPanel";
 import MoeCoin from "@/components/MoeCoin";
 import MarketPanel from "@/components/MarketPanel";
 import RapidMarketPanel from "@/components/RapidMarketPanel";
-import { ownsItem, type ShopItem } from "@/lib/shop";
+import { ownsItem, shopItem, type ShopItem } from "@/lib/shop";
 import CosmeticsPanel from "@/components/CosmeticsPanel";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
@@ -182,6 +182,7 @@ export default function Home() {
     equip: (item: ShopItem) => {
       if (!ownsItem(profile, item.id)) return;
       if (item.slot) save({ ...profile, avatar: { ...profile.avatar, [item.slot]: item.id } });
+      else if (item.category === "pip") save({ ...profile, pip: item.id });
       else if (item.category === "world") save({ ...profile, theme: item.id });
       else if (item.category === "font") save({ ...profile, font: item.id });
     },
@@ -275,7 +276,7 @@ export default function Home() {
           onClick={() => setPipOpen(true)}
           className="absolute bottom-6 right-6 z-[25] flex items-center gap-2 rounded-full bg-[#bff4ff] px-4 py-3 font-bold text-[#0b2a3d] shadow-lg hover:bg-white"
         >
-          ✦ Pip
+          {shopItem(profile.pip)?.icon ?? "✦"} Pip
         </button>
       )}
       {pipOpen && (

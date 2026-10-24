@@ -29,6 +29,7 @@ export default function RapidMarketPanel({ profile, actions }: { profile: Profil
   const equipped = (i: ShopItem) =>
     (i.slot === "shirt" && profile.avatar.shirt === i.id) ||
     (i.slot === "hat" && profile.avatar.hat === i.id) ||
+    (i.category === "pip" && profile.pip === i.id) ||
     (i.category === "world" && profile.theme === i.id) ||
     (i.category === "font" && profile.font === i.id);
   // island looks and objects are applied per island, not equipped globally
@@ -110,6 +111,13 @@ export default function RapidMarketPanel({ profile, actions }: { profile: Profil
 function Preview({ item }: { item: ShopItem }) {
   if (item.slot === "shirt") {
     return <div className="h-12 rounded-lg border-2 border-black/10" style={{ background: hex(SHIRT_COLORS[item.id]) }} />;
+  }
+  if (item.category === "pip") {
+    return (
+      <div className="flex h-12 items-center justify-center rounded-lg bg-[#2a6f97] text-3xl" title="Pip follows you around the map">
+        {item.icon}
+      </div>
+    );
   }
   if (item.category === "world") {
     const t = WORLD_THEMES[item.id];

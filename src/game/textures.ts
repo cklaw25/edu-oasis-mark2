@@ -26,6 +26,54 @@ export function makeAvatar(scene: Phaser.Scene, shirt: number, hat: string) {
   return key;
 }
 
+/** Pip drawn in one of the Rapid Fire Market looks; returns the texture key. */
+export function makePip(scene: Phaser.Scene, style: string) {
+  const key = `pip-tex-${style}`;
+  if (scene.textures.exists(key)) return key;
+  const g = scene.make.graphics({}, false);
+  const eyes = (y = 16, col = 0x10324a) => g.fillStyle(col).fillCircle(14, y, 2).fillCircle(22, y, 2);
+  if (style === "pip-ember") {
+    g.fillStyle(0xff7b00, 0.35).fillCircle(18, 20, 16);
+    g.fillStyle(0xff9f1c).fillTriangle(8, 26, 28, 26, 18, 2);
+    g.fillStyle(0xffd166).fillCircle(18, 22, 9);
+    eyes(21, 0x5a1a00);
+  } else if (style === "pip-leaf") {
+    g.fillStyle(0x80ed99, 0.35).fillCircle(18, 20, 16);
+    g.fillStyle(0xb7efc5).fillCircle(18, 21, 10);
+    g.fillStyle(0x2d6a4f).fillEllipse(23, 8, 12, 6).fillRect(17, 8, 2, 5);
+    eyes(20, 0x1b4332);
+  } else if (style === "pip-ghost") {
+    g.fillStyle(0xffffff, 0.3).fillCircle(18, 18, 16);
+    g.fillStyle(0xf8f9fa).fillCircle(18, 15, 10).fillRect(8, 15, 20, 12);
+    g.fillStyle(0xf8f9fa).fillTriangle(8, 27, 13, 27, 10.5, 32).fillTriangle(15.5, 27, 20.5, 27, 18, 32).fillTriangle(23, 27, 28, 27, 25.5, 32);
+    eyes(15, 0x212529);
+  } else if (style === "pip-star") {
+    g.fillStyle(0xffd166, 0.35).fillCircle(18, 18, 16);
+    const pts: { x: number; y: number }[] = [];
+    for (let i = 0; i < 10; i++) {
+      const a = -Math.PI / 2 + (i * Math.PI) / 5;
+      const r = i % 2 ? 6 : 14;
+      pts.push({ x: 18 + Math.cos(a) * r, y: 18 + Math.sin(a) * r });
+    }
+    g.fillStyle(0xffc300).fillPoints(pts, true);
+    eyes(18, 0x6a4c00);
+  } else if (style === "pip-robot") {
+    g.fillStyle(0x8ecae6, 0.3).fillCircle(18, 20, 16);
+    g.fillStyle(0x495057).fillRect(17, 2, 2, 6).fillStyle(0xe63946).fillCircle(18, 3, 2.5);
+    g.fillStyle(0xadb5bd).fillRoundedRect(7, 8, 22, 20, 4);
+    g.fillStyle(0x00b4d8).fillRect(11, 14, 5, 4).fillRect(20, 14, 5, 4);
+    g.fillStyle(0x495057).fillRect(12, 22, 12, 2);
+  } else {
+    // classic glowing spirit
+    g.fillStyle(0x7fe0ff, 0.35).fillCircle(18, 18, 14);
+    g.fillStyle(0xbff4ff).fillCircle(18, 18, 9);
+    eyes(16);
+  }
+  g.generateTexture(key, 36, 34);
+  g.destroy();
+  return key;
+}
+
 // All art is drawn in code, so worlds cost nothing to "generate" visually.
 export function makeTextures(scene: Phaser.Scene) {
   if (scene.textures.exists("player")) return;

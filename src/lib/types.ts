@@ -45,6 +45,7 @@ export interface Profile {
   ownedItems: string[];
   /** equipped shop item ids */
   avatar: { shirt: string; hat: string };
+  pip: string;
   theme: string;
   font: string;
 }

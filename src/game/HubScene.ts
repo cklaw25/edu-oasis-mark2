@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 import { bus } from "./bus";
-import { makeAvatar, makeTextures } from "./textures";
+import { makeAvatar, makePip, makeTextures } from "./textures";
 import { FLAG_COLORS, cosmeticsFor } from "@/lib/cosmetics";
 import { FREE_SLOT } from "@/lib/profile";
 import { LABEL_FONTS, OBJECT_SPOTS, SHIRT_COLORS, WORLD_THEMES, type WorldTheme } from "@/lib/shop";
@@ -107,7 +107,7 @@ export class HubScene extends Phaser.Scene {
     const { shirt, hat } = this.profile.avatar;
     const avatar = makeAvatar(this, SHIRT_COLORS[shirt] ?? SHIRT_COLORS["shirt-blue"], hat);
     this.player = this.add.sprite(spawn.x, spawn.y, avatar).setDepth(10);
-    this.pet = this.add.sprite(spawn.x - 40, spawn.y + 30, "pet").setDepth(9);
+    this.pet = this.add.sprite(spawn.x - 40, spawn.y + 30, makePip(this, this.profile.pip)).setDepth(9);
     this.tweens.add({ targets: this.pet, scale: 1.15, yoyo: true, repeat: -1, duration: 600 });
 
     this.cameras.main.setBounds(0, 0, W, H).startFollow(this.player, true, 0.1, 0.1).setZoom(lastZoom);

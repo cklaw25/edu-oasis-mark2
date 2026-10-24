@@ -1,7 +1,7 @@
 // Rapid Fire Market: cosmetic items bought with MOE. Price 0 = free starter item everyone owns.
 import type { Profile } from "./types";
 
-export type ShopCategory = "avatar" | "world" | "font" | "island" | "object";
+export type ShopCategory = "avatar" | "pip" | "world" | "font" | "island" | "object";
 
 export interface ShopItem {
   id: string;
@@ -29,6 +29,13 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: "hat-cap", category: "avatar", slot: "hat", name: "Cap", icon: "🧢", price: 3_000 },
   { id: "hat-wizard", category: "avatar", slot: "hat", name: "Wizard hat", icon: "🧙", price: 5_000 },
   { id: "hat-crown", category: "avatar", slot: "hat", name: "Crown", icon: "👑", price: 6_000 },
+  // Pip's look (the companion that follows you on the map)
+  { id: "pip-classic", category: "pip", name: "Classic spirit", icon: "✦", price: 0 },
+  { id: "pip-ember", category: "pip", name: "Ember spirit", icon: "🔥", price: 3_000 },
+  { id: "pip-leaf", category: "pip", name: "Leaf sprite", icon: "🌱", price: 3_000 },
+  { id: "pip-ghost", category: "pip", name: "Friendly ghost", icon: "👻", price: 4_000 },
+  { id: "pip-star", category: "pip", name: "Shooting star", icon: "⭐", price: 5_000 },
+  { id: "pip-robot", category: "pip", name: "Robo Pip", icon: "🤖", price: 6_000 },
   // world map designs
   { id: "theme-classic", category: "world", name: "Classic ocean", icon: "🌊", price: 0 },
   { id: "theme-tropical", category: "world", name: "Tropical lagoon", icon: "🏝️", price: 8_000 },
@@ -85,6 +92,7 @@ export const MAX_OBJECTS_PER_ISLAND = 6;
 
 export const CATEGORIES: { id: ShopCategory; label: string }[] = [
   { id: "avatar", label: "Avatar" },
+  { id: "pip", label: "Pip" },
   { id: "world", label: "World map" },
   { id: "font", label: "Fonts" },
   { id: "island", label: "Islands" },
