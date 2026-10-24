@@ -89,3 +89,44 @@ The faucet limit is a rolling window of about 24 hours, not a reset at midnight.
 2. Run `node create-moe.js`.
 3. Save the mint address (in `mint-devnet.txt`) and the Explorer link for the demo.
 4. Optional: host a metadata JSON file (name, symbol, description, image) and set `TOKEN_URI` before creating the token, so wallets show a logo.
+
+---
+
+## UPDATE — Sat 24 Oct, ~16:00 (from Memphis + Claude)
+
+### ✅ Blocker solved: the treasury is funded
+- Memphis funded the treasury through faucet.solana.com with his own GitHub account (that faucet limits per GitHub account, not per Wi-Fi).
+- `CNp9YiTDhKRomr9xAtPLQEK9GgpQ8riDgFDbRrTJVZUq` now holds **1 devnet SOL** (finalized).
+- Transaction: https://explorer.solana.com/tx/2qASRNwtbcduXrHjP6WRsF6Az3fJxgzp14ZSJZZjtcyswo4v8GZijPgL11gSUYN7h4F2SZJFLaU86ucedGaFAs2d?cluster=devnet
+- That's about 10× what `create-moe.js` needs, so there's spare SOL for the buy and badge transactions later. **Don't request more airdrops on venue Wi-Fi.** If we run low, Memphis can use the faucet again, or ask the Solana sponsor or MLH coach.
+
+### 👉 Your next steps, Corey (in order)
+1. **Run `node create-moe.js` now.** Send Memphis the **mint address** (`mint-devnet.txt`) and the **Explorer link**. Claude will check the name, symbol, 9 decimals and 1,000,000 supply on-chain.
+2. **Read `DISCUSSION_NOTES.md` on `main`**, especially **section 6 (Solana plan)**. It has the full product context, what's already built, and the function list the game will call.
+3. **Agree with Memphis what MOE is *for*** before building more on it. Judges will ask "why a token when SOL exists?". Proposed answer:
+   - Learners **earn MOE when learning is proven**: their predicted recall goes up after replaying a world. The game already computes recall per island.
+   - Creators **earn MOE** when their worlds teach well (players' measured results).
+   - MOE is **spent to unlock market worlds or buy membership**, with SOL as the alternative.
+   - Result: MOE = "proof-of-learning currency". It ties Solana to the data/prediction story (HRT track) and the TIME theme.
+4. **Build the functions the game side will call.** Work against mocks first, so we can wire up the UI before the chain is finished:
+   ```
+   connectWallet()                        -> pubkey               (Phantom via the wallet adapter)
+   mintWorld(spec, specHash, price)       -> worldAssetId          (Metaplex Core NFT; metadata stores creator + sha256(world file) + parent)
+   buyMembership() / buyAccess(assetId)   -> txSignature           (one atomic transaction: pay + mint pass)
+   hasAccess(pubkey, assetId?)            -> boolean
+   mintBadge(pubkey, worldId, score)      -> badgeAssetId          (non-transferable, timestamped)
+   rewardMoe(pubkey, amount, reason)      -> txSignature           (if we go with the MOE plan above)
+   listWorlds()                           -> [{ assetId, title, creator, price, coverage, avgRecall }]
+   ```
+   Suggested libraries: `@solana/web3.js` v1 (already used), `@solana/spl-token`, Metaplex Core via `@metaplex-foundation/umi` + `mpl-core`, `@solana/wallet-adapter-react` (Phantom). No custom Anchor program unless there's spare time.
+5. **Where to put the code:** the main app is Next.js in `main` (`src/…`). Put the Solana code in **`src/lib/solana/`** (client helpers) and **`src/app/api/solana/…`** (server routes that hold the treasury key from an env var, **never from a committed file**). Work on a branch, e.g. `corey/solana`, and open a PR into `main`.
+6. **Memphis is building the market island UI next**, with buttons for buy, membership, mint world and badges. Those buttons will call your functions.
+
+### ⏰ Timeline reminders
+- **17:30–18:30:** we ask judges for feedback in person. Have the MOE Explorer link ready if possible.
+- **Tonight:** chain integration end to end: mint world → buy → unlock → badge.
+- **09:00 Sun:** feature freeze. **12:00 Sun:** Devpost deadline.
+
+### 🔒 Reminders
+- `treasury.json` stays git-ignored. When the app needs the treasury, load it from `.env.local` (e.g. `TREASURY_SECRET_KEY`), which is also git-ignored.
+- Devnet only. No real money anywhere.
