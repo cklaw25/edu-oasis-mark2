@@ -15,6 +15,7 @@ const SLOTS = [
 ];
 const MARKET = { x: 1200, y: 1960, r: 210 };
 const BRIDGE_HALF = 34;
+const WORLD_UNLOCK_MOE = 10_000;
 
 // where the player was when the hub last ran, so restarts (new world, back from a world) don't teleport home
 let lastPos: { x: number; y: number } | null = null;
@@ -74,6 +75,7 @@ export class HubScene extends Phaser.Scene {
         this.drawIsland(c, 0xd8c79a, "Empty island", 0, true);
         this.addPortal(c, { kind: "empty", slot: i, world: null }, 0xffffff);
       }
+      this.addLock(c);
     });
     this.drawIsland(MARKET, 0x9d7be0, "World Market");
     this.drawStalls(MARKET);
@@ -232,5 +234,38 @@ export class HubScene extends Phaser.Scene {
         .setDepth(4);
     }
     this.portals.push({ x: c.x, y: c.y, info });
+  }
+
+  // Gold key floating over a world island; hovering it shows the MOE unlock price.
+  private addLock(c: Circle) {
+    const key = this.add
+      .image(c.x, c.y - 80, "key")
+      .setDepth(20)
+      .setInteractive({ useHandCursor: true });
+    this.tweens.add({ targets: key, y: key.y - 8, yoyo: true, repeat: -1, duration: 1100, ease: "Sine.easeInOut" });
+
+    const label = this.add
+      .text(0, 0, `🔒 ${WORLD_UNLOCK_MOE.toLocaleString("en-US")} MOE to unlock`, {
+        fontFamily: "monospace",
+        fontSize: "18px",
+        color: "#ffd166",
+      })
+      .setOrigin(0.5);
+    const bg = this.add
+      .rectangle(0, 0, label.width + 28, label.height + 16, 0x0b2a3d, 0.92)
+      .setStrokeStyle(2, 0xffd166);
+    const tip = this.add
+      .container(c.x, c.y - 140, [bg, label])
+      .setDepth(30)
+      .setVisible(false);
+
+    key.on("pointerover", () => {
+      tip.setVisible(true);
+      key.setScale(1.15);
+    });
+    key.on("pointerout", () => {
+      tip.setVisible(false);
+      key.setScale(1);
+    });
   }
 }
