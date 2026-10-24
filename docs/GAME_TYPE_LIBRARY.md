@@ -38,6 +38,7 @@ How EduOasis decides **which game to build for which content**. The generator re
 2. Content with **two opposing categories** → **`shooter`** if the topic is conflict/war/competition, or the learner wants action; otherwise **`arena`**.
 3. Content with **evaluation** (strengths/weaknesses, reliability, interpretations) → **`inspect`**.
 4. Pick **2–3 games per world**, ordered from *learn* (board/runner) to *test* (showdown/shooter) to *judge* (inspect).
+4b. **Fresh every island (rule, 24 Oct):** the design pass builds every game's content; then code (`pickGames` in `src/lib/worldSpec.ts`) picks **2 action games** (showdown / board / runner / shooter) that differ from the learner's recent islands, plus `inspect` when there is evaluation. Calm `arena` sorting only when fewer than 2 action games fit.
 7. **Slides get pictures:** every intro slide has a `scene` (2–4 emoji actors, style flow / versus / crash / group) drawn on the world's theme.
 5. Theme: war/conflict history → `war`; experiments/psychology/chemistry → `lab`; biology/ecology → `nature`; physics/astronomy → `space`; ancient history/classics → `ancient`; geography/marine → `ocean`; everything else → `city`.
 6. **Personalisation (next):** the Data tab's accuracy per game type feeds a bandit that adjusts these defaults per learner.

@@ -15,7 +15,7 @@ import { now } from "@/lib/clock";
 import { track } from "@/lib/telemetry";
 import { lifespanAt, nextHalfLife, nextStreak, recallAt } from "@/lib/recall";
 import { GENERATE_PRICE_MOE, formatMoe } from "@/lib/moe";
-import { addWorld, defaultProfile, loadProfile, saveProfile, showOnIsland, storeWorld, updateWorld } from "@/lib/profile";
+import { addWorld, allWorlds, defaultProfile, loadProfile, saveProfile, showOnIsland, storeWorld, updateWorld } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
 import type { WorldSpec } from "@/lib/worldSpec";
 import type { PortalInfo, Profile } from "@/lib/types";
@@ -253,6 +253,12 @@ export default function Home() {
             form.set("description", req.description);
             form.set("requests", req.requests);
             form.set("gameType", req.gameType);
+            // game mixes of my islands, so the new one plays differently
+            const recent = allWorlds(profile).flatMap((w) => {
+              const sp = loadSpec(w.id);
+              return sp ? [gamesOf(sp)] : [];
+            });
+            form.set("recentGames", JSON.stringify(recent));
             req.files.forEach((f) => form.append("files", f));
             const res = await fetch("/api/generate", { method: "POST", body: form });
             const body = await res.json();

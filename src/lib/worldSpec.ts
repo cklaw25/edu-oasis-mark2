@@ -140,6 +140,46 @@ export function gamesOf(spec: WorldSpec): GameId[] {
   return valid.length ? valid : ["arena", "inspect"];
 }
 
+// Action games move characters and objects; arena is calm label sorting, inspect is the judge step.
+const ACTION: GameId[] = ["showdown", "board", "runner", "shooter"];
+const LEARN: GameId[] = ["board", "runner"];
+
+/** Which action games this world has enough content for (the design pass builds all of them). */
+export function playableActionGames(spec: WorldSpec): GameId[] {
+  return ACTION.filter((g) => gamesOf({ ...spec, games: [g] })[0] === g && (g !== "shooter" || spec.arena.items.length >= 6));
+}
+
+/**
+ * Rule for every new island: 2 action games, a mix that differs from the learner's recent islands, then the
+ * inspect room when there is evaluation to judge. Arena (calm sorting) only when fewer than 2 action games fit.
+ * Games used less recently score higher; the model's own suggestion is a small bonus; random breaks ties,
+ * so the same notes can still come out different.
+ */
+export function pickGames(spec: WorldSpec, recent: GameId[][], rand = Math.random): GameId[] {
+  const action = playableActionGames(spec);
+  const judge: GameId[] = spec.inspect.clues.length >= 3 ? ["inspect"] : [];
+  if (action.length < 2) {
+    const fallback: GameId[] = [...action, "arena", ...judge];
+    return fallback.slice(0, 3);
+  }
+  const uses = (g: GameId) => recent.reduce((n, gs, i) => n + (gs.includes(g) ? 1 / (i + 1) : 0), 0); // newest weighs most
+  const suggested = new Set(spec.games ?? []);
+  const key = (gs: GameId[]) => [...gs].sort().join("+");
+  const seen = new Set(recent.map((gs) => key(gs.filter((g) => ACTION.includes(g)))));
+  let best: GameId[] = [];
+  let bestScore = -Infinity;
+  for (let i = 0; i < action.length; i++)
+    for (let j = i + 1; j < action.length; j++) {
+      const pair = [action[i], action[j]];
+      const fresh = -pair.reduce((n, g) => n + uses(g), 0) - (seen.has(key(pair)) ? 3 : 0);
+      const score = fresh + pair.filter((g) => suggested.has(g)).length * 0.3 + rand() * 0.6;
+      if (score > bestScore) [best, bestScore] = [pair, score];
+    }
+  // learn (board/runner) before test (showdown/shooter); two of a kind in random order
+  best.sort((a, b) => Number(LEARN.includes(b)) - Number(LEARN.includes(a)) || rand() - 0.5);
+  return [...best, ...judge];
+}
+
 export interface Coverage {
   covered: number;
   total: number;

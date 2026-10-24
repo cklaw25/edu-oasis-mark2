@@ -4,10 +4,12 @@ import {
   coverage,
   gamesOf,
   orderByYear,
+  pickGames,
   DESIGN_SCHEMA,
   KNOWLEDGE_SCHEMA,
   PATCH_SCHEMA,
   type Board,
+  type GameId,
   type InspectClue,
   type IntroSlide,
   type KnowledgeItem,
@@ -72,7 +74,9 @@ Build these parts:
    The player must defeat the fighter the poster asks for. E.g. Tesla 🧔 → ⚡ "AC motor";
    Newton 👨‍🦳 → 🍎 "Laws of motion"; Oppenheimer 🎩 → 💣 "Atomic bomb". Weapons must be distinct.
 
-Then choose "games": 2-3 game ids, in play order, using these rules (EduOasis game type library):
+Build EVERY part fully (sequence, board, showdown, arena, inspect): code then picks a fresh mix of games for this
+learner, so each part must be playable on its own. Then suggest "games": 2-3 game ids, in play order, using these rules
+(EduOasis game type library):
 - "showdown" when the content pairs WHO/WHAT with what they did, made, found or scored (people ↔ inventions,
   studies ↔ findings, conditions ↔ results, terms ↔ examples). The most fun game: use it whenever pairs exist.
 - "board" when things belong to 3+ groups (people ↔ teams/departments/places, items ↔ stages/types).
@@ -134,6 +138,11 @@ export async function POST(req: Request) {
   const topic = String(form.get("topic") ?? "");
   const description = String(form.get("description") ?? "");
   const requests = String(form.get("requests") ?? "");
+  // game mixes of the learner's existing islands (newest first), so a new island plays differently
+  let recent: GameId[][] = [];
+  try {
+    recent = JSON.parse(String(form.get("recentGames") ?? "[]"));
+  } catch {}
   const files = form.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
   const learner = `Topic: ${topic}\nWhat the learner wants to learn: ${description || "(not given)"}\nSpecial requests: ${requests || "(none)"}`;
 
@@ -155,6 +164,7 @@ export async function POST(req: Request) {
     const spec: WorldSpec = { ...base, ...design };
     if (spec.sequence) spec.sequence = orderByYear(spec.sequence);
     spec.board = cleanBoard(spec.board);
+    spec.games = pickGames(spec, recent);
 
     // pass 3: patch anything the design dropped
     let cov = coverage(spec);
