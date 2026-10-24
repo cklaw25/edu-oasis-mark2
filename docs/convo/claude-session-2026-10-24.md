@@ -1343,3 +1343,131 @@ Merge committed (`9531c96`). Next, the pitch and demo scripts. First I'm pulling
 ### Claude
 
 I have the facts. Writing the pitch script, the demo-video script and the TLDR as files in the repo.
+
+### Claude
+
+Exporting this conversation to a readable file, with secrets redacted, so it can go in the repo.
+
+### Claude
+
+The export is clean (no keys). Committing the docs and pushing `merge1`. `main` stays untouched.
+
+### Claude
+
+I've merged Corey's work on a new branch called `merge1` and pushed it to GitHub; `main` is untouched. I tested the merge in a browser: buying, paying for a new world, putting worlds on islands and swapping them, listing and reselling all worked, with no errors. I didn't re-run the full play-through tests for each game, so a new world playing all the way through hasn't been retested since the merge. The pitch script, the video script, the TLDR and a saved copy of this conversation are pushed too.
+
+Your local folder is now on `merge1`. A dev server is running on localhost:3123 again (not one I started), and it serves whatever branch the folder is on. So what you see there now is `merge1`; run `git checkout main` to go back.
+
+## What I changed
+1. **Starting state, as you described.** You start with 3 empty islands and 30,000 MOE, and your first 2 worlds are free. After that, a new world costs 10,000 MOE. If you can't afford it, the button says how much more MOE you need.
+2. **One market, all in MOE.** It has five tabs:
+   - **Shop:** pick a subject (Psychology, History, Biology). Bobo, Loftus & Palmer, Milgram, Inventors, WW1 and Photosynthesis cost 30,000 MOE each, so a new player can buy exactly one.
+   - **Player listings (Corey's idea):** other players resell worlds, and the original creator gets 10%. His fake Ava/Sam listings are now real, playable worlds.
+   - **My worlds:** list your own worlds or bought ones for sale.
+     - Your own world gets an NFT with its fingerprint when you first list it. Selling it sells a copy, and you keep the original.
+     - A bought world can be resold. It leaves your islands and the creator gets 10%.
+   - **Membership:** 90,000 MOE.
+   - **Wallet & history:** reads Corey's real MOE token live from devnet (name, supply, Explorer link).
+3. **Fingerprint check kept.** Every purchase re-checks the world file before loading it.
+4. **Built-in wallet.** Buying no longer needs a "Connect wallet" step; each player gets a wallet automatically.
+5. **"My worlds" library.** It's a list in the top-left card, closed by default.
+   - You can own any number of worlds and choose which 3 show on the islands.
+   - "store" moves a world off its island; the 1/2/3 buttons put a world on an island, swapping with what's there.
+   - A purchase made when all 3 islands are full goes into the library.
+6. **From Corey, kept as he wrote it:** the MOE token reader, the gold MOE balance top right, and blue portals for bought worlds.
+7. **On hold, as you asked:** learn-to-earn rewards. The file is still on Corey's branch, so it's easy to add later.
+8. "reset demo" now also clears the wallet and purchase history.
+
+Corey has pushed 4 newer branches since (cosmetics, a trading doc, a new hub design). I haven't touched them.
+
+## Pitch script (2:00)
+Fill in your team name where it says [TEAM].
+
+**Opening (0:00–0:20):** "Hi, I'm Memphis, and with my team [TEAM] we built **EduOasis**: you upload your notes, and they become a **game world on your own island**. And like real memories, **your islands dry up over time when you forget**, so you come back and play to keep them alive. We built it for neurodivergent learners like us, so the study tool adapts to our brains instead of our brains adapting to the tool."
+
+**Who & Problem (0:20–0:40):** "Most of our team is neurodivergent. Textbooks and slides are walls of text, and videos don't answer you when you're confused. So we either zone out, or we cram and forget it all a week later. The problem isn't just *learning*, it's **time**: nobody tells you *what* you're forgetting or *when* to review it."
+
+**Concept & Inspiration (0:40–1:00):** "We were inspired by **Inside Out**: Riley's memories live on islands, and when she stops caring about them they crumble. EduOasis is that, for studying. Green means you remember it; as our forgetting-curve model predicts your memory fading, the island dries up. And inside each island you don't *read* your notes, you *play* them. Learning who invented what? You dodge Tesla's lightning and Oppenheimer's bomb in a survival shooter. **The game type is chosen to fit the content.**"
+
+**How It Works (1:00–1:40):** "One: walk to an empty island and upload your notes. Two: Gemini reads every page, pulls out every fact, and builds a world: picture slides, then the games that fit. A drag-and-drop board for groups, a showdown for who-did-what, a timeline run for order, an inspect room for evaluation. Three: play it, and your island turns green again.
+Three things make it work:
+- **Nothing gets lost:** every fact is numbered and code checks a game teaches it. Loftus & Palmer covers 29 out of 29.
+- **It predicts your forgetting:** a memory model tells you which island is drying up and when to review.
+- **Worlds are owned, on Solana:** each world is an NFT carrying a fingerprint of its file. You buy other students' worlds in the World Market with **MOE**, our token live on Solana devnet, and creators earn royalties on every resale.
+
+Pip, your AI companion, answers anything from your own notes."
+
+**Closing (1:40–2:00):** "We built this because we needed it ourselves. Today it turns one set of notes into a playable island in under a minute. **Next**, we want MOE to actually move on-chain, students to earn MOE by learning, and a game picker that learns which game type works best for *your* brain. Learning shouldn't be a wall of text you forget in a week. It should be a world you keep alive. That's EduOasis."
+
+The same file also has:
+- a **demo video script** (about 2:30), with what to show on screen and what to say at each timestamp
+- a **plan for the 4–5 minutes at each judge's table**, with short answers to likely questions
+- a **list separating what's built from what's next**, so the two don't get mixed up when you speak
+
+One honesty line to keep: the MOE token is real on devnet, but in-app balances and purchases are still simulated. Say "live token on devnet", not "on-chain payments".
+
+## TLDR
+- **Idea:** your notes become a game island that dries up as you forget (TIME), built for ADHD and neurodivergent learners.
+- **Built:**
+  - AI-generated worlds with a check that no fact is skipped
+  - 6 game types plus the Bobo experiment
+  - picture slides
+  - Pip with recall prediction
+  - the MOE World Market with fingerprint checks
+  - the real MOE token on devnet
+  - the library of owned worlds
+- **Simulated:** MOE balances, purchases, NFTs and badges.
+- **Next:**
+  - real on-chain MOE
+  - learn-to-earn
+  - a game picker that learns per learner
+  - Pip's voice
+  - 3D
+- **Tracks:** TIME, Solana, HRT data, Gemini.
+
+Before you submit, the saved conversation should come out of git, along with the two discussion-notes files.
+
+Files are in docs/ on the merge1 branch:
+- PITCH_AND_DEMO_SCRIPT.md
+- TLDR.md
+- convo/claude-session-2026-10-24.md
+
+### Memphis
+
+how do i run the new merged local host
+
+### Claude
+
+It should already be running. Your project folder is on the `merge1` branch and a server is up on port 3123, so:
+
+1. **Open http://localhost:3123** in your browser.
+2. **Click "reset demo"** in the top-left card. Your browser still remembers the old game (Bobo and Loftus already on islands), so without a reset you won't see the new start: 3 empty islands and 30,000 MOE.
+
+If the page doesn't load or the server isn't running, start it yourself from a terminal:
+
+```
+cd C:\edu-oasis-mark2
+git checkout merge1
+npm install
+npm run dev -- -p 3123
+```
+
+Then open http://localhost:3123. `npm install` is needed because Corey's branch added the Solana packages. I already ran it on your machine, so it'll be quick. The first page load takes a little while as it builds.
+
+To go back to the version without MOE, stop the server (Ctrl+C), run `git checkout main`, and start it again.
+
+### Memphis
+
+save convo for now, i checked its pretyt good, but i did a napolean war generation test, it was not bad content wise but the game types is always the same, can u make sure it varies every time to keep it fresh keep it as a rule whenever a new island is generated and make sure that the games r gonna have more action gameplay than simple sortings, now the next thing i wanna work on is running a simulated transaction to see if it works, what will we need, sandbox or some shit ? show me the plan we have again and everything we are missing and i needed remind ? but the 2 main things after simulating the transaction is we need to combine the new merges and also public domain but lets do it one at a time do the simulated transaction first
+
+### Claude
+
+Adding a rule in code so every new island gets a fresh mix of action games.
+
+### Claude
+
+Prettier reformatted more than it should have. I'm reverting that and re-applying only my edits.
+
+### Claude
+
+Quick check that the picker gives different mixes over several generations of the same notes:
