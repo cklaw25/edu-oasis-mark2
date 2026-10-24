@@ -9,8 +9,12 @@ export interface WorldSummary {
   creator: string;
   createdAt: number;
   lastVisitedAt: number;
-  /** 0..1 predicted recall; drives how green or dried-out the island looks */
+  /** 0..1 predicted recall right now (derived from halfLifeH + lastVisitedAt); drives how green the island looks */
   recall: number;
+  /** hours until recall falls to 50% */
+  halfLifeH?: number;
+  /** accuracy of each completed session, oldest first */
+  sessions?: { t: number; accuracy: number }[];
   gameType: GameType;
   /** how many extracted knowledge items the world teaches */
   coverage?: { covered: number; total: number };

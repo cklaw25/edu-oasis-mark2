@@ -9,7 +9,8 @@ const DEMO_WORLD: WorldSummary = {
   creator: "EduOasis",
   createdAt: Date.now() - 3 * 86400_000,
   lastVisitedAt: Date.now() - 2 * 86400_000,
-  recall: 0.55,
+  halfLifeH: 48, // two days since the last visit → recall 50%
+  recall: 0.5,
   gameType: "rpg-experiment",
 };
 

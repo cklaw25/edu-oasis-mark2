@@ -46,9 +46,12 @@ export class ExperimentScene extends Phaser.Scene {
   }
 
   private autoStart = true;
+  /** 0..1, how worked-up the watching children are; rises with hits, cools in quiet rounds */
+  private agitation = 0;
 
   init(data: { autoStart?: boolean }) {
     this.autoStart = data.autoStart ?? true;
+    this.agitation = 0;
     this.bobos = [];
     this.kids = [];
     this.mode = "aggressive";
@@ -137,6 +140,7 @@ export class ExperimentScene extends Phaser.Scene {
     this.meterBar.setVisible(aggressive);
     this.mallet.setVisible(aggressive);
     this.kids.forEach((k) => k.setTexture(aggressive ? "kid-angry" : "kid-calm"));
+    this.tintKids();
     this.cameras.main.flash(250, aggressive ? 255 : 120, aggressive ? 80 : 255, aggressive ? 80 : 160);
   }
 
@@ -161,6 +165,10 @@ export class ExperimentScene extends Phaser.Scene {
     if (!this.running) return;
 
     this.timeLeft -= dt;
+    if (this.mode === "quiet" && this.agitation > 0) {
+      this.agitation = Math.max(0, this.agitation - dt * 0.08);
+      this.tintKids();
+    }
     if (this.mode === "aggressive") {
       this.meter -= dt / 3; // empty after 3s without a hit
       if (this.meter <= 0) {
@@ -215,13 +223,25 @@ export class ExperimentScene extends Phaser.Scene {
     if (this.mode === "aggressive") {
       this.stats.hits++;
       this.meter = Math.min(1, this.meter + 0.6);
-      this.kids.forEach((kid, i) =>
-        this.tweens.add({ targets: kid, y: kid.y - 6, yoyo: true, duration: 120, delay: i * 30 }),
-      );
+      this.agitation = Math.min(1, this.agitation + 0.12);
+      this.kids.forEach((kid, i) => {
+        // shake in place around a fixed home x (never drifts), tint redder as agitation builds
+        const homeX = 170 + i * 88;
+        this.tweens.killTweensOf(kid);
+        kid.x = homeX;
+        this.tweens.add({ targets: kid, x: homeX + 3, yoyo: true, repeat: 3, duration: 40, delay: i * 15 });
+      });
+      this.tintKids();
     } else {
       this.stats.wrongHits++;
       this.strike("The non-aggressive model never touches Bobo!");
     }
+  }
+
+  private tintKids() {
+    // white -> deep red
+    const gb = Math.round(255 * (1 - 0.65 * this.agitation));
+    this.kids.forEach((k) => k.setTint(Phaser.Display.Color.GetColor(255, gb, gb)));
   }
 
   private strike(reason: string) {

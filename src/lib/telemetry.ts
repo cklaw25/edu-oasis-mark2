@@ -1,4 +1,6 @@
 // Interaction log; feeds the recall model and game-type picker (data layer).
+import { now } from "./clock";
+
 const KEY = "eo2.events";
 
 export interface TelemetryEvent {
@@ -11,7 +13,7 @@ export interface TelemetryEvent {
 export function track(world: string, type: string, data?: Record<string, unknown>) {
   try {
     const events: TelemetryEvent[] = JSON.parse(localStorage.getItem(KEY) ?? "[]");
-    events.push({ t: Date.now(), world, type, data });
+    events.push({ t: now(), world, type, data });
     localStorage.setItem(KEY, JSON.stringify(events.slice(-2000)));
   } catch {}
 }

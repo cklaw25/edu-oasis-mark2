@@ -1,11 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import GameCanvas, { type SceneKey } from "@/components/GameCanvas";
 import CreateWorldModal from "@/components/CreateWorldModal";
 import BoboFlow, { type BoboPhase } from "@/components/BoboFlow";
 import WorldFlow, { labClues, type WorldPhase } from "@/components/WorldFlow";
+import PipPanel from "@/components/PipPanel";
 import { bus } from "@/game/bus";
+import { now } from "@/lib/clock";
+import { nextHalfLife, recallAt } from "@/lib/recall";
 import { defaultProfile, loadProfile, saveProfile } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
 import type { WorldSpec } from "@/lib/worldSpec";
@@ -28,6 +31,16 @@ export default function Home() {
   const [nonce, setNonce] = useState(0);
   const [autoStart, setAutoStart] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [pipOpen, setPipOpen] = useState(false);
+  const [clockTick, setClockTick] = useState(0);
+
+  // recall is derived from the forgetting curve at the current (possibly time-travelled) clock
+  const view = useMemo(
+    () => profile && { ...profile, worlds: profile.worlds.map((w) => w && { ...w, recall: recallAt(w) }) },
+    // clockTick: re-derive after a demo time jump
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [profile, clockTick],
+  );
 
   const setPhase = useCallback((p: Phase) => {
     if (p === "experiment") {
@@ -52,7 +65,9 @@ export default function Home() {
     setActive(world);
   }, []);
 
-  useEffect(() => setProfile(loadProfile()), []);
+  useEffect(() => {
+    setProfile(loadProfile());
+  }, []);
   useEffect(() => {
     const offInspect = bus.on("lab:inspect", () => setReviewOpen(true));
     const offResolved = bus.on("lab:resolved", () => setReviewOpen(false));
@@ -76,7 +91,7 @@ export default function Home() {
     };
   }, [enter]);
 
-  if (!profile) return <main className="h-screen bg-[#2a6f97]" />;
+  if (!profile || !view) return <main className="h-screen bg-[#2a6f97]" />;
 
   let scene: SceneKey = "hub";
   let sceneData: Record<string, unknown> = { autoStart };
@@ -88,11 +103,20 @@ export default function Home() {
       ? { clues: labClues(active.spec), title: active.spec.inspect.room }
       : { arena: active.spec.arena, autoStart };
   }
-  const paused = panel !== null || (active !== null && (CARD_PHASES.includes(phase) || reviewOpen));
+  const paused = pipOpen || panel !== null || (active !== null && (CARD_PHASES.includes(phase) || reviewOpen));
 
   const exitWorld = (id: string, accuracy: number) => {
+    const t = now();
     const worlds = profile.worlds.map((w) =>
-      w?.id === id ? { ...w, recall: 0.5 + 0.5 * accuracy, lastVisitedAt: Date.now() } : w,
+      w?.id === id
+        ? {
+            ...w,
+            halfLifeH: nextHalfLife(w, accuracy),
+            lastVisitedAt: t,
+            recall: 1,
+            sessions: [...(w.sessions ?? []), { t, accuracy }],
+          }
+        : w,
     );
     const next = { ...profile, worlds };
     saveProfile(next);
@@ -111,7 +135,7 @@ export default function Home() {
 
   return (
     <main className="relative h-screen w-screen overflow-hidden font-mono">
-      <GameCanvas scene={scene} sceneData={sceneData} nonce={nonce} profile={profile} paused={paused} />
+      <GameCanvas scene={scene} sceneData={sceneData} nonce={nonce} profile={view} paused={paused} />
 
       {active?.kind === "bobo" && (
         <BoboFlow phase={phase as BoboPhase} setPhase={setPhase} onExit={(acc) => exitWorld("demo-bobo", acc)} />
@@ -123,6 +147,23 @@ export default function Home() {
           phase={phase as WorldPhase}
           setPhase={setPhase}
           onExit={(acc) => exitWorld(active.id, acc)}
+        />
+      )}
+
+      {!pipOpen && (
+        <button
+          onClick={() => setPipOpen(true)}
+          className="absolute bottom-6 right-6 z-[25] flex items-center gap-2 rounded-full bg-[#bff4ff] px-4 py-3 font-bold text-[#0b2a3d] shadow-lg hover:bg-white"
+        >
+          ✦ Pip
+        </button>
+      )}
+      {pipOpen && (
+        <PipPanel
+          profile={view}
+          focusId={active?.kind === "bobo" ? "demo-bobo" : active?.kind === "gen" ? active.id : null}
+          onClose={() => setPipOpen(false)}
+          onClockChange={() => setClockTick((n) => n + 1)}
         />
       )}
 
@@ -184,7 +225,7 @@ export default function Home() {
               topic: spec.topic,
               creator: profile.name,
               createdAt: Date.now(),
-              lastVisitedAt: Date.now(),
+              lastVisitedAt: now(),
               recall: 1,
               gameType: "explore-collect",
               coverage: body.coverage,
