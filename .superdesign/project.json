@@ -1,0 +1,8 @@
+{
+  "title": "EduOasis (corey/from-cklaw25-main)",
+  "projectId": "c160d456-3416-4d75-925b-c80a96b30766",
+  "projectUrl": "https://superdesign.dev/teams/0990336d-28b4-4366-a102-86717596d0cc/projects/c160d456-3416-4d75-925b-c80a96b30766",
+  "baselineDraftId": "9614d541-8f8e-416b-b54b-ebfb7cd8de4e",
+  "baselineTemplate": "replica_html_template/island-hub.html",
+  "note": "island-hub.html is a static HTML/SVG replica of the Phaser island hub (src/game/HubScene.ts) used as the Superdesign starting point."
+}
