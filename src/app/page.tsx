@@ -9,8 +9,8 @@ import { gamesOf } from "@/lib/worldSpec";
 import PipPanel from "@/components/PipPanel";
 import MarketPanel from "@/components/MarketPanel";
 import MoeCoin from "@/components/MoeCoin";
-import { mintBadge, recordMoe, resetChain } from "@/lib/solana";
-import { ATTEMPT_FEE, recordRun, resetBounties } from "@/lib/bounty";
+import { mintBadge, mintBountyBadge, recordMoe, resetChain } from "@/lib/solana";
+import { ATTEMPT_FEE, PASS_SCORE, recordRun, resetBounties } from "@/lib/bounty";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
 import { track } from "@/lib/telemetry";
@@ -132,16 +132,25 @@ export default function Home() {
 
   const exitWorld = (id: string, accuracy: number) => {
     const t = now();
-    // bounty pool on this island? the run counts as an attempt, and a 90%+ run solves it
+    // bounty pool on this island? the run counts as an attempt; a 60%+ run passes it, and a higher score wins a bigger prize
     const run = recordRun(id, accuracy, profile.name);
     if (run) {
       const b = run.bounty;
-      if (run.solved) {
-        recordMoe("bounty-payout", `Mastered "${b.title}": solver prize from its bounty pool`, run.delta + ATTEMPT_FEE);
-        setBountyMsg(`🏆 You mastered "${b.title}" and won ${formatMoe(run.delta + ATTEMPT_FEE)} MOE from its bounty pool. Every staker got their stake back plus a bonus.`);
+      const pctScore = Math.round(accuracy * 100);
+      if (run.solved && run.tier) {
+        const tier = run.tier;
+        recordMoe("bounty-payout", `${tier.icon} ${tier.name} pass on "${b.title}" (${pctScore}%): solver prize from its bounty pool`, run.delta + ATTEMPT_FEE);
+        void mintBountyBadge(id, b.title, accuracy, tier);
+        setBountyMsg(
+          `${tier.icon} ${tier.name}! You passed "${b.title}" with ${pctScore}% and won ${formatMoe(run.prize)} MOE plus a ${tier.name} badge. ` +
+            `${formatMoe(run.burned)} MOE was burned${tier.id === "diamond" ? "" : " (a higher score would have claimed more of it)"}.`,
+        );
       } else {
-        recordMoe("bounty-attempt", `Bounty attempt on "${b.title}" (${Math.round(accuracy * 100)}%)`, -ATTEMPT_FEE);
-        setBountyMsg(`Bounty attempt on "${b.title}": ${Math.round(accuracy * 100)}%. You need 90% to win it. Your ${ATTEMPT_FEE} MOE fee grew the pool.`);
+        recordMoe("bounty-attempt", `Bounty attempt on "${b.title}" (${pctScore}%)`, -ATTEMPT_FEE);
+        setBountyMsg(
+          `Bounty attempt on "${b.title}": ${pctScore}%. You need ${Math.round(PASS_SCORE * 100)}% to pass. ` +
+            `${ATTEMPT_FEE - run.burned} MOE of your fee grew the pool and ${run.burned} was burned.`,
+        );
       }
     }
     const withMoe = run ? { ...profile, moe: profile.moe + run.delta } : profile;
