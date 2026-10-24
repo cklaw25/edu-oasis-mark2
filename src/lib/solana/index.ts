@@ -26,7 +26,9 @@ export interface Listing {
 
 export interface Tx {
   signature: string;
-  kind: "wallet" | "mint-world" | "buy-access" | "buy-membership" | "mint-badge" | "list-world" | "sell-world" | "generate";
+  kind:
+    | "wallet" | "mint-world" | "buy-access" | "buy-membership" | "mint-badge" | "list-world" | "sell-world" | "generate"
+    | "open-bounty" | "join-bounty" | "bounty-attempt" | "bounty-payout";
   summary: string;
   amount?: number;
   t: number;
