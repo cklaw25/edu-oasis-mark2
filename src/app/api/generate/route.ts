@@ -12,10 +12,13 @@ import {
 } from "@/lib/worldSpec";
 
 export const runtime = "nodejs";
-export const maxDuration = 300;
+export const maxDuration = 800;
 
-// lite: the full Flash models were taking 1-6 min per call on the free tier during the event
-const MODEL = process.env.GEMINI_MODEL ?? "gemini-3.5-flash-lite";
+// Quality first: the full Flash model writes better worlds but took 1-6 min per call on the free tier
+// during the event, so each call falls back to lite if it is too slow or fails.
+const QUALITY_MODEL = process.env.GEMINI_GEN_MODEL ?? "gemini-3.8-flash";
+const FAST_MODEL = process.env.GEMINI_MODEL ?? "gemini-3.5-flash-lite";
+const QUALITY_TIMEOUT_MS = 240_000;
 
 const MAX_CLUES = 12; // object spots in the inspect room (src/game/layout.ts)
 
@@ -46,12 +49,24 @@ and/or inspect clues (same style and the same arena categories / inspect choices
 Only use what the items say.`;
 
 async function json<T>(ai: GoogleGenAI, parts: Part[], schema: object): Promise<T> {
-  const res = await ai.models.generateContent({
-    model: MODEL,
-    contents: [{ role: "user", parts }],
-    config: { responseMimeType: "application/json", responseJsonSchema: schema },
-  });
-  return JSON.parse(res.text ?? "{}") as T;
+  const call = async (model: string, timeout?: number) => {
+    const res = await ai.models.generateContent({
+      model,
+      contents: [{ role: "user", parts }],
+      config: {
+        responseMimeType: "application/json",
+        responseJsonSchema: schema,
+        ...(timeout ? { httpOptions: { timeout } } : {}),
+      },
+    });
+    return JSON.parse(res.text ?? "{}") as T;
+  };
+  try {
+    return await call(QUALITY_MODEL, QUALITY_TIMEOUT_MS);
+  } catch (e) {
+    console.warn(`generate: ${QUALITY_MODEL} failed (${e instanceof Error ? e.message : e}), using ${FAST_MODEL}`);
+    return call(FAST_MODEL);
+  }
 }
 
 async function fileParts(files: File[]): Promise<Part[]> {

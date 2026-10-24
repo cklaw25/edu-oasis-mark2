@@ -11,6 +11,10 @@ export interface WorldSummary {
   lastVisitedAt: number;
   /** 0..1 predicted recall right now (derived from halfLifeH + lastVisitedAt); drives how green the island looks */
   recall: number;
+  /** 0..1 share of the current review interval left (derived); 0 = review due */
+  lifespan?: number;
+  /** good reviews in a row; review interval = 2 days × streak (min 2 days) */
+  streak?: number;
   /** hours until recall falls to 50% */
   halfLifeH?: number;
   /** accuracy of each completed session, oldest first */

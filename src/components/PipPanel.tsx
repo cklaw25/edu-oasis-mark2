@@ -77,10 +77,28 @@ export default function PipPanel({
   );
 }
 
+const CHAT_KEY = "eo2.pip.chat";
+const GREETING: Msg = {
+  role: "pip",
+  text: "Hi! Ask me anything about your islands — I can recap, quiz you, or tell you what to revisit.",
+};
+
+function loadChat(): Msg[] {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CHAT_KEY) ?? "null") as Msg[] | null;
+    if (saved?.length) return saved;
+  } catch {}
+  return [GREETING];
+}
+
 function Chat({ profile, focusId }: { profile: Profile; focusId: string | null }) {
-  const [msgs, setMsgs] = useState<Msg[]>([
-    { role: "pip", text: "Hi! Ask me anything about your islands — I can recap, quiz you, or tell you what to revisit." },
-  ]);
+  // chat history persists across sessions so Pip keeps context
+  const [msgs, setMsgs] = useState<Msg[]>(loadChat);
+  useEffect(() => {
+    try {
+      localStorage.setItem(CHAT_KEY, JSON.stringify(msgs.slice(-60)));
+    } catch {}
+  }, [msgs]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const end = useRef<HTMLDivElement>(null);
@@ -127,6 +145,9 @@ function Chat({ profile, focusId }: { profile: Profile; focusId: string | null }
         <div ref={end} />
       </div>
       <div className="mt-3 flex flex-wrap gap-1">
+        <button onClick={() => setMsgs([GREETING])} className="rounded-full px-2 py-1 text-xs opacity-50 hover:opacity-100">
+          clear chat
+        </button>
         {["What should I revisit?", "Quiz me", "Recap this world in 5 bullets"].map((q) => (
           <button key={q} onClick={() => send(q)} className="rounded-full bg-white px-2 py-1 text-xs hover:bg-[#dff1fa]">
             {q}
@@ -262,24 +283,30 @@ function Data({ profile, onClockChange }: { profile: Profile; onClockChange: () 
       <section>
         <h3 className="mb-2 font-bold">Prediction · memory per island</h3>
         <p className="mb-2 text-xs opacity-70">
-          Forgetting curve: recall = 2^(−time since review ÷ half-life). Good sessions lengthen the half-life, weak ones
-          shorten it.
+          <b>Lifespan</b> (big): how much of your review interval is left — 0% means review now. Intervals grow 2 → 4 → 6
+          days with each good session (≥60%), and reset to 2 days after a weak one. <b>Recall</b> (small): predicted chance
+          you&apos;d still answer correctly, from a forgetting curve.
         </p>
         <div className="space-y-2">
           {ins.worlds.map((w) => (
             <div key={w.world.id} className="rounded-lg bg-white p-2">
-              <div className="flex justify-between">
+              <div className="flex items-baseline justify-between">
                 <span className="font-semibold">{w.world.title}</span>
-                <span>{pct(w.recall)}</span>
+                <span className="text-2xl font-bold">{pct(w.lifespan)}</span>
               </div>
               <div className="mt-1 h-2 rounded bg-[#f0e6cf]">
                 <div
                   className="h-2 rounded"
-                  style={{ width: pct(w.recall), background: w.recall > 0.6 ? "#4fb35a" : w.recall > 0.35 ? "#d9a441" : "#c75c3a" }}
+                  style={{ width: pct(w.lifespan), background: w.lifespan > 0.5 ? "#4fb35a" : w.lifespan > 0.25 ? "#d9a441" : "#c75c3a" }}
                 />
               </div>
+              <div className="mt-1 text-xs">
+                recall <b>{pct(w.recall)}</b> ·{" "}
+                {w.daysUntilDue > 0 ? `review due in ${w.daysUntilDue.toFixed(1)} days` : "review due now!"} · every{" "}
+                {w.intervalDays} days
+              </div>
               <div className="mt-1 text-[11px] opacity-70">
-                half-life {w.halfLifeH.toFixed(0)}h · {w.hoursTo50 > 0 ? `drops to 50% in ${w.hoursTo50.toFixed(1)}h` : "below 50% — revisit!"} ·{" "}
+                half-life {w.halfLifeH.toFixed(0)}h ·{" "}
                 {w.sessions} session{w.sessions === 1 ? "" : "s"}
                 {w.lastAccuracy !== null && ` · last ${pct(w.lastAccuracy)}`}
               </div>
@@ -301,7 +328,8 @@ function Data({ profile, onClockChange }: { profile: Profile; onClockChange: () 
         <ul className="list-disc space-y-1 pl-5">
           {ins.nextIsland && (
             <li>
-              Revisit <b>{ins.nextIsland.world.title}</b> next — lowest predicted recall ({pct(ins.nextIsland.recall)}).
+              Revisit <b>{ins.nextIsland.world.title}</b> next — lifespan {pct(ins.nextIsland.lifespan)}, recall{" "}
+              {pct(ins.nextIsland.recall)}.
             </li>
           )}
           {ins.weakSpots.length > 0 && <li>Focus on: {ins.weakSpots.slice(0, 3).map((s) => s.label).join(", ")}.</li>}

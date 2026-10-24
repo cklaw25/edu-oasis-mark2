@@ -68,7 +68,8 @@ export class HubScene extends Phaser.Scene {
     SLOTS.forEach((c, i) => {
       const world = this.profile.worlds[i];
       if (world) {
-        this.drawIsland(c, lerpColor(world.recall), world.title, world.recall);
+        const life = world.lifespan ?? world.recall;
+        this.drawIsland(c, lerpColor(life), world.title, life, false, { lifespan: life, recall: world.recall });
         this.addPortal(c, { kind: "world", slot: i, world }, 0x7fe0ff);
       } else {
         this.drawIsland(c, 0xd8c79a, "Empty island", 0, true);
@@ -163,7 +164,14 @@ export class HubScene extends Phaser.Scene {
     c.add(g);
   }
 
-  private drawIsland(c: Circle, grass: number, label: string, recall = 1, empty = false) {
+  private drawIsland(
+    c: Circle,
+    grass: number,
+    label: string,
+    health = 1,
+    empty = false,
+    scores?: { lifespan: number; recall: number },
+  ) {
     const g = this.add.graphics();
     g.fillStyle(0x8fd3e8, 0.5).fillCircle(c.x, c.y, c.r + 18); // shallow water
     g.fillStyle(0xf0d9a0).fillCircle(c.x, c.y, c.r); // sand
@@ -174,11 +182,11 @@ export class HubScene extends Phaser.Scene {
     for (let i = 0; i < trees; i++) {
       const a = rng.angle() * Phaser.Math.DEG_TO_RAD;
       const d = rng.between(c.r * 0.45, c.r * 0.75);
-      this.drawPalm(c.x + Math.cos(a) * d, c.y + Math.sin(a) * d, recall);
+      this.drawPalm(c.x + Math.cos(a) * d, c.y + Math.sin(a) * d, health);
     }
 
     this.add
-      .text(c.x, c.y - c.r - 34, label, {
+      .text(c.x, c.y - c.r - (scores ? 76 : 34), label, {
         fontFamily: "monospace",
         fontSize: "20px",
         color: "#ffffff",
@@ -186,12 +194,24 @@ export class HubScene extends Phaser.Scene {
         strokeThickness: 5,
       })
       .setOrigin(0.5);
-    if (!empty && recall < 1 && label !== "Home Island" && label !== "World Market") {
+    if (scores) {
+      // big: lifespan of the current review interval; small: predicted recall (forgetting curve)
+      const color = (x: number) => (x < 0.25 ? "#ffb4a2" : x < 0.5 ? "#ffe0a3" : "#d8ffd8");
       this.add
-        .text(c.x, c.y - c.r - 10, `recall ${Math.round(recall * 100)}%`, {
+        .text(c.x, c.y - c.r - 42, `${Math.round(scores.lifespan * 100)}%`, {
+          fontFamily: "monospace",
+          fontSize: "34px",
+          fontStyle: "bold",
+          color: color(scores.lifespan),
+          stroke: "#0b2a3d",
+          strokeThickness: 6,
+        })
+        .setOrigin(0.5);
+      this.add
+        .text(c.x, c.y - c.r - 14, `recall ${Math.round(scores.recall * 100)}%`, {
           fontFamily: "monospace",
           fontSize: "14px",
-          color: recall < 0.5 ? "#ffb4a2" : "#d8ffd8",
+          color: color(scores.recall),
           stroke: "#0b2a3d",
           strokeThickness: 4,
         })

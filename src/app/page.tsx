@@ -8,7 +8,7 @@ import WorldFlow, { labClues, type WorldPhase } from "@/components/WorldFlow";
 import PipPanel from "@/components/PipPanel";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
-import { nextHalfLife, recallAt } from "@/lib/recall";
+import { lifespanAt, nextHalfLife, nextStreak, recallAt } from "@/lib/recall";
 import { defaultProfile, loadProfile, saveProfile } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
 import type { WorldSpec } from "@/lib/worldSpec";
@@ -36,7 +36,7 @@ export default function Home() {
 
   // recall is derived from the forgetting curve at the current (possibly time-travelled) clock
   const view = useMemo(
-    () => profile && { ...profile, worlds: profile.worlds.map((w) => w && { ...w, recall: recallAt(w) }) },
+    () => profile && { ...profile, worlds: profile.worlds.map((w) => w && { ...w, recall: recallAt(w), lifespan: lifespanAt(w) }) },
     // clockTick: re-derive after a demo time jump
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [profile, clockTick],
@@ -112,6 +112,7 @@ export default function Home() {
         ? {
             ...w,
             halfLifeH: nextHalfLife(w, accuracy),
+            streak: nextStreak(w, accuracy),
             lastVisitedAt: t,
             recall: 1,
             sessions: [...(w.sessions ?? []), { t, accuracy }],
