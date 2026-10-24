@@ -2,15 +2,75 @@
 
 import { useState } from "react";
 import MoeCoin from "@/components/MoeCoin";
-import { SUBJECTS, type MarketTopic } from "@/lib/market";
+import { PLAYER_LISTINGS, SUBJECTS, type MarketTopic, type PlayerListing } from "@/lib/market";
 import { WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
 import type { Profile } from "@/lib/types";
 
-// World Market: pick a subject, then buy subtopic worlds for MOE. Bought worlds land on a free island.
-export default function MarketPanel({ profile, onBuy }: { profile: Profile; onBuy: (topic: MarketTopic) => void }) {
+export interface MarketActions {
+  buyTopic: (topic: MarketTopic) => void;
+  buyListing: (listing: PlayerListing) => void;
+  list: (worldId: string, price: number) => void;
+  unlist: (worldId: string) => void;
+  sell: (worldId: string) => void;
+}
+
+type Tab = "shop" | "listings" | "mine";
+
+// World Market: buy EduOasis worlds by subject, buy island NFTs other players listed, and list your own.
+export default function MarketPanel({ profile, actions }: { profile: Profile; actions: MarketActions }) {
+  const [tab, setTab] = useState<Tab>("shop");
+  const tabs: [Tab, string][] = [
+    ["shop", "Shop"],
+    ["listings", "Player listings"],
+    ["mine", "My islands"],
+  ];
+  return (
+    <>
+      <div className="mb-4 flex gap-1 rounded-xl bg-[#0b2a3d]/10 p-1">
+        {tabs.map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`flex-1 rounded-lg px-2 py-1.5 text-sm font-bold ${tab === id ? "bg-white shadow" : "opacity-60 hover:opacity-100"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div className="max-h-[60vh] overflow-y-auto pr-1">
+        {tab === "shop" && <Shop profile={profile} actions={actions} />}
+        {tab === "listings" && <Listings profile={profile} actions={actions} />}
+        {tab === "mine" && <MyIslands profile={profile} actions={actions} />}
+      </div>
+    </>
+  );
+}
+
+function Price({ amount }: { amount: number }) {
+  return (
+    <span className="flex items-center gap-2 font-bold">
+      <MoeCoin size={22} />
+      {formatMoe(amount)} MOE
+    </span>
+  );
+}
+
+function Card({ children }: { children: React.ReactNode }) {
+  return <div className="rounded-xl border-2 border-[#0b2a3d]/15 bg-white p-4">{children}</div>;
+}
+
+const buyBtn =
+  "rounded-lg bg-[#e0a526] px-4 py-2 text-sm font-bold text-[#2b2118] hover:bg-[#ffd166] disabled:cursor-not-allowed disabled:opacity-40";
+
+function whyNot(profile: Profile, price: number) {
+  if (profile.moe < price) return `You need ${formatMoe(price - profile.moe)} more MOE.`;
+  if (!profile.worlds.some((w) => !w)) return "All your islands are full. Sell one first.";
+  return null;
+}
+
+function Shop({ profile, actions }: { profile: Profile; actions: MarketActions }) {
   const [subjectId, setSubjectId] = useState<string | null>(null);
   const subject = SUBJECTS.find((s) => s.id === subjectId);
-  const hasFreeIsland = profile.worlds.some((w) => !w);
 
   if (!subject) {
     return (
@@ -44,39 +104,119 @@ export default function MarketPanel({ profile, onBuy }: { profile: Profile; onBu
       <div className="mt-3 flex flex-col gap-3">
         {subject.topics.map((t) => {
           const owned = profile.owned.includes(t.id);
-          const canAfford = profile.moe >= WORLD_PRICE_MOE;
+          const blocked = whyNot(profile, WORLD_PRICE_MOE);
           return (
-            <div key={t.id} className="rounded-xl border-2 border-[#0b2a3d]/15 bg-white p-4">
+            <Card key={t.id}>
               <div className="font-bold">{t.title}</div>
               <p className="mt-1 text-sm opacity-75">{t.blurb}</p>
               <div className="mt-3 flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 font-bold">
-                  <MoeCoin size={22} />
-                  {formatMoe(WORLD_PRICE_MOE)} MOE
-                </span>
+                <Price amount={WORLD_PRICE_MOE} />
                 {owned ? (
                   <span className="rounded-lg bg-[#06d6a0]/20 px-3 py-2 text-sm font-bold text-[#05785a]">
                     ✓ Owned: on your island
                   </span>
                 ) : (
-                  <button
-                    onClick={() => onBuy(t)}
-                    disabled={!canAfford || !hasFreeIsland}
-                    className="rounded-lg bg-[#e0a526] px-4 py-2 text-sm font-bold text-[#2b2118] hover:bg-[#ffd166] disabled:cursor-not-allowed disabled:opacity-40"
-                  >
+                  <button onClick={() => actions.buyTopic(t)} disabled={!!blocked} className={buyBtn}>
                     Buy
                   </button>
                 )}
               </div>
-              {!owned && !canAfford && (
-                <p className="mt-2 text-xs font-bold text-[#9b2226]">
-                  You need {formatMoe(WORLD_PRICE_MOE - profile.moe)} more MOE.
-                </p>
+              {!owned && blocked && <p className="mt-2 text-xs font-bold text-[#9b2226]">{blocked}</p>}
+            </Card>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+function Listings({ profile, actions }: { profile: Profile; actions: MarketActions }) {
+  const open = PLAYER_LISTINGS.filter((l) => !profile.boughtListings.includes(l.id));
+  return (
+    <>
+      <p className="text-sm opacity-80">Island NFTs other players have listed. Sellers set their own price.</p>
+      <div className="mt-3 flex flex-col gap-3">
+        {open.length === 0 && <p className="text-sm opacity-60">No islands for sale right now.</p>}
+        {open.map((l) => {
+          const blocked = whyNot(profile, l.price);
+          return (
+            <Card key={l.id}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="font-bold">{l.world.title}</div>
+                <span className="rounded bg-[#0b2a3d]/10 px-2 py-0.5 text-[10px] font-bold">NFT {l.world.nftId}</span>
+              </div>
+              <p className="mt-1 text-sm opacity-75">
+                {l.world.topic} · sold by {l.seller}
+              </p>
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <Price amount={l.price} />
+                <button onClick={() => actions.buyListing(l)} disabled={!!blocked} className={buyBtn}>
+                  Buy
+                </button>
+              </div>
+              {blocked && <p className="mt-2 text-xs font-bold text-[#9b2226]">{blocked}</p>}
+            </Card>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+function MyIslands({ profile, actions }: { profile: Profile; actions: MarketActions }) {
+  const [prices, setPrices] = useState<Record<string, string>>({});
+  const islands = profile.worlds.filter((w) => w !== null);
+  return (
+    <>
+      <p className="text-sm opacity-80">Each island is an NFT you own. List it at any price for other players to buy.</p>
+      <div className="mt-3 flex flex-col gap-3">
+        {islands.length === 0 && <p className="text-sm opacity-60">You don&apos;t own any islands with worlds yet.</p>}
+        {islands.map((w) => {
+          const listing = profile.listings.find((l) => l.worldId === w.id);
+          const typed = prices[w.id] ?? "";
+          const price = Math.floor(Number(typed.replace(/,/g, "")));
+          const valid = Number.isFinite(price) && price > 0;
+          return (
+            <Card key={w.id}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="font-bold">{w.title}</div>
+                {w.nftId && (
+                  <span className="rounded bg-[#0b2a3d]/10 px-2 py-0.5 text-[10px] font-bold">NFT {w.nftId}</span>
+                )}
+              </div>
+              {listing ? (
+                <>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <span className="text-sm">Listed for</span>
+                    <Price amount={listing.price} />
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      onClick={() => actions.unlist(w.id)}
+                      className="flex-1 rounded-lg border-2 border-[#0b2a3d]/20 px-3 py-2 text-sm font-bold hover:bg-[#0b2a3d]/5"
+                    >
+                      Cancel listing
+                    </button>
+                    <button onClick={() => actions.sell(w.id)} className={`flex-1 ${buyBtn}`}>
+                      Demo: a buyer pays
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="mt-3 flex items-center gap-2">
+                  <input
+                    inputMode="numeric"
+                    placeholder="Your price in MOE"
+                    value={typed}
+                    onChange={(e) => setPrices({ ...prices, [w.id]: e.target.value })}
+                    className="min-w-0 flex-1 rounded-lg border-2 border-[#0b2a3d]/20 px-3 py-2 text-sm"
+                  />
+                  <button onClick={() => actions.list(w.id, price)} disabled={!valid} className={buyBtn}>
+                    List for sale
+                  </button>
+                </div>
               )}
-              {!owned && canAfford && !hasFreeIsland && (
-                <p className="mt-2 text-xs font-bold text-[#9b2226]">All your islands are full.</p>
-              )}
-            </div>
+            </Card>
           );
         })}
       </div>

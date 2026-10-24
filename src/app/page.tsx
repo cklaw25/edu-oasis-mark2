@@ -10,13 +10,14 @@ import MoeCoin from "@/components/MoeCoin";
 import MarketPanel from "@/components/MarketPanel";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
-import type { MarketTopic } from "@/lib/market";
+import { newNftId, topicForWorld, type MarketTopic, type PlayerListing } from "@/lib/market";
 import { WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
+import { sessionReward } from "@/lib/rewards";
 import { nextHalfLife, recallAt } from "@/lib/recall";
 import { defaultProfile, loadProfile, saveProfile } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
 import type { WorldSpec } from "@/lib/worldSpec";
-import type { PortalInfo, Profile } from "@/lib/types";
+import type { PortalInfo, Profile, WorldSummary } from "@/lib/types";
 
 type Panel =
   | { kind: "create"; slot: number }
@@ -41,6 +42,14 @@ export default function Home() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [pipOpen, setPipOpen] = useState(false);
   const [clockTick, setClockTick] = useState(0);
+  const [earned, setEarned] = useState<{ amount: number; accuracy: number } | null>(null);
+
+  // the reward toast fades after a few seconds
+  useEffect(() => {
+    if (!earned) return;
+    const id = setTimeout(() => setEarned(null), 5000);
+    return () => clearTimeout(id);
+  }, [earned]);
 
   // recall is derived from the forgetting curve at the current (possibly time-travelled) clock
   const view = useMemo(
@@ -113,8 +122,15 @@ export default function Home() {
   }
   const paused = pipOpen || panel !== null || (active !== null && (CARD_PHASES.includes(phase) || reviewOpen));
 
+  const save = (next: Profile) => {
+    saveProfile(next);
+    setProfile(next);
+  };
+
   const exitWorld = (id: string, accuracy: number) => {
     const t = now();
+    const played = profile.worlds.find((w) => w?.id === id);
+    const reward = played ? sessionReward(accuracy, recallAt(played, t)) : 0;
     const worlds = profile.worlds.map((w) =>
       w?.id === id
         ? {
@@ -126,21 +142,55 @@ export default function Home() {
           }
         : w,
     );
-    const next = { ...profile, worlds };
-    saveProfile(next);
-    setProfile(next);
+    save({ ...profile, worlds, moe: profile.moe + reward });
     setActive(null);
+    if (reward) setEarned({ amount: reward, accuracy });
   };
 
-  // buying a market world puts it on the first free island
-  const buy = (topic: MarketTopic) => {
+  // a bought world lands on the first free island as a fresh island NFT
+  const place = (world: WorldSummary, price: number, extra: Partial<Profile>) => {
     const slot = profile.worlds.findIndex((w) => !w);
-    if (slot < 0 || profile.moe < WORLD_PRICE_MOE || profile.owned.includes(topic.id)) return;
+    if (slot < 0 || profile.moe < price) return;
     const worlds = [...profile.worlds];
-    worlds[slot] = { ...topic.world, createdAt: Date.now(), lastVisitedAt: now(), recall: 1 };
-    const next = { ...profile, worlds, moe: profile.moe - WORLD_PRICE_MOE, owned: [...profile.owned, topic.id] };
-    saveProfile(next);
-    setProfile(next);
+    worlds[slot] = {
+      ...world,
+      bought: true,
+      nftId: world.nftId ?? newNftId(),
+      createdAt: Date.now(),
+      lastVisitedAt: now(),
+      recall: 1,
+    };
+    save({ ...profile, ...extra, worlds, moe: profile.moe - price });
+  };
+
+  const market = {
+    buyTopic: (topic: MarketTopic) => {
+      if (profile.owned.includes(topic.id)) return;
+      place(topic.world, WORLD_PRICE_MOE, { owned: [...profile.owned, topic.id] });
+    },
+    buyListing: (listing: PlayerListing) => {
+      if (profile.boughtListings.includes(listing.id)) return;
+      place(listing.world, listing.price, { boughtListings: [...profile.boughtListings, listing.id] });
+    },
+    list: (worldId: string, price: number) => {
+      const worlds = profile.worlds.map((w) => (w?.id === worldId && !w.nftId ? { ...w, nftId: newNftId() } : w));
+      const listings = [...profile.listings.filter((l) => l.worldId !== worldId), { worldId, price }];
+      save({ ...profile, worlds, listings });
+    },
+    unlist: (worldId: string) => save({ ...profile, listings: profile.listings.filter((l) => l.worldId !== worldId) }),
+    // demo stand-in for another player buying your listing: the island leaves, the MOE arrives
+    sell: (worldId: string) => {
+      const listing = profile.listings.find((l) => l.worldId === worldId);
+      if (!listing) return;
+      const topic = topicForWorld(worldId);
+      save({
+        ...profile,
+        worlds: profile.worlds.map((w) => (w?.id === worldId ? null : w)),
+        moe: profile.moe + listing.price,
+        listings: profile.listings.filter((l) => l.worldId !== worldId),
+        owned: topic ? profile.owned.filter((id) => id !== topic.id) : profile.owned,
+      });
+    },
   };
 
   const prompt =
@@ -222,6 +272,18 @@ export default function Home() {
         </div>
       </div>
 
+      {earned && !active && (
+        <div className="absolute left-1/2 top-36 z-30 flex -translate-x-1/2 items-center gap-3 rounded-2xl bg-[#0b2a3d]/90 px-5 py-3 text-white shadow-xl">
+          <MoeCoin size={32} />
+          <div>
+            <div className="text-lg font-bold text-[#ffd166]">+{formatMoe(earned.amount)} MOE earned!</div>
+            <div className="text-xs opacity-80">
+              {Math.round(earned.accuracy * 100)}% correct. The more you learn, the more you earn.
+            </div>
+          </div>
+        </div>
+      )}
+
       {prompt && !panel && !active && (
         <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-5 py-2 text-sm font-bold text-[#0b2a3d] shadow-lg">
           {prompt}
@@ -268,7 +330,7 @@ export default function Home() {
 
       {panel?.kind === "market" && (
         <Overlay title="World Market" onClose={() => setPanel(null)}>
-          <MarketPanel profile={profile} onBuy={buy} />
+          <MarketPanel profile={profile} actions={market} />
         </Overlay>
       )}
 
@@ -276,7 +338,7 @@ export default function Home() {
         <Overlay title={panel.info.world!.title} onClose={() => setPanel(null)}>
           <p className="text-sm opacity-80">{panel.info.world!.topic}</p>
           <p className="mt-2 text-sm">
-            {panel.info.world!.creator === "EduOasis"
+            {panel.info.world!.bought
               ? "You own this world. Its game is still being built, so check back soon."
               : "This world's file isn't on this device."}
           </p>

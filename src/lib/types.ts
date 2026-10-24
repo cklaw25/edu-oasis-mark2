@@ -18,6 +18,10 @@ export interface WorldSummary {
   gameType: GameType;
   /** how many extracted knowledge items the world teaches */
   coverage?: { covered: number; total: number };
+  /** bought on the World Market (its island portal shows blue) */
+  bought?: boolean;
+  /** demo NFT id: the island token that can be listed and sold */
+  nftId?: string;
 }
 
 export interface Profile {
@@ -29,6 +33,10 @@ export interface Profile {
   moe: number;
   /** World Market topic ids this player has bought */
   owned: string[];
+  /** my islands listed for sale on the World Market */
+  listings: { worldId: string; price: number }[];
+  /** other players' listings this player has bought */
+  boughtListings: string[];
 }
 
 export type PortalKind = "world" | "empty" | "market";
