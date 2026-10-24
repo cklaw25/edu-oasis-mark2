@@ -78,15 +78,9 @@ the most important thing is the plan can u make us the plan for the enxt few hou
 
 Now writing the hub world: a main island, 3 world islands and a market island, with walking, a pet that follows you, and portals.
 
-### Claude
-
 The hub world is scaffolded. I'm fixing one type error and then running it to check.
 
-### Claude
-
 It compiles and serves. Committing the scaffold so Correy can pull it:
-
-### Claude
 
 The 2D hub world is built and pushed. Open **http://localhost:3123** (the dev server is running) to see it:
 - A home island in the middle with bridges out to 3 world islands, plus a market island on the opposite side.
@@ -153,47 +147,25 @@ Quick answers first, then I'll build.
 
 Building the Bobo world now.
 
-### Claude
-
 You put the key in `.env.example`, which is tracked by git. It wasn't committed, so nothing leaked. I'm moving it to `.env.local`, which git ignores:
-
-### Claude
 
 Key is moved and `git status` is clean. It isn't in the usual `AIza…` format, so I'll test it with a real call when I wire up Gemini. Now the Bobo world content:
 
-### Claude
-
 Now the experiment scene. You're the model inside the TV, and the conditions swap every 10 seconds:
-
-### Claude
 
 Now the React overlays: the intro slides, the results chart, the peer-review cards and the summary.
 
-### Claude
-
 The experiment scene needs to wait while the intro slides are showing, and "Try again" needs to restart it. Adding both:
-
-### Claude
 
 Types pass. Removing two leftover lint comments, then I'll drive the game in headless Edge and take screenshots to check it actually works:
 
-### Claude
-
 No errors, and the game logic works: 6 hits registered, and 1 strike when I stopped hitting for over 3 seconds, which is correct. Checking the visuals:
-
-### Claude
 
 The whole flow runs end to end. Recall updated to 75%, which is correct for my 4 out of 8 answers, and 10 interaction events were logged. Checking the remaining screens:
 
-### Claude
-
 Everything works. Making the polish fixes and pushing:
 
-### Claude
-
 Last thing: checking whether your Gemini key works, since it's in an unusual format:
-
-### Claude
 
 The Bobo doll world is built, play-tested and pushed. Refresh **http://localhost:3123** and walk across the bridge to the Bobo island on the left.
 
@@ -225,71 +197,37 @@ the gameplay seems alright i liked ur idea, we can use that to collect data for 
 
 The test confirms it: all three scenes were still alive at the same time. My edit didn't apply because the file changed on disk, so I'm re-reading it and applying again:
 
-### Claude
-
 Now the scene doesn't switch to the lab at all, and Next.js reports an error. Getting the error text:
-
-### Claude
 
 Fixed: the hub is running and the experiment and lab scenes are properly shut down. Confirming visually and cleaning up the lint warnings:
 
-### Claude
-
 You're back on the main island after the peer review now. I spotted one small leftover: the "E — enter Bobo" prompt stays on screen after you return. Fixing that and pushing:
-
-### Claude
 
 Now the world generator. First, checking what the installed Gemini SDK supports for structured output:
 
-### Claude
-
 Supported. Writing the world file format, with knowledge-coverage tracking built in:
-
-### Claude
 
 Testing the pipeline with real notes. I'll use another IB Psychology study (Loftus & Palmer) as the uploaded resource:
 
-### Claude
-
 The generation took over 5 minutes. That's far too slow for a demo, so I'm checking where the time goes:
-
-### Claude
 
 `gemini-3.5-flash-lite` answers in about 6 seconds, compared with 90+ for the bigger models. Switching to it, with an environment setting so we can change models later without editing code:
 
-### Claude
-
 Now generalising the lab so it takes any set of objects, not just Bobo's:
-
-### Claude
 
 Now the React side for generated worlds. Reusing the Bobo card styles:
 
-### Claude
-
 Phaser can't be imported by server-rendered React code, so the layout helper moves into its own file:
-
-### Claude
 
 The room has 12 object spots. If the patch pass ever adds more clues than that, the extras would be silently dropped, which defeats the coverage guarantee. So I'm capping clues in the patch prompt:
 
-### Claude
-
 Now the page: real generation with a loading state, saving the world file, and playing generated worlds.
-
-### Claude
 
 Types and lint pass. Running a full end-to-end browser test: upload the Loftus notes through the real form, generate, play the arena and inspect room, and return to the hub.
 
-### Claude
-
 Generation through the real form took 14 seconds with no errors. My test script then broke somewhere in the world, so checking the screenshots:
 
-### Claude
-
 The whole loop passes: generate, then play the intro, arena and inspect room, then back to the hub with only the hub scene running and no errors. Checking the screens:
-
-### Claude
 
 The back-to-islands bug is fixed, and **uploading resources now generates a real playable world**. Both are tested end to end in a browser and pushed.
 
@@ -333,39 +271,21 @@ Big list. I'll answer everything at the end and build in this order: the kids bu
 
 The kids bug: each hit started a new "jump up" animation from wherever the face currently was. Overlapping animations crept them upwards. They'll now shake in place and turn redder as aggression builds.
 
-### Claude
-
 Now Bobo's fact list, so Pip and the notes tab treat the hand-made world like a generated one:
-
-### Claude
 
 Now the analysis layer that turns the interaction log into stats, predictions and decisions:
 
-### Claude
-
 Now Pip's panel, with four tabs: **Chat · Notes · My Notes · Data**.
-
-### Claude
 
 Wiring Pip and the recall model into the page:
 
-### Claude
-
 Testing Pip end to end: play Bobo, then open Pip and check the Data, Notes and Chat tabs, then time-travel one day:
-
-### Claude
 
 Two page errors: "destroy is not a function". Getting the stack trace:
 
-### Claude
-
 Found it. Newer Chrome makes `scrollIntoView` return a Promise, and my one-line effect handed that Promise back to React as a "cleanup function". Fix:
 
-### Claude
-
 No errors now. Checking the screens:
-
-### Claude
 
 Pip is built, tested end to end in a browser and pushed. The kids now stay in their row and turn redder as aggression builds, and recall is now a real prediction. Refresh **http://localhost:3123** and click **✦ Pip** in the bottom-right corner.
 
@@ -435,11 +355,7 @@ can u push to git first, save convo in detail and shit for now
 
 Everything up to Pip is already pushed. Checking for anything left over, then writing the discussion notes in full:
 
-### Claude
-
 The working tree is clean and GitHub has every commit. Correy still hasn't pushed anything. Now rewriting the discussion notes with everything we've decided and built:
-
-### Claude
 
 Everything is pushed to GitHub. The game work up to Pip was already there, and I've just committed and pushed the updated notes too (`43dca07`). Nothing uncommitted is left.
 
@@ -493,7 +409,7 @@ check it
 
 ### Claude
 
-It worked. The treasury wallet `CNp9…VZUq` now has **1 devnet SOL**, and the transfer is final on the network ([view the transaction](https://explorer.solana.com/tx/[REDACTED BASE58 SECRET]?cluster=devnet)). That's about 10 times what his script needs, so there's spare for the purchase and badge transactions later.
+It worked. The treasury wallet `CNp9…VZUq` now has **1 devnet SOL**, and the transfer is final on the network ([view the transaction](https://explorer.solana.com/tx/2qASRNwtbcduXrHjP6WRsF6Az3fJxgzp14ZSJZZjtcyswo4v8GZijPgL11gSUYN7h4F2SZJFLaU86ucedGaFAs2d?cluster=devnet)). That's about 10 times what his script needs, so there's spare for the purchase and badge transactions later.
 
 **Tell Corey to run `node create-moe.js` now.** It will create the MOE token, mint 1,000,000 MOE to the treasury, and print the mint address and an Explorer link.
 
@@ -508,8 +424,6 @@ can u save wut to do next onto the discussion notes correy and push it to git, s
 ### Claude
 
 I'll add it to Corey's own note on his branch, so he sees it where he already works:
-
-### Claude
 
 I've pushed the update to Corey's branch (`corey/discussion-note`), at the bottom of his own `discussion-note-corey.md`. He can get it with:
 
@@ -548,31 +462,17 @@ Lots here. Short answers first, then I'll build.
 
 Starting with generation quality. You said quality over speed, so generation will use the bigger model, with a fallback to the fast one if it takes too long:
 
-### Claude
-
 Generating the Loftus & Palmer sample world with the quality model in the background. It may take a few minutes, so I'll keep working meanwhile:
-
-### Claude
 
 Now showing both scores in Pip's Data tab and in what Pip knows:
 
-### Claude
-
 Now **Pip's memory**. Your own notes were already saved, but chat history disappeared when you closed the panel, and Pip couldn't see your notes. Fixing both:
-
-### Claude
 
 Now the Loftus sample world. Checking whether the quality generation has finished:
 
-### Claude
-
 Still generating. Meanwhile I'm saving all your reminders, with priority and the trigger for each:
 
-### Claude
-
 I'll drop in the earlier fast-model version as a placeholder so the app keeps compiling. The quality version replaces it when it finishes:
-
-### Claude
 
 Everything you asked for is done, tested in the browser and pushed to GitHub. The notes and my memory are updated too.
 
@@ -610,39 +510,21 @@ go build the market island, can u also add a back to home button when in gamepla
 
 Starting with the market's content. A market needs real worlds for sale, so I'm generating three community worlds in the background from short notes I'm writing: one psychology, one biology, one history.
 
-### Claude
-
 While those generate: the **sorting fix**. Touching a label no longer sorts it. You walk up to it (it lights up), then press **SPACE** to confirm.
-
-### Claude
 
 Now the **"How to play" screens** shown before each game. Each one has a small animated example built from the world's real content, e.g. an actual Loftus label being sorted:
 
-### Claude
-
 Now the **back-to-home button**, shown during any world, including Bobo:
-
-### Claude
 
 Quitting mid-world while an inspect card is open would leave a "card open" flag set, which would freeze the next world. Resetting it on entry:
 
-### Claude
-
 The catalog worlds are still generating. Writing the catalog list and the market screen meanwhile:
-
-### Claude
 
 Only the catalog files are missing, which is expected. Waiting for the three worlds to finish generating:
 
-### Claude
-
 All three are complete with 100% coverage: Milgram 21/21, Photosynthesis 33/33, WW1 19/19. Installing them and type-checking:
 
-### Claude
-
 Labels are readable now and the score line sits below the floor. Committing, pushing and updating the notes for Corey:
-
-### Claude
 
 The market island and your three gameplay fixes are built and pushed. I tested everything end to end in the browser with no errors. Refresh **http://localhost:3123** and click **"reset demo"** first.
 
@@ -676,67 +558,35 @@ Yes, I get it: each topic should get a game that *feels* like the topic, not the
 3. Build new action game types with much more visual art.
 4. Let the generator pick game types and a visual theme per world, with shorter text.
 
-### Claude
-
 Now the code. First the world file format gets a **theme**, an ordered **sequence** (for the runner), the **list of games** to play, and **icons** on items:
-
-### Claude
 
 Now the generator prompt. It gets the game library's rules and much stricter limits on text:
 
-### Claude
-
 Starting regeneration of all four sample worlds with the new format in the background (about 4 minutes) while I build the new games:
-
-### Claude
 
 The worlds are regenerating. Now the visuals. A **theme system** means each world gets its own sky, ground, backdrop art and enemy vehicles, all drawn in code:
 
-### Claude
-
 Now **Hold the Line**, the shooter. Themed vehicles (biplanes for war, UFOs for space, bees for nature) fly down carrying labels. You shoot the ones in category A and let B pass.
-
-### Claude
 
 Simplifying the star pickups I just wrote, which have some leftover physics code:
 
-### Claude
-
 Registering the new games and turning on physics for the platformer:
-
-### Claude
 
 Now the how-to screens for the two new games:
 
-### Claude
-
 The sort didn't run because the last step's text had no year. Adding "August 1914" to it:
-
-### Claude
 
 Swapping a module-level variable I used for a proper React ref, then updating the page to drive any game sequence:
 
-### Claude
-
 Types pass. Running lint, then a full test of the WW1 world. The test buys it in the market, then plays all three games (Timeline Run → Hold the Line → Inspect Room) with screenshots:
-
-### Claude
 
 No errors, and the full run returns to the hub cleanly. Checking how each game looks:
 
-### Claude
-
 Replacing the flag emojis already in the sample worlds:
-
-### Claude
 
 Quick re-run of the WW1 test to confirm the fixes:
 
-### Claude
-
 The HUD shows properly now: "What comes after First Moroccan Crisis?", "step 3/8", and the fact pop-up below. The back button covers the start of the prompt, so I'm moving the prompt right:
-
-### Claude
 
 I've added two action games with themed visuals. Each world now picks its games based on its content. Everything is tested end to end in the browser and pushed. Refresh localhost:3123 and click **"reset demo"**. To see WW1: market → connect wallet → membership → add Causes of WW1.
 
@@ -766,222 +616,35 @@ Next on the plan is the **public URL** (Vercel deploy). Or play the new games fi
 
 ### Memphis
 
-This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
-
-<tools-used-before-summary>Bash, Edit, Grep, Read, ToolSearch, WebFetch, WebSearch, Write</tools-used-before-summary>
-Summary:
-1. Primary Request and Intent:
-   - The user (Memphis, KCL student; teammate **Corey**, sometimes written "Correy") is at **OxHack 2026** (Oxford, Sat 24 – Sun 25 Oct). **Devpost deadline: 12:00 Sun 25 Oct.** The submission needs a video, a description, GitHub and ideally a public URL. Judging is science-fair style, 4–5 min per judge. The main theme is **TIME**. Target tracks: **Solana**, plus HRT "data for prediction & decision making", Gemini, and maybe Tiger Data, ElevenLabs or Presage.
-   - Project: **EduOasis Mark 2**, an edtech app for ADHD/neurodivergent learners. Uploaded resources become interactive game worlds (not Kahoot). There are 3 free generations; after that, users buy or trade worlds with Solana. The hub is "Inside Out" style: a main island, 3 world islands and a market island. **Pip** is the AI companion. Built from scratch; the old repo is reference only.
-   - Memphis builds the game; Corey builds the Solana side.
-   - Standing instructions:
-     - Keep `DISCUSSION_NOTES.md` in git for the teammate and **update it only when the user asks**.
-     - Remind the user of reminders at the right time. The user wants one task at a time and doesn't want to be overwhelmed.
-   - Latest request (done): more visuals and action game types (platformers, dodging, gun/fighting games, "living through the war"). Research popular game types (e.g. Roblox), save that research as a library, and let the system decide the best game type per content type. The history world was too similar to the others and too wordy.
-
-2. Key Technical Concepts:
-   - Next.js 15.5.4 (App Router, Turbopack), React 19, TypeScript, Tailwind 4, **Phaser 3.90** (2D, dynamic import, client-only), Arcade physics (runner only), `@google/genai` 1.20.
-   - Models: `gemini-3.8-flash` for quality, with fallback to `gemini-3.5-flash-lite` after a 240s timeout or a 503. The free tier is slow and overloaded. The env vars below set the models.
-   - Event bus between Phaser and React (`src/game/bus.ts`). All art is drawn in code (Graphics → `generateTexture`) plus emoji.
-   - World file = WorldSpec JSON.
-     - Pass 1 extracts facts with ids K1..Kn and their sources.
-     - Pass 2 designs the game, citing `refs`.
-     - `coverage()` checks every fact is used; pass 3 patches anything missing.
-     - Fields: theme, sequence, games and icons; `gamesOf()`; `orderByYear()` re-sorts timelines by year as a safety net.
-   - Recall: half-life forgetting curve `2^(-Δt/h)`, using `nextHalfLife`.
-   - **Lifespan**: share of the spaced-review interval left. Intervals are 2 days × streak (2 → 4 → 6…), the streak resets after a session under 60%, and island colour follows lifespan.
-   - Demo clock offset with a "+1 day" button.
-   - Telemetry stored in localStorage; `insights.ts` derives weak spots, accuracy per game type and the next island to revisit.
-   - The Solana interface is **simulated** in `src/lib/solana/index.ts` (localStorage, fake base58 signatures). The SHA-256 fingerprint of world files is real (`src/lib/hash.ts`, canonical key order). Imports re-hash the file and refuse it if it doesn't match.
-   - Testing: puppeteer-core 24.22 driving Chrome headless with swiftshader. Scripts live in the scratchpad `drive/*.mjs`. The `window.__game` dev handle is used to teleport the player. The dev server runs on **port 3123** (background task b94702v51).
-
-3. Files and Code Sections (repo `C:\edu-oasis-mark2`, GitHub cklaw25/edu-oasis-mark2, branch main; latest commit `a7c738a`):
-   - `src/app/page.tsx`: the main state machine.
-     - Active world is `{kind:"bobo"} | {kind:"gen",id,spec}`. Phase type is `BoboPhase | WorldPhase`.
-     - `isCardPhase(p)` = intro/results/summary or `how:`/`done:`.
-     - `setPhase`:
-       - "experiment" from intro emits `experiment:begin`; otherwise it does a retry with `autoStart` + a nonce bump.
-       - `how:i` sets `autoStart=false` and bumps the nonce.
-       - `play:i` emits runner/shooter/arena `:begin`.
-     - The scene for generated worlds comes from `sceneFor(spec, gamesOf(spec)[i], autoStart)`.
-     - `view` (useMemo) adds `recall`/`lifespan`.
-     - `exitWorld` updates `halfLifeH`, `streak`, `lastVisitedAt`, `sessions`, and mints a badge if a wallet is connected.
-     - Also renders: the ← Back to islands button (tracks `world_quit`), the Pip button and panel, `MarketPanel`, and the create-world modal, which POSTs FormData to `/api/generate` and calls `saveSpec`.
-     - `enter()` resets `reviewOpen`.
-   - `src/components/GameCanvas.tsx`:
-     - Scenes registered: hub, experiment, lab, arena, shooter, runner. Physics is arcade with zero gravity.
-     - `startScene` stops active, paused or sleeping scenes other than the target, then starts the target with `{profile,...sceneData}` and applies a pending pause on "create".
-     - The paused effect only pauses/resumes the current scene and toggles `keyboard.enabled`.
-     - The nonce prop forces a restart.
-   - `src/game/HubScene.ts`:
-     - Islands: MAIN (1200,1250), SLOTS (560,1000), (1200,560), (1840,1000), MARKET (1200,1960).
-     - Module-level `lastPos` keeps the player position across restarts.
-     - Island labels show title, a big lifespan % and a small "recall X%". Grass colour comes from `lerpColor(lifespan)`.
-     - Emits `portal:near` / `portal:enter`, and clears the prompt on create. Zoom is 0.75.
-   - `src/game/ExperimentScene.ts`: Bobo world. Conditions alternate every 10s over 4 rounds with 3 strikes; it uses the `autoStart` / `experiment:begin` pattern. The kids shake at a fixed `homeX = 170+i*88` and `tintKids()` reddens them as agitation rises (agitation cools in quiet rounds). Bobo quotes come from the study.
-   - `src/game/LabScene.ts`: the inspect room. It takes `init({clues?, title?})` and defaults to Bobo's CLUES. Prof. Skeptic chases the player; the banner reads "INSPECT — judge every object". Events: `lab:inspect`, `lab:resolved`, `lab:done{hearts}`.
-   - `src/game/layout.ts`: Phaser-free `layoutObjects()` with 12 spots.
-   - `src/game/ArenaScene.ts`: the sorting arena. Players walk within REACH 70 (the label glows) and press **SPACE** to sort. Labels have depth 600, and the status/hint text sits below the floor.
-   - `src/game/ShooterScene.ts` ("Hold the Line"): themed carriers descend holding labels. SPACE/W fires; A/D moves. Shooting an A item or letting a B item pass counts as correct, and mistakes recycle the item. Spawns pick lanes away from targets near the top. A theme-coloured helmet ellipse updates in `update()`. Emits `shooter:done`.
-   - `src/game/RunnerScene.ts` ("Timeline Run"):
-     - Layout: platformer with GROUND_TOP 470, HIGH_TOP 360, SEG 260, PIT 320, START 320.
-     - Each gap has two one-way bridges (`checkCollision.down/left/right=false`), the correct step plus a distractor. The wrong bridge crumbles. Falling resets the player to the checkpoint. Stars are collectibles; the 🏁 flag finishes and emits `runner:done`.
-     - The HUD is in a scrollFactor-0 container scaled `1/z`, positioned at `(cam.width/2 - cam.width/(2z), cam.height/2 - cam.height/(2z))`. The prompt sits at x=220, clear of the back button.
-   - `src/game/themes.ts`: PALETTES for war/lab/nature/space/ancient/ocean/city. `makeActionTextures` draws spark, bullet, gunner, biplane, ufo, bee, balloon and drone. Also `drawBackdrop` (parallax; war adds barbed wire, smoke and shell flashes) and `burst` particles.
-   - `src/game/textures.ts`: player, pet, bobo, mallet, tinker, kid-calm/kid-angry.
-   - `src/components/WorldFlow.tsx`:
-     - Phases are `intro | summary | how:i | play:i | done:i`.
-     - Exports `phaseGame`, `sceneFor` and `labClues`. `GAME_NAMES` maps runner → Timeline Run, shooter → Hold the Line, arena → Sort Storm, inspect → Inspect Room.
-     - A `phaseRef` is used inside the bus handlers. Shows result cards per game, the InspectCard and the summary.
-   - `src/components/HowToPlay.tsx`: animated SVG how-to screens: HowToArena, HowToInspect, HowToShooter, HowToRunner.
-   - `src/components/BoboFlow.tsx`: Bobo intro/results/review/summary. Exports `btn`, `Card`, `Stat`.
-   - `src/components/PipPanel.tsx`: tabs are Chat (history persisted in `eo2.pip.chat`, clear-chat button, `renderBold`), Notes (taught-in info, Download world file), My notes (`eo2.notes.<id>`, autosave) and Data (lifespan + recall, +1 day / reset time, recommendations, game type effectiveness, weak spots, collected counts). The scrollIntoView effect has braces.
-   - `src/components/MarketPanel.tsx`: tabs are Explore, Sell my worlds, Membership, and Wallet & history. Also handles seeding the catalog with real hashes, `importWorld` (hash check, free slot, no generation used) and the free-island list.
-   - `src/components/CreateWorldModal.tsx`: busy and stage states plus error display; `onSubmit` is async.
-   - `src/app/api/generate/route.ts`:
-     - EXTRACT/DESIGN/PATCH prompts.
-     - The DESIGN prompt includes the game library rules, theme choice, sequence rules (strict chronology with the year in each detail, one event per step), word limits, and no flag emojis.
-     - The `json()` helper does quality → fast fallback with `httpOptions.timeout`. Then come `orderByYear` and the patch pass. MAX_CLUES is 12 and `maxDuration` is 800.
-   - `src/app/api/pip/route.ts`: Pip's system prompt (short, no roleplay, cite `[K3 · source]`).
-   - `src/lib/`:
-     - types.ts: WorldSummary includes recall, lifespan, streak, halfLifeH, sessions, coverage.
-     - profile.ts: default worlds are Bobo (lastVisited 1 day ago, halfLife 48, streak 1) and sample-loftus; generationsLeft 2.
-     - Others: recall.ts, clock.ts, telemetry.ts, insights.ts, worldStore.ts (SAMPLES `sample-loftus`), worldSpec.ts, hash.ts, solana/index.ts.
-   - `src/content/`: bobo.ts, boboKnowledge.ts, catalog.ts (Milgram 🧠 ◎0.05 psych_with_priya, Photosynthesis 🌿 ◎0.03 bio.tom, WW1 📜 ◎0.04 historyhannah), `samples/{loftus,milgram,photosynthesis,ww1}.world.json`. All were regenerated in the new format with 100% coverage. WW1 was fixed to the order 1871 → 1905 → 1906 → June/July/Aug 1914, and flag emojis were replaced with 📍.
-   - `docs/GAME_TYPE_LIBRARY.md`: research with sources, design rules, a game type table (runner, shooter, arena, inspect and experiment are built; dodge, defense and boss are planned; sim is the hub), and content → game decision rules.
-   - `DISCUSSION_NOTES.md`: full team write-up (sections 0–8, plus 7b and 7c updates). Last updated about 17:45.
-   - Corey's branch `corey/discussion-note`, file `discussion-note-corey.md`: I appended an update covering the funded treasury, his next steps, MOE's purpose, the function interface, where to put code, and security notes.
-   - `.env.example` lists GEMINI_API_KEY=[REDACTED] GEMINI_MODEL=, GEMINI_GEN_MODEL=. The key is in `.env.local`, which git ignores.
-
-4. Errors and fixes:
-   - The paused lab stayed on top after returning to the hub: stop paused and sleeping scenes too, and only pause/resume the current scene. Resuming a just-stopped scene revived it, which caused the "reading 'entries'" crash.
-   - "destroy is not a function": newer Chrome's `scrollIntoView` returns a Promise, which a one-line effect returned as its cleanup. Fixed with braces.
-   - A Phaser import inside a React component broke SSR, so `layoutObjects` moved to `layout.ts`.
-   - Gemini 2.5-flash is closed to new users, and Flash models took minutes, so the code falls back to lite.
-   - The user had pasted the key into the tracked `.env.example`; I moved it to `.env.local` before any commit.
-   - Kids drifted upward from stacked tweens; they now shake in place and redden.
-   - Hub restarts teleported the player home; fixed with `lastPos`.
-   - The WW1 timeline was in the wrong order; fixed with the prompt change, the `orderByYear` safety net, and a hand-fixed sample.
-   - The runner HUD was pushed off-screen by the camera zoom; fixed with the counter-scaled container.
-   - Overlapping UI: arena status moved below the floor, shooter lanes spread out, how-to text no longer overflows.
-   - Leaving a world mid-card froze the next world; `enter()` now resets `reviewOpen`.
-   - Corey's devnet airdrop was rate-limited by the shared venue IP. The user funded treasury `CNp9YiTDhKRomr9xAtPLQEK9GgpQ8riDgFDbRrTJVZUq` with 1 devnet SOL via faucet.solana.com using their own GitHub account (I verified the balance).
-
-5. Problem Solving: Everything is tested end to end with headless browser scripts and was passing with no page errors at the last run (ww1.mjs: the full WW1 world, runner → shooter → inspect → hub).
-
-6. All user messages:
-   - "open new project : here is the github repo, call it eduoasis mark 2, i will give u every fucking context in the next prompt : https://github.com/cklaw25/edu-oasis-mark2"
-   - A long message:
-     - Keep a discussion notes file in git for the teammate, updated only when the user reminds me.
-     - OxHack context (slides link, MLH tracks, pasted organiser text).
-     - "remind me to ask judges for feedback in person in the middle of competition".
-     - The idea builds on the EduOasis that won before; the Solana track with digital wallet, 3 generations, trading and buying worlds. "help with refining how our idea can maximise solana use… instead of just forcing an idea".
-     - Plan how to proceed. The teammate does transactions; the user builds from scratch. Brain dump to come later ("remind me").
-   - Asked for a plan for the next few hours; to grade the HRT weather idea; data processing, prediction and decision-making ideas; deadline 12pm 25 Oct on Devpost; teammate Correy; 2D first with 3D as a later reminder; full game feature list (home page with stats, profile and marketplace; 3 chances to type a topic, upload resources and make special requests, letting the AI choose the game type; Bobo doll RPG example where condition swaps every 10s; Pip-like AI agent; Inside Out islands with island 4 as the market); "start building right fucking now"; brain dump later.
-   - Asked how the 2D art is made and whether NPCs can look like Bobo; what Gemini is used for and the cost ("keep that in mind"); membership resale idea; the analysis part = strengths/weaknesses, make it more fun than matching; "go".
-   - Gameplay is alright; use it for data later ("remind me"); bug: back to the main island didn't work; remind about a domain/public URL; is the AI helper implemented?; how is detail retained in the world file? "go".
-   - Remind me which reminders are priority. Kids vibrate up off-screen (make them vibrate in place and turn redder). What does 75% mean? A Pip section with collected data, decisions and predictions; readable notes; a personal notes file; what data to collect; how can I see the world file and test it?; how is the UI made?; the bought-world transaction flow and alternatives; maximise Solana; "go for pip".
-   - "can u push to git first, save convo in detail and shit for now"
-   - Side track: read the teammate's branch discussion note about an address problem and solve it first.
-   - "check it" (the balance after funding).
-   - "can u save wut to do next onto the discussion notes correy and push it to git, so he can read it from his computer"
-   - A long message:
-     - What's the timeline / next step? Tiger Data opinion ("careful about what data we are analysing… I don't understand the Data section").
-     - "remind me in the reminder when we are working on data collection part cause i dont wanna be overwhelemd and i wanna handle one task at a time".
-     - "remind me how bought world works when we implement solana after"; add Palmer to localhost; "dw about how long it will take to generate… i care abt the quality of gameplay for now"; "remind me about the solana notes when implementing solana after".
-     - Two scores: a big "lifespan" (2 → 4 → 6 day spaced interval) and a small recall; does the island turn brown?
-     - "remind me in reminder the cost problem"; save the convo; does Pip save notes and conversation?; "remind me to remove the discussion notes before submission from git"; "remind me to work on sth to do with progression levels but not important"; "remind me to work with in game tokens in future but remind me after"; "what should we work on one just choose and go".
-   - "go build the market island, can u also add a back to home button when in gameplay… for palmer… add a tab before that shows example of how game is played, and also the sorting part can u not use collide instead come into contact and actually press space to confirm sort, i will do feedback after remind me but not now"
-   - Latest: "right now first fix is that for the games, we need more visuals and the game mode for the history one is too similar and too wordy, can u add more visuals for the games and also more action elements (uk like platformers or dodging or living through the war or gun games or fighting, reserach into games like roblox or popular game types and save that in a base and u can decide what is the best game type for differnt type of content to learn like for example maybe history learning about war we can do a gun game, do u get wut i mean ?"
-   - Security and secrets constraints (preserved from memory, the notes, and the user's standing preferences): if the user pastes a live API key or secret, write it straight to the file, never echo it back, and tell them to rotate it. Never commit `.env.local` or `treasury.json` (private key); load the treasury key from an env var (e.g. `TREASURY_SECRET_KEY`). Devnet only, no real money. Git identity is set locally per repo only.
-
-7. Pending Tasks (raise reminders only at their trigger):
-   - **Ask the user for the judge/test feedback they said they'd give** (they asked to be reminded after the market build; not yet requested).
-   - Next on the timeline: **public URL (Vercel deploy)**, maybe a free MLH domain.
-   - When working on data collection: simplify the Data tab into plain language, decide what to collect (add idle time, Pip questions, notes opened, game type vs outcome), Tiger Data, and the game-type picker that learns (bandit).
-   - When implementing Solana: remind about notes section 6 and Corey's note, the bought-world flow (off-chain JSON, NFT with sha256 + URI, wallet pass check, client re-hash, import without using a generation, remix child NFT for royalties), and swapping the simulated `src/lib/solana` for real devnet calls. Corey still needs to run `create-moe.js` and send the mint address for me to verify; agree MOE's purpose (earned by proven learning, spent on worlds).
-   - Cost of keeping the platform running (raise at deploy or pitch time).
-   - Before submission: remove `DISCUSSION_NOTES.md` and `discussion-note-corey.md` from git.
-   - Low priority: progression levels. Later: in-game tokens. Brain dump from the slides (the user said it's not important now). Try 3D once 2D is solid. Planned game types: dodge, defense, boss.
-   - Update DISCUSSION_NOTES only when the user asks (it hasn't been updated for the action-games work yet).
-
-8. Current Work:
-   I had just finished the user's latest request: action game types, visuals and the game type library. Committed and pushed as `a7c738a` "Action game types, visual themes and a game type library" (17:51).
-   - Includes `docs/GAME_TYPE_LIBRARY.md`, `RunnerScene` (Timeline Run), `ShooterScene` (Hold the Line), `themes.ts`, the multi-game WorldFlow, how-to screens, generator theme/game selection, the `orderByYear` safety net, and the regenerated samples (WW1 = war theme with runner, shooter, inspect).
-   - The WW1 end-to-end test passed with no page errors.
-   - Memory was updated with "ACTION GAMES DONE". I hadn't yet given the user the final summary reply for this turn.
-
-9. Optional Next Step:
-   Report to the user what was built for "add more visuals for the games and also more action elements… reserach into games like roblox… save that in a base and u can decide what is the best game type":
-   - The new Timeline Run and Hold the Line games and the 7 visual themes.
-   - The library file `docs/GAME_TYPE_LIBRARY.md`, with research sources (exitlag, creation.dev, statista, PMC meta-analysis, actaludologica, UGM).
-   - The generator now picks the theme and games itself.
-   - The WW1 chronology fix.
-   - Tell them to refresh localhost:3123, click "reset demo", then add WW1 via the market (connect wallet, then buy access or membership).
-   Then follow the earlier reminder: ask for the feedback they said they'd give after the market build. Suggest the next timeline item (Vercel public URL) without starting it until they confirm.
-
-If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: C:\Users\lawch\.claude\projects\C--Users-lawch\b8ff7a3e-53dd-49e1-b0cf-286434e9363e.jsonl
-Continue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with "I'll continue" or similar. Pick up the last task as if the break never happened.
-
-The messages after this summary are the most recent messages from before compaction, kept verbatim. The summary was written without seeing them, so something it says has not happened yet may already have happened in them.
-
-### Memphis
-
 before we deploy, i wanna give some feedback, so first the data or info u researched on game types keep that in ur database for future use, i also wanna give feedback on gameplay : i like how we added more actiony elements like shooting drones and platformer jump, u can keep that but also the gamemode fundamentally is still kinda word sorting (also on another note u know the slides that show up before the game starts, can u add an image for each slide relevant to make it easier to understand each slide), i can give uan example to show u my vision and make adjustment or game change for loftsu and palmer to show u understand, for example imagine im trying to learn about the story of oppenheimer histroy, one of the games can be drag and dropping a character pool and each character into which department they worked at if u know wut i mean, so i know its like sorting but its less words and more visual and actiony if u get what i mean, another example is if im learning about history of tech like nikola tesla and issac newton or oppenheimer and it will basically be like a survival game where u can shoot  a bunch of randomly spawning multiple npcs of tesla and issac newton and oppenheimer where they will attack u with relevatn weapons so like oppenherimer with a nuke bomb and the player will have to dodge and player will have a gun or sth and shoot them dead, the goal of this course will be like teach the user to differentiate and memorise what person invented what device, u can what i mean ? then we nede to pull from the branch of what he has done but ask for permission this after, pull from branch of correy so we can do the trading bit combined with what we have worked on so far
 
 ### Claude
 
 Generator now knows the new games. Writing the drag-and-drop board scene next.
 
-### Claude
-
 Board and showdown scenes written. Wiring them into the world flow, plus slide pictures.
-
-### Claude
 
 Adding the animated how-to screens for the two new games.
 
-### Claude
-
 While that generates, I'll play-test the new Loftus world in the headless browser.
-
-### Claude
 
 Loftus plays end to end: the board scored 14/1 and the showdown 8/8 with real mouse drags and clicks. Fixing some layout overlap on the board, then I'll check the generated inventors world.
 
-### Claude
-
 Same newline slip as before; fixing it, then regenerating.
-
-### Claude
 
 Inventors sample: 32/32 facts and the timeline is in the right order. Adding it to the market and adding slide pictures to the other samples.
 
-### Claude
-
 Updating the samples changes their file fingerprints, and the market would then refuse to import them as tampered. Making the catalog seed refresh its stored hashes.
-
-### Claude
 
 Clean build. Re-running the Loftus test, plus a full run of the inventors world bought through the market.
 
-### Claude
-
 Same SSR trap as last time: the slide pictures imported the colour palettes from a file that loads Phaser. Moving the palettes into their own Phaser-free file.
-
-### Claude
 
 Both worlds play through with no page errors. One more fix: board pieces spawn too close together and their name tags overlap. Spacing them out.
 
-### Claude
-
 The test ran out of loop steps because pieces now arrive more slowly. That's a test limit, not a game bug; raising it.
 
-### Claude
-
 Everything passes. Updating the game library doc with the two new types, then committing.
-
-### Claude
 
 I built both of your game ideas and added a picture to every intro slide. The game-type research is saved to my long-term memory so I can reuse it on future projects. Everything is tested end to end in the browser and pushed. Refresh localhost:3123 and click **reset demo** to see it.
 
@@ -1020,15 +683,9 @@ theres a small fix lets fix first, for the shooting game with the inventors idk 
 
 Reproducing the stuck-W bug first. My guess is that W's key-release gets lost, so the game still thinks W is held: the player stays pinned to the top, and pressing S just cancels the "held" W, so neither key seems to work.
 
-### Claude
-
 Corey has six more branches beyond the notes one. Reading them all (read-only).
 
-### Claude
-
 Checking his live MOE token on devnet (a read-only lookup).
-
-### Claude
 
 **Bug fixed and pushed (`a1fc93e`).** The shooter thought W was still held down, so it kept pushing you into the top wall, and pressing S only cancelled that out. This happens when the browser loses the moment you let go of W. The most likely cause is a typing tool such as a Chinese keyboard, which can report the release as a different key; clicking out of the window mid-press does the same. I reproduced it exactly (you get pinned at the top and S does nothing). The fix applies to every game: keys are now released based on the physical key, and all keys reset when the window loses focus. I re-ran the inventors world end to end and it had no errors.
 
@@ -1096,173 +753,6 @@ I'm still waiting on your two choices before merging Corey's branch:
 
 ### Memphis
 
-This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
-
-<tools-used-before-summary>Bash, Edit, Grep, Read, ToolSearch, WebFetch, WebSearch, Write</tools-used-before-summary>
-Summary:
-1. Primary Request and Intent:
-   - The user is Memphis, a KCL student. Teammate **Corey** (sometimes written "Correy") does the Solana side. They are at **OxHack 2026** in Oxford (24–25 Oct). **The Devpost deadline is 12:00 Sun 25 Oct** (needs a video, description, GitHub link, ideally a public URL). Main theme is TIME. Tracks: Solana, plus HRT data/prediction, Gemini, maybe Tiger Data.
-   - Project: **EduOasis Mark 2**, an edtech game for ADHD learners. Uploaded resources become game worlds. Hub of islands, a market island, and Pip as the AI companion.
-   - Standing rules:
-     - Keep `DISCUSSION_NOTES.md` in git; update it **only when the user asks**.
-     - Raise reminders only at their trigger.
-     - One task at a time; the user doesn't want to be overwhelmed.
-   - Feedback this session (done):
-     - Save the game-type research into memory for future use.
-     - Gameplay is still fundamentally "word sorting". Keep the action, but make it more visual.
-     - Add an image to each intro slide.
-     - Show understanding by remaking Loftus & Palmer. The user's examples:
-       - Oppenheimer story: drag-and-drop characters into the departments they worked in.
-       - Tech-history survival game: Tesla, Newton and Oppenheimer NPCs attack with their inventions (Oppenheimer with a nuke); the player dodges and shoots; the goal is to learn who invented what.
-   - Then the user asked to pull Corey's branch, "but ask for permission this after".
-   - Latest user message:
-     - Fix the bug of getting stuck on the top wall in the inventors shooter with W/S not working (done).
-     - For Corey's branch: "brief me and summarise what he added and explain to me how u will combine our 2 together, but dont write any code and change anything yet, explain to me first, but do fix the bug tho".
-
-2. Key Technical Concepts:
-   - Next.js 15.5.4 (App Router, Turbopack), React 19, TypeScript, Tailwind 4.
-   - Phaser 3.90, client-only via dynamic import.
-   - `@google/genai`: QUALITY_MODEL gemini-3.8-flash (240s timeout), falling back to gemini-3.5-flash-lite.
-   - WorldSpec JSON with knowledge K-ids, element `refs`, and `coverage()`. Coverage now counts only the intro plus games actually played.
-   - Event bus (`src/game/bus.ts`); `X:begin` / `X:done` events per game.
-   - Art is drawn in code plus emoji.
-   - Recall/lifespan model. Telemetry `${game}_done` is used generically in insights.
-   - Simulated Solana layer in `src/lib/solana/index.ts`; real SHA-256 world hashes.
-   - Testing:
-     - puppeteer-core with headless Chrome and swiftshader; scripts in the scratchpad `drive/`.
-     - `window.__game` dev handle.
-     - The dev server on port 3123 (background task b94702v51) **was killed by the system for low memory. Do not restart it unless the user asks.** Report this to the user.
-   - Corey's stack: @solana/web3.js ^1.98, @solana/spl-token ^0.4.9, Token-2022.
-
-3. Files and Code Sections (repo `C:\edu-oasis-mark2`, GitHub cklaw25/edu-oasis-mark2, branch main):
-   - Commits: `5367197` "Showdown + Squad Board games, slide pictures, Loftus remake, inventors world"; `a1fc93e` "Fix keys stuck down (IME / lost focus) pinning the player to a wall". Both pushed. Git identity is set per command: `-c user.name="cklaw25" -c user.email="cklaw025@gmail.com"`.
-   - `src/lib/worldSpec.ts`:
-     - Added `SlideScene {style: "flow"|"versus"|"crash"|"group"; actors:{emoji,label?}[]}` and `IntroSlide.scene?`.
-     - `GameId` now includes "board" and "showdown"; added `GAME_IDS`.
-     - `Board {title, instructions, zones:{id,name,icon}[], pieces:{name,icon,zone,fact,refs}[]}`.
-     - `Showdown {title, instructions, fighters:{name,avatar,weapon:{name,icon},fact,refs}[]}`.
-     - `WorldSpec.board?` and `WorldSpec.showdown?`.
-     - `cleanBoard()` maps a zone given by name to its id, keeping up to 5 zones and 14 pieces.
-     - `gamesOf` validates the board (≥3 pieces, ≥2 zones) and the showdown (≥2 fighters).
-     - `coverage(spec: WorldSpec)` counts only played games.
-     - Schemas: sceneSchema, boardSchema, showdownSchema. DESIGN_SCHEMA requires board and showdown. PATCH_SCHEMA = {intro, clues, fighters, pieces}.
-   - `src/app/api/generate/route.ts`:
-     - The DESIGN prompt adds: "Players remember PICTURES and ACTION", a scene per slide, intro of 3–6 slides (never more), board with 8–14 pieces, showdown with 4–10 fighters (include EVERY person; the avatar looks like the person; weapons are distinct).
-     - Game rules: showdown for who↔what pairs, board for 3+ groups, runner for order, shooter for war, arena as a last resort, inspect for evaluation. Prefer the visual games.
-     - The PATCH pass adds fighters, pieces and clues before resorting to slides.
-     - Imports cleanBoard, gamesOf, Board, Showdown. Missing items are passed as `` `Missing items:\n${JSON.stringify(cov.missing)}` ``.
-   - `src/game/BoardScene.ts` (new, "Squad Board"):
-     - W=960, H=600, BELT_Y=440, BELT_SPEED=55, ON_BELT=3.
-     - Zones are drawn at the top (y=62, h=270); tokens are containers (disc + emoji + name tag), draggable.
-     - Dragend over the right zone: parks the token, burst, `say()` fact line at y=362, combo. Wrong zone: shake, back to the belt.
-     - Spawning happens in `update()` when the belt isn't crowded (no token at x<200). Tokens that roll off the end are re-queued.
-     - Emits `board:begin` / `board:done`.
-   - `src/game/ShowdownScene.ts` (new):
-     - Top-down, TOP=110, HEARTS=5, ON_SCREEN=3.
-     - Fighters are containers (shadow, coloured body, emoji avatar, name tag) that keep a distance, strafe, and throw their weapon (icon + small name label) every 2.2–3.6s.
-     - Player moves with WASD, aims with the mouse, and shoots with click or SPACE.
-     - Poster: "🎯 WANTED: whoever throws {icon} {name}". The wanted fighter takes 2 hits to KO, then a fact float and the next round.
-     - Hitting the wrong fighter reveals "That's X — icon weapon"; counted as a mistake once per round.
-     - Losing all hearts counts a knockout and refills them.
-     - Floor tile grid. Result {correct, mistakes, knockouts, answers}. Emits `showdown:done`.
-   - `src/game/palettes.ts` (new, Phaser-free): PALETTES, palette(), Palette. `themes.ts` re-exports them. This split fixes the SSR "window is not defined" error.
-   - `src/components/SlideScene.tsx` (new): CSS-keyframe emoji scene on a theme gradient. Imports PALETTES from `@/game/palettes`.
-   - `src/components/HowToPlay.tsx`: added `HowToBoard` and `HowToShowdown` animated SVGs.
-   - `src/components/WorldFlow.tsx`:
-     - sceneFor handles board → `{board, theme, autoStart}` and showdown → `{showdown, theme, autoStart}`.
-     - GAME_NAMES adds board "Squad Board" and showdown "Showdown".
-     - Listens for board:done and showdown:done.
-     - Renders `<SlideScene key={slide} scene={s.scene} theme={spec.theme}/>` in the intro, and the new how-to screens.
-   - `src/components/GameCanvas.tsx`:
-     - Registers BoardScene and ShowdownScene; SceneKey includes board and showdown.
-     - **Stuck-key fix**: window keyup maps `e.code` (KeyA–Z, Space, arrows) to a keyCode. If it differs from `e.keyCode` (e.g. IME 229), it calls `kb.keys[kc]?.reset()` on every scene's keyboard. On window `blur` and `visibilitychange` it calls `resetKeys()` on every scene. Listeners are removed on cleanup.
-   - `src/app/page.tsx`: on `play:` it emits begin for runner, shooter, arena, board and showdown.
-   - `src/lib/insights.ts`: Answer.mode is `"experiment" | GameId`; any `${g}_done` event is parsed generically.
-   - `src/lib/solana/index.ts`: `seedListings` now refreshes specHash, coverage and title for existing catalog listings, so updated sample files still pass the hash check, and adds new ones.
-   - `src/content/samples/loftus.world.json`:
-     - Games ["board", "showdown", "inspect"].
-     - Board "Which Experiment?": zones e1 🎬, e2 🥛, c 🧠; 14 pieces.
-     - Showdown "Crash Course": verbs 😡 Smashed 💥 40.8 … 🙂 Contacted 🤏 31.8, plus Smashed/Hit/Control groups 🥛 32%, 🍷 14%, 🪟 12%.
-     - Slide scenes added.
-     - Fixed the Yuille & Cutshall clue: answer B (Limitation) with a new claim and why.
-     - Coverage 29/29.
-   - `src/content/samples/inventors.world.json` (new):
-     - Generated through the real API, then polished. Theme lab, games ["runner", "showdown", "inspect"], board removed.
-     - 10 fighters: Newton 🍎, Watt 🚂, Bell ☎️, Edison 💡, Tesla ⚡ AC motor, Curie ☢️, Wright 👬 ✈️, Turing 🔐, Oppenheimer 🎩 💣, Berners-Lee 🌐.
-     - Timeline in the correct order; 32/32 coverage.
-   - Milgram, photosynthesis and ww1 samples got slide scenes.
-   - `src/content/catalog.ts`: added the Inventors entry first (⚡, techhistory.sam, ◎0.04).
-   - `docs/GAME_TYPE_LIBRARY.md`: added rule 0 (pictures, not word lists), showdown and board rows, decision rule 0, and rule 7 (slide pictures).
-   - Memory:
-     - New `reference_game_type_research.md` with an index line in MEMORY.md.
-     - `project_eduoasis_mark2.md` updated with the 19:30 progress and NEXT = permission and merging Corey's branch, then the Vercel deploy.
-
-4. Errors and fixes:
-   - **SSR 500 "window is not defined"**: SlideScene imported themes.ts, which imports Phaser. Fixed by moving the palettes into the Phaser-free `palettes.ts`.
-   - **Template literal newline**: a Python edit put a literal newline into `Missing items:`; fixed with Edit to use `\n`. It happened twice.
-   - **Board pieces overlapped and the status bar covered name tags**: moved the belt up, replaced floating texts with one fact line, and spawned only when the belt isn't crowded.
-   - **Test loop too short** after slower spawning: raised it to 150 iterations (a test artifact, not a game bug).
-   - **Generator v1** gave a thin showdown (4 fighters, no Tesla or Newton) and 11 wordy slides. Fixed with the prompt and patch changes; v2 gave 10 fighters and 6 slides in 22s.
-   - **Generated board error**: Watt (Scottish) was put under England. The board was dropped from the sample.
-   - **Stuck W key** (the user's bug): reproduced with a synthetic IME keyup (keyCode 229) and with window blur, which pinned the player at y=130 and made S ineffective. Fixed with the GameCanvas guard; after the fix y went 245 → 436 with S, and blur stopped movement. Inventors regression test: no page errors.
-
-5. Problem Solving:
-   - All tests pass:
-     - `loftus.mjs`: board 14/1, showdown 8/8, inspect, summary.
-     - `inv.mjs`: market buy, runner, showdown, inspect, hub.
-     - No page errors in either.
-   - Corey's MOE mint `4BDLBADE7SE8wGc7d3X7BJL9TsNo5SQJ27GKHEbbCxGk` was verified on devnet: Token-2022, supply 1,000,000, decimals 9, mint authority = treasury CNp9YiTDhKRomr9xAtPLQEK9GgpQ8riDgFDbRrTJVZUq, metadata "Moe Done" / "MOE".
-
-6. All user messages:
-   - First message of this session: "before we deploy, i wanna give some feedback, so first the data or info u researched on game types keep that in ur database for future use, i also wanna give feedback on gameplay : i like how we added more actiony elements like shooting drones and platformer jump, u can keep that but also the gamemode fundamentally is still kinda word sorting (also on another note u know the slides that show up before the game starts, can u add an image for each slide relevant to make it easier to understand each slide), i can give uan example to show u my vision and make adjustment or game change for loftsu and palmer to show u understand, for example imagine im trying to learn about the story of oppenheimer histroy, one of the games can be drag and dropping a character pool and each character into which department they worked at if u know wut i mean, so i know its like sorting but its less words and more visual and actiony if u get what i mean, another example is if im learning about history of tech like nikola tesla and issac newton or oppenheimer and it will basically be like a survival game where u can shoot a bunch of randomly spawning multiple npcs of tesla and issac newton and oppenheimer where they will attack u with relevatn weapons so like oppenherimer with a nuke bomb and the player will have to dodge and player will have a gun or sth and shoot them dead, the goal of this course will be like teach the user to differentiate and memorise what person invented what device, u can what i mean ? then we nede to pull from the branch of what he has done but ask for permission this after, pull from branch of correy so we can do the trading bit combined with what we have worked on so far"
-   - "theres a small fix lets fix first, for the shooting game with the inventors idk how but i got stuck on the top wall during gameplay and cant move w and s key for some reason, also for correy branch before we combine both, cause he added alot of his own stuff as well, so can u brief me and summarise what he added and explain to me how u will combine our 2 together, but dont write any code and change anything yet, explain to me first, but do fix the bug tho"
-   - Security and secrets constraints (preserved from memory, the notes, and the user's standing preferences): if the user pastes a live API key or secret, write it straight to the file, never echo it back, and tell them to rotate it. Never commit `.env.local` or `treasury.json` (private key); load the treasury key from an env var (e.g. `TREASURY_SECRET_KEY`). Devnet only, no real money. Git identity is set locally per repo only. Don't write code or change anything for the Corey merge until the user approves.
-
-7. Pending Tasks:
-   - **Await the user's decision on the Corey merge.** I asked two questions:
-     1. Currency: MOE for everything in the game (recommended) vs keeping SOL for worlds.
-     2. Starting state: hybrid with Bobo and Loftus preloaded plus "buying claims the next empty island" (recommended) vs Corey's version (one empty island and 30k MOE).
-   - Tell the user the dev server (port 3123) was stopped by the system for low memory. Restart it only when asked.
-   - After the merge: real on-chain MOE flow (treasury pays rewards from an env key, buying mints an access pass, client re-hashes the world file, import without using a generation, optional remix royalties).
-   - Next on the timeline: public URL via Vercel deploy, maybe a free MLH domain. At deploy or pitch time, raise the platform running-cost reminder.
-   - When working on data collection: simplify the Data tab into plain language, decide what to collect, Tiger Data, and the game-type bandit.
-   - Before submission: remove `DISCUSSION_NOTES.md` and `discussion-note-corey.md` from git.
-   - Low priority or later: progression levels, in-game tokens, the brain dump, 3D, and planned game types (dodge, defense, boss).
-   - DISCUSSION_NOTES has not been updated since 17:45; update it only when asked.
-
-8. Current Work:
-   - I fixed and pushed the stuck-key bug (`a1fc93e`).
-   - I briefed the user on Corey's branches without changing anything. He has 6 stacked branches (moe-token-live, moe-in-app, moe-world-locks, world-market, rewards-and-nft-market, one-free-island), all based on our 15:30 commit 43dca07; the tip `corey/one-free-island` (18:55) contains everything. He added:
-     - the real MOE token (verified)
-     - a read-only `/api/solana/moe` route and `src/lib/solana/moe.ts`
-     - `src/lib/moe.ts` (WORLD_PRICE_MOE 10,000; STARTING_MOE 30,000)
-     - `src/lib/rewards.ts`: `sessionReward = 200 + 800a + 1000·a·(1−recallBefore)`, rounded to 10
-     - the `MoeCoin` component and a balance badge
-     - island claiming in profile.ts (FREE_SLOT 0, isClaimed, nextIslandSlot; default `worlds: [null, null, null]` with moe, owned, listings, boughtListings)
-     - types fields `bought` and `nftId`
-     - `src/lib/market.ts` (SUBJECTS: Psychology → Bobo, Loftus; PLAYER_LISTINGS of placeholder Ava Milgram 15k and Sam Asch 8k)
-     - his own MarketPanel (Shop, Player listings, My islands with list/unlist/sell)
-     - page.tsx market actions (place, buyTopic, buyListing, list, unlist, sell), an earned-MOE toast, and the reward added in exitWorld
-     - HubScene "Your free island" / "Unclaimed island" and blue portals for bought islands
-   - Conflicts: two MarketPanels in the same file, SOL vs MOE, different starting state, and shared files (page.tsx, HubScene, profile, types), especially exitWorld.
-   - The plan I explained:
-     1. Work on a new branch `merge/corey`, merging rather than copying to keep his credit.
-     2. Take his standalone files as-is.
-     3. One market, using ours as the base plus his MOE prices, subject browsing, list/unlist/sell, and real worlds in place of his placeholders.
-     4. exitWorld does both lifespan/streak/badge and the MOE reward.
-     5. Test in the browser, then merge to main and give the user a summary for Corey.
-   - The Solana reminder (notes section 6 and the bought-world flow) has already been given.
-
-9. Optional Next Step:
-   Wait for the user's answer. My last message ended: "Tell me your picks (or "go with your recommendations") and I'll do the merge." Do not write merge code until the user approves. In the next reply, also tell the user that the dev server on port 3123 was stopped by the system for low memory and offer to restart it when needed.
-
-If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: C:\Users\lawch\.claude\projects\C--Users-lawch\b8ff7a3e-53dd-49e1-b0cf-286434e9363e.jsonl
-Continue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with "I'll continue" or similar. Pick up the last task as if the break never happened.
-
-The messages after this summary are the most recent messages from before compaction, kept verbatim. The summary was written without seeing them, so something it says has not happened yet may already have happened in them.
-
-### Memphis
-
 my teammates are still making new branches so keep that in mind but no need to do anything, after this i want to work on the script for presenting and also our video demo script, i will give u content i want and format for the script at the end, but in terms of the merging, pause the fourth one were not merging that hold that, also for the fifth one basically u start with 30, 000 moe, u have 3 island spots, u can generate 2 of ur own for free and buy another one for market place using the moe u were given at start up, u can generate more of ur own after but u will need to purchase it for a fixed amount of moe, u can have a bunch of islands, but have maybe like a shrink about library list and user can select the 3 main islands to display and play, for the market can we combine both together or will it corrupt shit, use the MOE, it starts with 3 empty islands, then have the other islands like loftus palmer or history of world war one or inventor ones or the bobo doll ones set at 30,000 moe price so they can buy one of them to test it, ok lets combine them on a branch insead of messing with the main for now lets call it merge1, ye good merge, then give me the script and also a TLDR based on the script and shit weve done so far, push the TLDR and branch and necessary and saved convo to git repo, then lets make the script (2 questions : currency use MOE for everything, starting state i think i alr answered the question, after uve made the changes can u gimme a summary of changes u made) script : in the past for my hackathons this is the formula i used : (write the one for this idea now but make sure the core idea and features are expressed clearly and also the potential but dont mix them up cause we have a lot of elements right now) : 
 
 <pasted_content id="c5b5">
@@ -1300,59 +790,31 @@ How we answer questions → similar to mario game
 
 Reading Corey's branch in detail before merging it on `merge1`. I'm skipping the rewards piece, as you asked.
 
-### Claude
-
 Resolving merge conflicts on `merge1` now. The simple files are done first, then the market.
-
-### Claude
 
 Rewriting the profile (3 islands plus a library) and the market catalog in MOE.
 
-### Claude
-
 Now the simulated chain layer moves to MOE, with a built-in wallet so buying doesn't need a connect step.
-
-### Claude
 
 Writing the combined World Market panel. It has our fingerprint checks and Corey's subjects, player listings and selling, all priced in MOE.
 
-### Claude
-
 Next, `page.tsx`: the MOE balance, the island library, and paid generation after the 2 free ones.
-
-### Claude
 
 Updating the "Grow a world" box so it charges MOE once the 2 free worlds are used, then I'll type-check.
 
-### Claude
-
 Type-check passes. Checking free memory before I start a temporary server for a browser test.
-
-### Claude
 
 All flows work. Checking the screenshots visually.
 
-### Claude
-
 The merge works end to end. Running lint, then committing the merge on `merge1`.
-
-### Claude
 
 Merge committed (`9531c96`). Next, the pitch and demo scripts. First I'm pulling the facts from our notes so the scripts are accurate.
 
-### Claude
-
 I have the facts. Writing the pitch script, the demo-video script and the TLDR as files in the repo.
-
-### Claude
 
 Exporting this conversation to a readable file, with secrets redacted, so it can go in the repo.
 
-### Claude
-
 The export is clean (no keys). Committing the docs and pushing `merge1`. `main` stays untouched.
-
-### Claude
 
 I've merged Corey's work on a new branch called `merge1` and pushed it to GitHub; `main` is untouched. I tested the merge in a browser: buying, paying for a new world, putting worlds on islands and swapping them, listing and reselling all worked, with no errors. I didn't re-run the full play-through tests for each game, so a new world playing all the way through hasn't been retested since the merge. The pitch script, the video script, the TLDR and a saved copy of this conversation are pushed too.
 
@@ -1464,19 +926,11 @@ save convo for now, i checked its pretyt good, but i did a napolean war generati
 
 Adding a rule in code so every new island gets a fresh mix of action games.
 
-### Claude
-
 Prettier reformatted more than it should have. I'm reverting that and re-applying only my edits.
-
-### Claude
 
 Quick check that the picker gives different mixes over several generations of the same notes:
 
-### Claude
-
 Saved and pushed. Before writing the transaction plan, I'm checking Corey's trading doc so the plan matches his.
-
-### Claude
 
 I've saved the conversation and pushed `merge1`. The game-type rule is in place too.
 
@@ -1568,20 +1022,141 @@ Say "go" and I'll build step 1, then give you the exact message to send Corey.
 
 ### Memphis
 
-for the differnet game mdes, can u help me do extensive research on possible game modes popular in the gaming industry and what games mode u feel like will be compatible with us or not, whatever happens i want at least 50 possible game types for our AI to choose from generating new island not the 4 bullshit, do the research ur talking about, and is tiger data implemented as a side quest ? also remind me we nede to add a part where user can prompt their own game type and what game it will look like and the gameplay will be like but in hte futuer (how people use claude to make game development ask in reminder alongside this), KEY = [REDACTED KEYPAIR BYTES]
+for the differnet game mdes, can u help me do extensive research on possible game modes popular in the gaming industry and what games mode u feel like will be compatible with us or not, whatever happens i want at least 50 possible game types for our AI to choose from generating new island not the 4 bullshit, do the research ur talking about, and is tiger data implemented as a side quest ? also remind me we nede to add a part where user can prompt their own game type and what game it will look like and the gameplay will be like but in hte futuer (how people use claude to make game development ask in reminder alongside this), KEY = [REDACTED SECRET KEY]
 
 ### Claude
 
 First, the key you pasted: I'm writing it straight into `.env.local` without repeating it, then checking it matches the treasury wallet.
 
-### Claude
-
 The key matches the treasury wallet and git ignores `.env.local`. Next, the game-mode research.
-
-### Claude
 
 The research is enough to write the catalogue. Writing it into the repo.
 
+Saving the reminders you asked for in memory, then committing, re-exporting the conversation and pushing.
+
+I saved the key, wrote the game-mode research, and pushed everything to `merge1`.
+
+**The key you pasted:** it's now in `.env.local` as `TREASURY_SECRET_KEY`. I checked that it really is the treasury wallet (`CNp9…VZUq`, the one that controls all the MOE), and git never commits that file. I didn't repeat it anywhere. The saved conversation in the repo has it blanked out; I checked the pushed copy and no part of the key is in it. Still, a key pasted in chat should be treated as exposed. It's devnet play money, so it's fine for the demo, but have Corey switch to a new treasury after the event and before anything real.
+
+## Game modes: 70 researched
+The full catalogue is in `docs/GAME_MODES_RESEARCH.md`.
+
+**What the research says:**
+- **The action has to be the learning, not a quiz with a game skin.** In a study with a maths game called Zombie Division, children learned more when correctly dividing an enemy made it split into that many ghosts. They also chose to play that version about 7 times longer than a version with a quiz between fights.
+- **Games help memory over time more than on day one,** and they work best over several sessions. That fits our islands, which dry up and get replayed.
+- **No genre is proven best for ADHD.** The right approach is variety, plus measuring which modes work for each learner.
+
+**The catalogue:**
+- 70 modes, each with what it's inspired by and which action does the teaching.
+- 7 already built, 39 that fit our engine now, and 21 that need more work.
+- 3 that don't fit yet: real-time multiplayer, full 3D/VR, and word hunts as a default (hard for dyslexic players).
+- Also ruled out:
+  - loot boxes paid with MOE (gambling)
+  - typing-under-pressure games (hard for dyslexic players)
+  - plain quiz shows
+  - gore
+
+**Some examples:**
+- **Grow.io:** eat items from the right category to grow.
+- **Gate Crowd:** run through the right gate to multiply your army.
+- **Courtroom** (like Ace Attorney): present the evidence that breaks a false claim.
+- **Impostor** (like Among Us): vote out the character stating a fake fact.
+- **Microgame Mix:** 5-second mini-games back to back, the most ADHD-friendly mode.
+- **Merge Lab:** combine smaller events into the bigger cause.
+- **Card Duel:** heroes fight with their real powers.
+
+**How we get to 60+ modes without writing 60 games:** each mode runs on one of 10 shared engines. We already have 4 of them: top-down action, side-scrolling, drag-and-drop and walk-around rooms. They read the same few kinds of content the AI already writes. So a new mode is one new scene, not a new AI step.
+
+**The fix for "same boring games":** the AI won't just pick a mode. It will write a short game idea specific to the topic, and code checks it hasn't been used on your recent islands.
+- **Marvel:** an Infinity Stone heist where you grab the stones in film order, plus a hero Card Duel, plus an Impostor round.
+- **Napoleon:** move armies across a campaign map in order, plus a boss battle against the coalition.
+
+The doc ends with a suggested build order, and we'll start on it after the transaction test.
+
+## Your other questions
+- **Tiger Data:** not built. It's only in the plan for when we do the data work.
+- **Reminders saved for the future:**
+  - a feature where you describe your own game type (how it looks and plays) and the AI builds it
+  - research on how people use Claude for game development, to bring along when we do that feature
+
+**Next:** the test transaction between your laptop and Corey's, using demo wallets in the browser. Say go and I'll build it.
+
+Sources:
+- [ESA Global Video Games Report 2025](https://gamedevreports.substack.com/p/esa-global-video-games-report-2025)
+- [Statista genre breakdown](https://statista.com/statistics/240990/global-online-games-genre-breakdown)
+- [Konvoy Q2 2025](https://www.konvoy.vc/blogs/how-many-people-play-video-games)
+- [Roblox genres (ExitLag)](https://www.exitlag.com/blog/roblox-game-genres-and-popularity/)
+- [Best Roblox games (ExitLag)](https://www.exitlag.com/blog/best-roblox-games-play-popular/)
+- [GameRefinery taxonomy](https://www.gamerefinery.com/genre-taxonomy-update-january-2020/)
+- [Hyper-casual mechanics](https://game-ace.com/blog/hyper-casual-game-mechanics/)
+- [CrazyLabs mechanics vs controls](https://www.crazylabs.com/?p=16144)
+- [Habgood & Ainsworth, intrinsic integration](https://shura.shu.ac.uk/3556/)
+- [Habgood thesis](https://eprints.nottingham.ac.uk/10385)
+- [Wouters et al. 2013](https://research-portal.uu.nl/en/publications/a-meta-analysis-of-the-cognitive-and-motivational-effects-of-seri/)
+- [ADHD game interventions meta-analysis 2025](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12743074/)
+- [Games & ADHD mapping study](https://actaludologica.com/games-and-adhd-add-a-systematic-mapping-study/)
+- [Game tech for ADHD review](https://journal.ugm.ac.id/v3/JNTETI/article/view/2001)
+
+### Memphis
+
+go build that fucking shit
+
 ### Claude
 
-Saving the reminders you asked for in memory, then committing, re-exporting the conversation and pushing.
+Building it. The plan:
+- a demo wallet in each browser
+- a server route that sends starter MOE from the treasury
+- a send-MOE flow the browser signs itself
+- all of it shown in the Wallet tab
+
+Server side first: the treasury loader, funding, building a transfer, and submitting it.
+
+Now the browser side: the demo wallet that signs its own transfers.
+
+Adding the real devnet wallet card to the market's Wallet tab:
+
+It type-checks and lints clean. Now a real devnet test: two separate browsers play your laptop and Corey's.
+
+Both transactions confirmed on devnet. Checking the balances on-chain:
+
+Everything works: the balance updates, both laptops see the same address everywhere, and there are no page errors. Committing and pushing.
+
+Real MOE transfers now work on Solana devnet. I tested with two separate browsers standing in for your laptop and Corey's:
+1. Browser 1 claimed the starter 30,000 MOE from the treasury.
+2. It sent 500 MOE to browser 2.
+3. Both transactions were confirmed on devnet. Reading the balances straight from the chain gave 29,500 and 500, and you can see the transfer on [Solana Explorer](https://explorer.solana.com/tx/2vvvSeDbp8KoMc1tYFnSqKzTwrp5UDg7Fpb5BbaoUPmw6id3yvAqyq2Yc8qmPkPFiF7sFMAfDSvDb5qrXsirE3GU?cluster=devnet).
+
+It's pushed to `merge1` (`cec8af8`).
+
+**Where it is:** World Market → **Wallet & history** → the purple **Devnet wallet: real transactions** card. Each browser gets its own wallet there. You can copy your address, claim the starter 30,000 MOE once, and send MOE to any address. Every transaction has an Explorer link.
+
+## Testing it with Corey
+Your server has the treasury key, so you hand out the MOE and Corey doesn't need the key at all.
+
+1. **You:** refresh localhost:3123 → World Market → Wallet & history → **Claim starter 30,000 MOE**.
+2. **Corey:** pull the branch and run it. Send him this:
+   > `git fetch && git checkout merge1 && git pull && npm install && npm run dev`, then open localhost:3000 → walk to the World Market → Wallet & history → copy the address in the purple Devnet wallet card and send it to Memphis.
+3. **You:** paste his address, enter 500, click **Send MOE**, and send him the Explorer link from the green message.
+4. **Corey:** click **refresh** and he should see 500 MOE on-chain. To prove it works both ways, he sends some back to your address.
+
+**Still simulated:** buying worlds in the market still uses the in-game balance, which is why the top-right still says 30,000. The next Solana step would make **Buy** send real MOE to the world's creator, with the world's fingerprint attached to the transaction. Your call whether we do that or move on.
+
+**Before the public deploy:** the starter-MOE button gives MOE to any brand-new wallet. Someone could drain the treasury by making lots of wallets, so I'll add a limit then. It's only play money on devnet, but worth fixing. The treasury key will go into Vercel's secret settings, not the code.
+
+**Next up:** once you've tested with Corey, step 2 is combining his newer branches (cosmetics, the new hub design) with `merge1` and putting it all on `main`.
+
+### Memphis
+
+wait so it actually made a transaction between 2 seperate computers ??? answwr this next time save convo and show this exact message next time i open convo
+
+### Claude
+
+Now the answer I'm adding to the end of the export:
+
+### Claude
+
+**Not yet. It was two separate wallets on one computer (yours), and the transaction itself was real.**
+
+- **What I tested:** two isolated browser sessions on your laptop. Each one had its own wallet (its own private key), the same as two different people would. Wallet A claimed 30,000 MOE from the treasury and sent 500 MOE to wallet B. Both transactions are on the real Solana devnet blockchain. Anyone can look them up on Solana Explorer, and the balances (29,500 and 500) were read straight from the chain.
+- **What hasn't happened yet:** your laptop sending to Corey's laptop. The blockchain only sees wallet → wallet, so a different computer makes no difference to how it works. That's why the same-computer test proves the code. But the real two-laptop test still needs doing, and it's the stronger thing to show judges.
+- **How to do it:** Corey runs `git fetch && git checkout merge1 && git pull && npm install && npm run dev`, opens World Market → Wallet & history, and sends you his address. You claim the starter MOE, paste his address and send 500. He clicks refresh and sees it. Then he sends some back.
