@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import MoeCoin from "@/components/MoeCoin";
 import { boboKnowledge } from "@/content/boboKnowledge";
 import { CATALOG, PLAYER_LISTINGS, SUBJECTS, type CatalogEntry, type PlayerListing } from "@/content/catalog";
@@ -9,6 +9,8 @@ import { now } from "@/lib/clock";
 import { MARKET_PRICE_MOE, MEMBERSHIP_PRICE_MOE, formatMoe } from "@/lib/moe";
 import { addWorld, allWorlds, ownsWorld, removeWorld, updateWorld } from "@/lib/profile";
 import * as chain from "@/lib/solana";
+import * as demo from "@/lib/solana/demoWallet";
+import type { SentTx } from "@/lib/solana/demoWallet";
 import type { Profile, WorldSummary } from "@/lib/types";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
 import { coverage } from "@/lib/worldSpec";
@@ -56,6 +58,7 @@ export default function MarketPanel({
 
   // put the market's worlds "on chain" once, with their real file hashes
   useEffect(() => {
+    void demo.demoAddress().then(refresh); // the market uses this browser's devnet wallet address
     (async () => {
       const seed = await Promise.all(
         CATALOG.map(async (c): Promise<chain.Listing> => {
@@ -489,6 +492,127 @@ function Membership({ profile, onProfile, busy, run }: { profile: Profile; onPro
   );
 }
 
+// A real wallet on Solana devnet, kept in this browser: claim starter MOE, send MOE to anyone (e.g. a teammate's laptop).
+function DevnetWallet() {
+  const [address, setAddress] = useState<string | null>(null);
+  const [balance, setBalance] = useState<number | null>(null);
+  const [log, setLog] = useState<SentTx[]>([]);
+  const [to, setTo] = useState("");
+  const [amount, setAmount] = useState("500");
+  const [busy, setBusy] = useState<string | null>(null);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string; link?: string } | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const latest = useRef(0);
+  const refresh = useCallback(async () => {
+    setLog(demo.sentLog());
+    const id = ++latest.current; // an older, slower read must not overwrite a newer one
+    const b = await demo.demoBalance().catch(() => null);
+    if (id === latest.current) setBalance(b);
+  }, []);
+  useEffect(() => {
+    demo.demoAddress().then(setAddress);
+    void refresh();
+  }, [refresh]);
+
+  const act = async (label: string, fn: () => Promise<SentTx>) => {
+    setBusy(label);
+    setMsg(null);
+    try {
+      const tx = await fn();
+      setMsg({ ok: true, text: `✔ ${tx.summary}. Confirmed on devnet.`, link: tx.explorer });
+    } catch (e) {
+      setMsg({ ok: false, text: e instanceof Error ? e.message : "Transaction failed" });
+    } finally {
+      setBusy(null);
+      void refresh();
+    }
+  };
+
+  return (
+    <div className="rounded-xl border-2 border-[#7c5cff]/40 bg-white p-4">
+      <div className="flex items-center gap-2">
+        <div className="font-bold">Devnet wallet: real transactions</div>
+        <span className="rounded-full bg-[#ece2ff] px-2 py-0.5 text-[10px] text-[#5b3fa0]">demo wallet in this browser</span>
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <span className="break-all font-mono text-xs">{address ?? "…"}</span>
+        {address && (
+          <button
+            className="shrink-0 rounded bg-[#0b2a3d]/10 px-2 py-0.5 text-[11px] font-bold hover:bg-[#0b2a3d]/20"
+            onClick={() => {
+              void navigator.clipboard?.writeText(address);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 1500);
+            }}
+          >
+            {copied ? "copied" : "copy"}
+          </button>
+        )}
+      </div>
+      <div className="mt-2 flex items-center gap-2 text-xl font-bold">
+        <MoeCoin size={24} />
+        {balance === null ? "…" : formatMoe(balance)} MOE <span className="text-xs font-normal opacity-60">on-chain</span>
+        <button onClick={() => void refresh()} className="ml-auto text-xs font-normal underline opacity-60">
+          refresh
+        </button>
+      </div>
+      {balance === 0 && (
+        <button disabled={!!busy} onClick={() => act("fund", demo.claimStarter)} className={`mt-3 w-full ${buyBtn}`}>
+          {busy === "fund" ? "Sending from the treasury…" : "Claim starter 30,000 MOE"}
+        </button>
+      )}
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <input
+          placeholder="Send to (wallet address)"
+          value={to}
+          onChange={(e) => setTo(e.target.value.trim())}
+          className="min-w-0 flex-[3] rounded-lg border-2 border-[#0b2a3d]/20 px-3 py-2 font-mono text-xs"
+        />
+        <input
+          inputMode="numeric"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="w-24 rounded-lg border-2 border-[#0b2a3d]/20 px-3 py-2 text-sm"
+        />
+        <button
+          disabled={!!busy || !to || !(Number(amount) > 0) || !balance}
+          onClick={() => act("send", () => demo.sendMoe(to, Number(amount), "EduOasis MOE transfer"))}
+          className={buyBtn}
+        >
+          {busy === "send" ? "Signing & sending…" : "Send MOE"}
+        </button>
+      </div>
+      {msg && (
+        <div className={`mt-3 rounded-lg p-2 text-xs ${msg.ok ? "bg-emerald-100" : "bg-rose-100"}`}>
+          {msg.text}{" "}
+          {msg.link && (
+            <a href={msg.link} target="_blank" rel="noreferrer" className="font-bold underline">
+              View on Solana Explorer ↗
+            </a>
+          )}
+        </div>
+      )}
+      {log.length > 0 && (
+        <ul className="mt-3 space-y-1">
+          {log.map((t) => (
+            <li key={t.signature} className="flex items-center gap-2 rounded bg-[#fff8e7] px-2 py-1 text-xs">
+              <span className="w-20 shrink-0 opacity-60">{new Date(t.t).toLocaleTimeString()}</span>
+              <span className="flex-1">{t.summary}</span>
+              <a href={t.explorer} target="_blank" rel="noreferrer" className="font-mono underline opacity-70">
+                {t.signature.slice(0, 8)}… ↗
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-2 text-[11px] opacity-60">
+        Devnet only: play money. The key for this wallet lives in this browser; &quot;reset demo&quot; doesn&apos;t delete it.
+      </p>
+    </div>
+  );
+}
+
 type MoeInfo = { mint: string; name: string; symbol: string; decimals: number; supply: string; explorer: string };
 
 function Wallet({ profile }: { profile: Profile }) {
@@ -506,8 +630,7 @@ function Wallet({ profile }: { profile: Profile }) {
   return (
     <div className="space-y-5 text-sm">
       <div className="rounded-xl bg-white p-4">
-        <div className="text-xs opacity-60">Your EduOasis wallet</div>
-        <div className="break-all font-mono text-xs">{w.pubkey}</div>
+        <div className="text-xs opacity-60">In-game balance (simulated) · wallet {chain.shortAddr(w.pubkey)}</div>
         <div className="mt-2 flex items-center gap-2 text-2xl font-bold">
           <MoeCoin size={28} />
           {formatMoe(profile.moe)} MOE
@@ -529,8 +652,9 @@ function Wallet({ profile }: { profile: Profile }) {
             </a>
           </div>
         )}
-        <p className="mt-2 text-xs opacity-60">Balances and payments are simulated in the app for now; the token itself is real.</p>
+        <p className="mt-2 text-xs opacity-60">In-game balances and purchases are simulated for now; the token itself is real.</p>
       </div>
+      <DevnetWallet />
       <section>
         <h3 className="mb-2 font-bold">Completion badges (non-transferable)</h3>
         {bs.length === 0 ? (

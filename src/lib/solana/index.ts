@@ -81,9 +81,13 @@ export function shortAddr(a: string) {
 /** The learner's built-in devnet wallet, created on first use (no seed phrases to manage). */
 export function getWallet(): { pubkey: string } {
   const s = load();
-  if (!s.wallet) {
-    s.wallet = { pubkey: rand(44) };
-    record(s, { kind: "wallet", summary: "Created your EduOasis wallet" });
+  let real: string | null = null;
+  try {
+    real = localStorage.getItem("eo2.demoWallet.pub"); // this browser's devnet wallet (demoWallet.ts)
+  } catch {}
+  if (!s.wallet || (real && s.wallet.pubkey !== real)) {
+    if (!s.wallet) record(s, { kind: "wallet", summary: "Created your EduOasis wallet" });
+    s.wallet = { pubkey: real ?? rand(44) };
     save(s);
   }
   return s.wallet;
