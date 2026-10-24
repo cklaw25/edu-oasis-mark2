@@ -1,7 +1,9 @@
 import * as Phaser from "phaser";
 import { bus } from "./bus";
 import { makeTextures } from "./textures";
-import { CLUES } from "@/content/bobo";
+import { CLUES as BOBO_CLUES } from "@/content/bobo";
+import type { LabObject } from "./layout";
+
 
 // Peer Review: walk Bandura's lab, inspect objects (E) to judge strengths/weaknesses while dodging Prof. Skeptic.
 const ROOM = { w: 1000, h: 640 };
@@ -25,7 +27,12 @@ export class LabScene extends Phaser.Scene {
     super("lab");
   }
 
-  init() {
+  private clues: LabObject[] = BOBO_CLUES;
+  private title = "Bandura's Lab · Stanford, 1961";
+
+  init(data: { clues?: LabObject[]; title?: string }) {
+    this.clues = data.clues ?? BOBO_CLUES;
+    this.title = data.title ?? "Bandura's Lab · Stanford, 1961";
     this.markers.clear();
     this.resolved = new Set();
     this.hearts = 3;
@@ -37,7 +44,7 @@ export class LabScene extends Phaser.Scene {
     makeTextures(this);
     this.drawRoom();
 
-    CLUES.forEach((c) => {
+    this.clues.forEach((c) => {
       this.add.text(c.x, c.y, c.icon, { fontSize: "44px" }).setOrigin(0.5).setDepth(c.y);
       this.add
         .text(c.x, c.y + 34, c.label, { fontFamily: "monospace", fontSize: "13px", color: "#2b2118" })
@@ -92,7 +99,7 @@ export class LabScene extends Phaser.Scene {
         this.tweens.killTweensOf(m);
         m.setText(correct ? "✔" : "✖").setColor(correct ? "#a5f3c4" : "#ff8a80");
       }
-      if (this.resolved.size === CLUES.length) {
+      if (this.resolved.size === this.clues.length) {
         this.time.delayedCall(600, () => bus.emit("lab:done", { hearts: this.hearts }));
       }
     });
@@ -114,14 +121,14 @@ export class LabScene extends Phaser.Scene {
     this.player.y = Phaser.Math.Clamp(this.player.y + vy, 80, ROOM.h - 60);
     if (vx) this.player.setFlipX(vx < 0);
 
-    const near = CLUES.find((c) => Phaser.Math.Distance.Between(c.x, c.y, this.player.x, this.player.y) < 60);
+    const near = this.clues.find((c) => Phaser.Math.Distance.Between(c.x, c.y, this.player.x, this.player.y) < 60);
     this.nearId = near?.id ?? null;
     this.hint.setText(
       near ? (this.resolved.has(near.id) ? `${near.label} — reviewed` : `E — inspect ${near.label}`) : "",
     );
 
     // Prof. Skeptic chases; getting caught costs a heart
-    const done = this.resolved.size === CLUES.length;
+    const done = this.resolved.size === this.clues.length;
     if (!done) {
       const speed = SKEPTIC_SPEED + this.resolved.size * 6;
       const a = Phaser.Math.Angle.Between(this.skeptic.x, this.skeptic.y, this.player.x, this.player.y);
@@ -166,7 +173,7 @@ export class LabScene extends Phaser.Scene {
     g.fillStyle(0x8b6b4a).fillRect(0, 0, ROOM.w, 46);
     g.lineStyle(10, 0x5c4a36).strokeRect(0, 0, ROOM.w, ROOM.h);
     this.add
-      .text(500, 23, "Bandura's Lab · Stanford, 1961", { fontFamily: "monospace", fontSize: "16px", color: "#fff8e7" })
+      .text(500, 23, this.title, { fontFamily: "monospace", fontSize: "16px", color: "#fff8e7" })
       .setOrigin(0.5);
   }
 }

@@ -12,6 +12,8 @@ export interface WorldSummary {
   /** 0..1 predicted recall; drives how green or dried-out the island looks */
   recall: number;
   gameType: GameType;
+  /** how many extracted knowledge items the world teaches */
+  coverage?: { covered: number; total: number };
 }
 
 export interface Profile {

@@ -1,76 +1,104 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import GameCanvas from "@/components/GameCanvas";
+import GameCanvas, { type SceneKey } from "@/components/GameCanvas";
 import CreateWorldModal from "@/components/CreateWorldModal";
 import BoboFlow, { type BoboPhase } from "@/components/BoboFlow";
+import WorldFlow, { labClues, type WorldPhase } from "@/components/WorldFlow";
 import { bus } from "@/game/bus";
 import { defaultProfile, loadProfile, saveProfile } from "@/lib/profile";
+import { loadSpec, saveSpec } from "@/lib/worldStore";
+import type { WorldSpec } from "@/lib/worldSpec";
 import type { PortalInfo, Profile } from "@/lib/types";
 
 type Panel = { kind: "create"; slot: number } | { kind: "market" } | { kind: "world"; info: PortalInfo } | null;
+type Active = { kind: "bobo" } | { kind: "gen"; id: string; spec: WorldSpec } | null;
+type Phase = BoboPhase | WorldPhase;
+
+// phases where the player reads a card instead of playing
+const CARD_PHASES: Phase[] = ["intro", "results", "summary", "arenaDone"];
 
 export default function Home() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [near, setNear] = useState<PortalInfo | null>(null);
   const [panel, setPanel] = useState<Panel>(null);
-  const [inWorld, setInWorld] = useState(false);
-  const [phase, setPhaseState] = useState<BoboPhase>("intro");
-  const phaseRef = useRef<BoboPhase>("intro");
+  const [active, setActive] = useState<Active>(null);
+  const [phase, setPhaseState] = useState<Phase>("intro");
+  const phaseRef = useRef<Phase>("intro");
   const [nonce, setNonce] = useState(0);
   const [autoStart, setAutoStart] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
 
-  const setPhase = useCallback((p: BoboPhase) => {
+  const setPhase = useCallback((p: Phase) => {
     if (p === "experiment") {
       if (phaseRef.current === "intro") bus.emit("experiment:begin");
       else {
+        // retry after a ruined experiment
         setAutoStart(true);
         setNonce((n) => n + 1);
       }
     }
+    if (p === "arena") bus.emit("arena:begin");
     phaseRef.current = p;
     setPhaseState(p);
   }, []);
 
-  const enterBobo = () => {
+  const enter = useCallback((world: Active) => {
     setPanel(null);
     setAutoStart(false);
     phaseRef.current = "intro";
     setPhaseState("intro");
     setNonce((n) => n + 1);
-    setInWorld(true);
-  };
+    setActive(world);
+  }, []);
 
   useEffect(() => setProfile(loadProfile()), []);
   useEffect(() => {
     const offInspect = bus.on("lab:inspect", () => setReviewOpen(true));
     const offResolved = bus.on("lab:resolved", () => setReviewOpen(false));
-    return () => {
-      offInspect();
-      offResolved();
-    };
-  }, []);
-  useEffect(() => {
     const offNear = bus.on("portal:near", (p) => setNear(p as PortalInfo | null));
     const offEnter = bus.on("portal:enter", (p) => {
       const info = p as PortalInfo;
       if (info.kind === "empty") setPanel({ kind: "create", slot: info.slot! });
       else if (info.kind === "market") setPanel({ kind: "market" });
-      else if (info.world?.id === "demo-bobo") enterBobo();
-      else setPanel({ kind: "world", info });
+      else if (info.world?.id === "demo-bobo") enter({ kind: "bobo" });
+      else {
+        const spec = info.world && loadSpec(info.world.id);
+        if (spec) enter({ kind: "gen", id: info.world!.id, spec });
+        else setPanel({ kind: "world", info });
+      }
     });
     return () => {
+      offInspect();
+      offResolved();
       offNear();
       offEnter();
     };
-  }, []);
+  }, [enter]);
 
   if (!profile) return <main className="h-screen bg-[#2a6f97]" />;
 
-  const scene = !inWorld ? "hub" : phase === "review" || phase === "summary" ? "lab" : "experiment";
-  const paused =
-    panel !== null || (inWorld && (phase === "intro" || phase === "results" || phase === "summary" || reviewOpen));
+  let scene: SceneKey = "hub";
+  let sceneData: Record<string, unknown> = { autoStart };
+  if (active?.kind === "bobo") scene = phase === "review" || phase === "summary" ? "lab" : "experiment";
+  if (active?.kind === "gen") {
+    const inLab = phase === "inspect" || phase === "summary";
+    scene = inLab ? "lab" : "arena";
+    sceneData = inLab
+      ? { clues: labClues(active.spec), title: active.spec.inspect.room }
+      : { arena: active.spec.arena, autoStart };
+  }
+  const paused = panel !== null || (active !== null && (CARD_PHASES.includes(phase) || reviewOpen));
+
+  const exitWorld = (id: string, accuracy: number) => {
+    const worlds = profile.worlds.map((w) =>
+      w?.id === id ? { ...w, recall: 0.5 + 0.5 * accuracy, lastVisitedAt: Date.now() } : w,
+    );
+    const next = { ...profile, worlds };
+    saveProfile(next);
+    setProfile(next);
+    setActive(null);
+  };
 
   const prompt =
     near?.kind === "empty"
@@ -83,26 +111,26 @@ export default function Home() {
 
   return (
     <main className="relative h-screen w-screen overflow-hidden font-mono">
-      <GameCanvas scene={scene} sceneData={{ autoStart }} nonce={nonce} profile={profile} paused={paused} />
+      <GameCanvas scene={scene} sceneData={sceneData} nonce={nonce} profile={profile} paused={paused} />
 
-      {inWorld && (
-        <BoboFlow
-          phase={phase}
+      {active?.kind === "bobo" && (
+        <BoboFlow phase={phase as BoboPhase} setPhase={setPhase} onExit={(acc) => exitWorld("demo-bobo", acc)} />
+      )}
+      {active?.kind === "gen" && (
+        <WorldFlow
+          worldId={active.id}
+          spec={active.spec}
+          phase={phase as WorldPhase}
           setPhase={setPhase}
-          onExit={(accuracy) => {
-            const worlds = profile.worlds.map((w) =>
-              w?.id === "demo-bobo" ? { ...w, recall: 0.5 + 0.5 * accuracy, lastVisitedAt: Date.now() } : w,
-            );
-            const next = { ...profile, worlds };
-            saveProfile(next);
-            setProfile(next);
-            setInWorld(false);
-          }}
+          onExit={(acc) => exitWorld(active.id, acc)}
         />
       )}
 
       {/* profile card */}
-      <div hidden={inWorld} className="absolute left-4 top-4 z-10 rounded-xl bg-[#0b2a3d]/80 px-4 py-3 text-white backdrop-blur">
+      <div
+        hidden={active !== null}
+        className="absolute left-4 top-4 z-10 rounded-xl bg-[#0b2a3d]/80 px-4 py-3 text-white backdrop-blur"
+      >
         <div className="text-lg font-bold">EduOasis</div>
         <div className="text-xs opacity-80">{profile.name}</div>
         <div className="mt-1 text-xs">🌱 {profile.generationsLeft} free generations</div>
@@ -118,11 +146,14 @@ export default function Home() {
         </button>
       </div>
 
-      <div hidden={inWorld} className="absolute right-4 top-4 z-10 rounded-xl bg-[#0b2a3d]/80 px-3 py-2 text-xs text-white">
+      <div
+        hidden={active !== null}
+        className="absolute right-4 top-4 z-10 rounded-xl bg-[#0b2a3d]/80 px-3 py-2 text-xs text-white"
+      >
         WASD / arrows to move · E to interact
       </div>
 
-      {prompt && !panel && !inWorld && (
+      {prompt && !panel && !active && (
         <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-5 py-2 text-sm font-bold text-[#0b2a3d] shadow-lg">
           {prompt}
         </div>
@@ -132,18 +163,31 @@ export default function Home() {
         <CreateWorldModal
           generationsLeft={profile.generationsLeft}
           onClose={() => setPanel(null)}
-          onSubmit={(req) => {
-            // TODO: call /api/generate; for now plant a placeholder world so the hub loop works end to end
+          onSubmit={async (req) => {
+            const form = new FormData();
+            form.set("topic", req.topic);
+            form.set("description", req.description);
+            form.set("requests", req.requests);
+            form.set("gameType", req.gameType);
+            req.files.forEach((f) => form.append("files", f));
+            const res = await fetch("/api/generate", { method: "POST", body: form });
+            const body = await res.json();
+            if (!res.ok) throw new Error(body.error ?? "Generation failed");
+            const spec = body.spec as WorldSpec;
+
+            const id = crypto.randomUUID();
+            saveSpec(id, spec);
             const worlds = [...profile.worlds];
             worlds[panel.slot] = {
-              id: crypto.randomUUID(),
-              title: req.topic.slice(0, 28),
-              topic: req.topic,
+              id,
+              title: spec.title.slice(0, 32),
+              topic: spec.topic,
               creator: profile.name,
               createdAt: Date.now(),
               lastVisitedAt: Date.now(),
               recall: 1,
-              gameType: req.gameType === "auto" ? "explore-collect" : req.gameType,
+              gameType: "explore-collect",
+              coverage: body.coverage,
             };
             const next = { ...profile, worlds, generationsLeft: profile.generationsLeft - 1 };
             saveProfile(next);
@@ -162,7 +206,7 @@ export default function Home() {
       {panel?.kind === "world" && (
         <Overlay title={panel.info.world!.title} onClose={() => setPanel(null)}>
           <p className="text-sm opacity-80">{panel.info.world!.topic}</p>
-          <p className="mt-2 text-sm">World scene coming next.</p>
+          <p className="mt-2 text-sm">This world&apos;s file isn&apos;t on this device.</p>
         </Overlay>
       )}
     </main>

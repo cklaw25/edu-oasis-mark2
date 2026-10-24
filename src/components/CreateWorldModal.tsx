@@ -26,8 +26,11 @@ export default function CreateWorldModal({
 }: {
   generationsLeft: number;
   onClose: () => void;
-  onSubmit: (req: CreateWorldRequest) => void;
+  onSubmit: (req: CreateWorldRequest) => Promise<void>;
 }) {
+  const [busy, setBusy] = useState(false);
+  const [stage, setStage] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   const [topic, setTopic] = useState("");
   const [description, setDescription] = useState("");
   const [requests, setRequests] = useState("");
@@ -42,7 +45,7 @@ export default function CreateWorldModal({
             <h2 className="text-xl font-bold">Grow a new world</h2>
             <p className="text-sm opacity-70">{generationsLeft} free generations left</p>
           </div>
-          <button onClick={onClose} className="text-2xl leading-none opacity-60 hover:opacity-100">
+          <button onClick={onClose} disabled={busy} className="text-2xl leading-none opacity-60 hover:opacity-100">
             ×
           </button>
         </div>
@@ -97,12 +100,31 @@ export default function CreateWorldModal({
           onChange={(e) => setRequests(e.target.value)}
         />
 
+        {error && <p className="mb-3 rounded-lg bg-rose-100 p-2 text-sm text-rose-800">{error}</p>}
+        {busy && (
+          <p className="mb-3 animate-pulse text-center text-sm">
+            {["Reading your resources…", "Extracting every fact…", "Designing your world…", "Checking nothing was lost…"][stage]}
+          </p>
+        )}
         <button
-          disabled={!topic || generationsLeft <= 0}
-          onClick={() => onSubmit({ topic, description, requests, gameType, files })}
+          disabled={!topic || generationsLeft <= 0 || busy}
+          onClick={async () => {
+            setBusy(true);
+            setError(null);
+            setStage(0);
+            const timer = setInterval(() => setStage((s) => Math.min(3, s + 1)), 5000);
+            try {
+              await onSubmit({ topic, description, requests, gameType, files });
+            } catch (e) {
+              setError(e instanceof Error ? e.message : "Generation failed — try again");
+            } finally {
+              clearInterval(timer);
+              setBusy(false);
+            }
+          }}
           className="w-full rounded-xl bg-[#2a6f97] py-3 font-bold text-white disabled:opacity-40"
         >
-          {generationsLeft > 0 ? "Generate world" : "No free generations left — visit the market"}
+          {busy ? "Growing…" : generationsLeft > 0 ? "Generate world" : "No free generations left — visit the market"}
         </button>
       </div>
     </div>

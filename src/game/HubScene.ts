@@ -16,6 +16,9 @@ const SLOTS = [
 const MARKET = { x: 1200, y: 1960, r: 210 };
 const BRIDGE_HALF = 34;
 
+// where the player was when the hub last ran, so restarts (new world, back from a world) don't teleport home
+let lastPos: { x: number; y: number } | null = null;
+
 type Circle = { x: number; y: number; r: number };
 type Seg = { ax: number; ay: number; bx: number; by: number };
 
@@ -76,8 +79,9 @@ export class HubScene extends Phaser.Scene {
     this.drawStalls(MARKET);
     this.addPortal(MARKET, { kind: "market" }, 0xffd166);
 
-    this.player = this.add.sprite(MAIN.x, MAIN.y + 60, "player").setDepth(10);
-    this.pet = this.add.sprite(MAIN.x - 40, MAIN.y + 90, "pet").setDepth(9);
+    const spawn = lastPos ?? { x: MAIN.x, y: MAIN.y + 60 };
+    this.player = this.add.sprite(spawn.x, spawn.y, "player").setDepth(10);
+    this.pet = this.add.sprite(spawn.x - 40, spawn.y + 30, "pet").setDepth(9);
     this.tweens.add({ targets: this.pet, scale: 1.15, yoyo: true, repeat: -1, duration: 600 });
 
     this.cameras.main.setBounds(0, 0, W, H).startFollow(this.player, true, 0.1, 0.1).setZoom(0.75);
@@ -106,6 +110,7 @@ export class HubScene extends Phaser.Scene {
     else if (this.walkable(x + vx, y)) this.player.setPosition(x + vx, y);
     else if (this.walkable(x, y + vy)) this.player.setPosition(x, y + vy);
     if (vx) this.player.setFlipX(vx < 0);
+    lastPos = { x: this.player.x, y: this.player.y };
 
     // pet trails behind the player
     this.pet.x += (this.player.x - 36 - this.pet.x) * 0.06;

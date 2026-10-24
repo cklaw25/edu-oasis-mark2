@@ -129,9 +129,9 @@ export default function BoboFlow({
   return null;
 }
 
-const btn = "mt-5 w-full rounded-xl bg-[#2a6f97] py-3 font-bold text-white hover:bg-[#245f82]";
+export const btn = "mt-5 w-full rounded-xl bg-[#2a6f97] py-3 font-bold text-white hover:bg-[#245f82]";
 
-function Card({ children, wide }: { children: React.ReactNode; wide?: boolean }) {
+export function Card({ children, wide }: { children: React.ReactNode; wide?: boolean }) {
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 p-4">
       <div
@@ -145,7 +145,7 @@ function Card({ children, wide }: { children: React.ReactNode; wide?: boolean })
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+export function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg bg-white p-2">
       <div className="text-xs opacity-60">{label}</div>

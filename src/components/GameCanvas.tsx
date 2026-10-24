@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Profile } from "@/lib/types";
 
-export type SceneKey = "hub" | "experiment" | "lab";
+export type SceneKey = "hub" | "experiment" | "lab" | "arena";
 
 // Mounts Phaser on the client only (Phaser touches window at import time).
 export default function GameCanvas({
@@ -45,10 +45,11 @@ export default function GameCanvas({
     let destroyed = false;
     (async () => {
       const Phaser = await import("phaser");
-      const [{ HubScene }, { ExperimentScene }, { LabScene }] = await Promise.all([
+      const [{ HubScene }, { ExperimentScene }, { LabScene }, { ArenaScene }] = await Promise.all([
         import("@/game/HubScene"),
         import("@/game/ExperimentScene"),
         import("@/game/LabScene"),
+        import("@/game/ArenaScene"),
       ]);
       if (destroyed || !host.current) return;
       game.current = new Phaser.Game({
@@ -63,6 +64,7 @@ export default function GameCanvas({
       game.current.scene.add("hub", HubScene, false);
       game.current.scene.add("experiment", ExperimentScene, false);
       game.current.scene.add("lab", LabScene, false);
+      game.current.scene.add("arena", ArenaScene, false);
       startScene();
     })();
     return () => {
