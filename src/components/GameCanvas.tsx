@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Profile } from "@/lib/types";
 
-export type SceneKey = "hub" | "experiment" | "lab" | "arena" | "shooter" | "runner";
+export type SceneKey = "hub" | "experiment" | "lab" | "arena" | "shooter" | "runner" | "board" | "showdown";
 
 // Mounts Phaser on the client only (Phaser touches window at import time).
 export default function GameCanvas({
@@ -45,7 +45,7 @@ export default function GameCanvas({
     let destroyed = false;
     (async () => {
       const Phaser = await import("phaser");
-      const [{ HubScene }, { ExperimentScene }, { LabScene }, { ArenaScene }, { ShooterScene }, { RunnerScene }] =
+      const [{ HubScene }, { ExperimentScene }, { LabScene }, { ArenaScene }, { ShooterScene }, { RunnerScene }, { BoardScene }, { ShowdownScene }] =
         await Promise.all([
           import("@/game/HubScene"),
           import("@/game/ExperimentScene"),
@@ -53,6 +53,8 @@ export default function GameCanvas({
           import("@/game/ArenaScene"),
           import("@/game/ShooterScene"),
           import("@/game/RunnerScene"),
+          import("@/game/BoardScene"),
+          import("@/game/ShowdownScene"),
         ]);
       if (destroyed || !host.current) return;
       game.current = new Phaser.Game({
@@ -71,6 +73,8 @@ export default function GameCanvas({
       game.current.scene.add("arena", ArenaScene, false);
       game.current.scene.add("shooter", ShooterScene, false);
       game.current.scene.add("runner", RunnerScene, false);
+      game.current.scene.add("board", BoardScene, false);
+      game.current.scene.add("showdown", ShowdownScene, false);
       startScene();
     })();
     return () => {

@@ -8,6 +8,7 @@ How EduOasis decides **which game to build for which content**. The generator re
 - **Our takeaway:** (1) match the game's *mechanic* to the *shape of the knowledge*; (2) keep text tiny and visuals big; (3) give constant action and feedback (ADHD-friendly); (4) **measure** which type works for each learner and adapt, since the research says it varies.
 
 ## Design rules for every game
+0. **Pictures, not word lists.** Playtest feedback (24 Oct): even with shooting and jumping, A/B label games still feel like "word sorting". The best games move *characters and objects*: drag the person into their department, fight the inventor who throws their invention.
 1. **The mechanic IS the learning.** The action you perform should mirror the idea: sorting = categorising, ordering jumps = sequencing, shooting false claims = rejecting misconceptions.
 2. **Max 4–5 words per label**, always with an emoji/icon. Explanations appear only *after* an action (feedback), never as a wall before it.
 3. **Every 10–20 seconds something changes** (a mode flip, a new wave, a checkpoint).
@@ -23,6 +24,8 @@ How EduOasis decides **which game to build for which content**. The generator re
 | `shooter` | **Hold the Line** | Arcade shooters, Roblox combat | Targets carrying labels advance; **shoot** the ones in category A, let B pass; friendly fire or a miss costs a heart | **Fast classification under pressure**: causes vs effects, true vs false, supports vs contradicts. Great skin for war/conflict | `arena` (A/B items) | ✅ built |
 | `arena` | **Sort Storm** | Party/arcade sorting | Calm top-down sorting; the wanted category flips every 10s; SPACE to sort | Two-category sorting at a gentler pace (lower intensity option) | `arena` | ✅ built |
 | `inspect` | **Inspect Room** | Escape rooms, detective games | Explore a themed room, inspect objects, judge each claim, dodge Prof. Skeptic | **Evaluation**: strengths/limitations, validity, judging sources, critical thinking | `inspect.clues[]` | ✅ built |
+| `showdown` | **Showdown** | Roblox combat/survival, arena shooters | Top-down survival. Fighters (people, groups, conditions) attack with their **signature thing** (Tesla throws ⚡ "AC motor", Oppenheimer throws 💣). A WANTED poster names a thing: dodge, then take down whoever owns it. Wrong hit = the fighter reveals who they are | **Pairs**: person ↔ invention/discovery, study ↔ finding, condition ↔ result, term ↔ example | `showdown.fighters[]` (name, avatar, weapon) | ✅ built |
+| `board` | **Squad Board** | Drag-and-drop puzzle games, team builders | Characters ride a conveyor belt; **drag** each onto the zone (team, department, place, experiment) it belongs to before it rolls away. Combos for streaks | **Membership in 3+ groups**: people ↔ departments (Manhattan Project), organelles ↔ cell parts, facts ↔ experiment 1/2 | `board.zones[]`, `board.pieces[]` | ✅ built |
 | `experiment` | **Be the Experiment** | Roleplay (Brookhaven) | You *act out* the study's conditions | Specific studies/experiments with conditions (hand-made per study for now) | hand-authored | ✅ Bobo only |
 | `dodge` | **Survive the Storm** | Roblox "Natural Disaster Survival", bullet hell | Dodge falling misconceptions, catch true facts | Misconceptions, common exam traps | true/false facts | 🔜 planned |
 | `defense` | **Defend the Idea** | Tower defense (Plants vs Brainrots) | Place "concept towers" that only stop matching enemies | Matching definitions ↔ examples, multi-category | multi-category items | 🔜 planned |
@@ -30,9 +33,11 @@ How EduOasis decides **which game to build for which content**. The generator re
 | `sim` | **Grow Your Oasis** | Simulators (Grow a Garden) | Long-term: the hub itself; learning grows and waters islands | Spaced repetition, progression levels | recall data | ✅ hub (+ progression levels later) |
 
 ## Content → game decision rules (what the generator follows)
+0. Content with **who/what ↔ what they did, made or scored** → **`showdown`** (the most fun; use it whenever pairs exist). Things that belong to **3+ groups** → **`board`**. Prefer these visual games over word sorting.
 1. Content with an **order** (dates, steps, stages, procedures, cycles) → **`runner`**.
 2. Content with **two opposing categories** → **`shooter`** if the topic is conflict/war/competition, or the learner wants action; otherwise **`arena`**.
 3. Content with **evaluation** (strengths/weaknesses, reliability, interpretations) → **`inspect`**.
-4. Pick **2–3 games per world**, ordered from *learn* (runner/arena) to *test* (shooter) to *judge* (inspect).
+4. Pick **2–3 games per world**, ordered from *learn* (board/runner) to *test* (showdown/shooter) to *judge* (inspect).
+7. **Slides get pictures:** every intro slide has a `scene` (2–4 emoji actors, style flow / versus / crash / group) drawn on the world's theme.
 5. Theme: war/conflict history → `war`; experiments/psychology/chemistry → `lab`; biology/ecology → `nature`; physics/astronomy → `space`; ancient history/classics → `ancient`; geography/marine → `ocean`; everything else → `city`.
 6. **Personalisation (next):** the Data tab's accuracy per game type feeds a bandit that adjusts these defaults per learner.

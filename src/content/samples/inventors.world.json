@@ -1,0 +1,679 @@
+{
+  "title": "Inventors Who Changed the World",
+  "topic": "Inventors and Inventions",
+  "summary": "Who invented what, and when: from Newton's laws to the World Wide Web.",
+  "knowledge": [
+    {
+      "id": "K1",
+      "kind": "fact",
+      "text": "Isaac Newton lived from 1643 to 1727 and was English.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K2",
+      "kind": "fact",
+      "text": "Isaac Newton published the laws of motion and the law of universal gravitation in the Principia in 1687.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K3",
+      "kind": "fact",
+      "text": "Isaac Newton built the first practical reflecting telescope in 1668.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K4",
+      "kind": "fact",
+      "text": "Isaac Newton co-developed calculus, which Leibniz developed independently.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K5",
+      "kind": "fact",
+      "text": "James Watt lived from 1736 to 1819 and was Scottish.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K6",
+      "kind": "fact",
+      "text": "James Watt improved the steam engine by adding a separate condenser patented in 1769.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K7",
+      "kind": "fact",
+      "text": "James Watt's steam engine improvements made engines far more efficient and powered the Industrial Revolution.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K8",
+      "kind": "fact",
+      "text": "Alexander Graham Bell lived from 1847 to 1922.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K9",
+      "kind": "fact",
+      "text": "Alexander Graham Bell received the first US patent for the telephone in 1876.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K10",
+      "kind": "fact",
+      "text": "Thomas Edison lived from 1847 to 1931 and was American.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K11",
+      "kind": "fact",
+      "text": "Thomas Edison invented the phonograph in 1877.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K12",
+      "kind": "fact",
+      "text": "Thomas Edison developed a practical, long-lasting incandescent light bulb in 1879.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K13",
+      "kind": "fact",
+      "text": "Thomas Edison opened the Pearl Street Station in New York in 1882, an early direct current power station.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K14",
+      "kind": "fact",
+      "text": "Nikola Tesla lived from 1856 to 1943 and was Serbian-American.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K15",
+      "kind": "fact",
+      "text": "Nikola Tesla invented the AC induction motor, patented in 1888.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K16",
+      "kind": "fact",
+      "text": "Nikola Tesla developed the alternating current power system, licensed to George Westinghouse.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K17",
+      "kind": "fact",
+      "text": "Nikola Tesla invented the Tesla coil in 1891.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K18",
+      "kind": "fact",
+      "text": "The War of the Currents took place in the late 1880s to 1890s between Edison promoting direct current and Tesla and Westinghouse promoting alternating current.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K19",
+      "kind": "fact",
+      "text": "Alternating current won the War of the Currents because it can be sent long distances efficiently using transformers.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K20",
+      "kind": "fact",
+      "text": "Marie Curie lived from 1867 to 1934 and was Polish-French.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K21",
+      "kind": "fact",
+      "text": "Marie Curie discovered the elements polonium and radium in 1898 and pioneered research on radioactivity.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K22",
+      "kind": "fact",
+      "text": "Marie Curie was the first person to win two Nobel Prizes in Physics in 1903 and Chemistry in 1911.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K23",
+      "kind": "fact",
+      "text": "The Wright brothers, Orville and Wilbur, made the first powered, controlled aeroplane flight at Kitty Hawk on 17 December 1903.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K24",
+      "kind": "fact",
+      "text": "Alan Turing lived from 1912 to 1954 and was English.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K25",
+      "kind": "fact",
+      "text": "Alan Turing described the Turing machine in 1936, providing the foundation of computer science.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K26",
+      "kind": "fact",
+      "text": "Alan Turing helped break the German Enigma code at Bletchley Park in World War II using the Bombe machine.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K27",
+      "kind": "fact",
+      "text": "J. Robert Oppenheimer lived from 1904 to 1967 and was American.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K28",
+      "kind": "fact",
+      "text": "J. Robert Oppenheimer served as scientific director of the Los Alamos Laboratory in the Manhattan Project.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K29",
+      "kind": "fact",
+      "text": "J. Robert Oppenheimer led the development of the first atomic bomb, tested at Trinity on 16 July 1945.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K30",
+      "kind": "quote",
+      "text": "Now I am become Death, the destroyer of worlds.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K31",
+      "kind": "fact",
+      "text": "Tim Berners-Lee was born in 1955 and is English.",
+      "source": "inventors.txt section 1"
+    },
+    {
+      "id": "K32",
+      "kind": "fact",
+      "text": "Tim Berners-Lee invented the World Wide Web in 1989 while working at CERN.",
+      "source": "inventors.txt section 1"
+    }
+  ],
+  "theme": "lab",
+  "games": [
+    "runner",
+    "showdown",
+    "inspect"
+  ],
+  "intro": [
+    {
+      "keyword": "Telescope",
+      "text": "Isaac Newton built the first practical reflecting telescope in 1668 and published laws of motion.",
+      "refs": [
+        "K1",
+        "K2",
+        "K3",
+        "K4"
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "👨‍🦳",
+            "label": "Newton"
+          },
+          {
+            "emoji": "🔭",
+            "label": "telescope"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "Steam Engine",
+      "text": "James Watt patented his separate condenser in 1769, powering the Industrial Revolution.",
+      "refs": [
+        "K5",
+        "K6",
+        "K7"
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "👷",
+            "label": "Watt"
+          },
+          {
+            "emoji": "🚂",
+            "label": "steam engine"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "Telephone",
+      "text": "Alexander Graham Bell received the first US patent for the telephone in 1876.",
+      "refs": [
+        "K8",
+        "K9"
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "🧔",
+            "label": "Bell"
+          },
+          {
+            "emoji": "☎️",
+            "label": "telephone"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "Currents War",
+      "text": "Edison and Tesla clashed in the War of the Currents over direct and alternating current.",
+      "refs": [
+        "K10",
+        "K11",
+        "K12",
+        "K13",
+        "K14",
+        "K15",
+        "K16",
+        "K17",
+        "K18",
+        "K19"
+      ],
+      "scene": {
+        "style": "versus",
+        "actors": [
+          {
+            "emoji": "👨‍💼",
+            "label": "Edison: DC"
+          },
+          {
+            "emoji": "🧔‍♂️",
+            "label": "Tesla: AC"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "Radioactivity",
+      "text": "Marie Curie discovered polonium and radium in 1898 and won two Nobel Prizes.",
+      "refs": [
+        "K20",
+        "K21",
+        "K22"
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "👩‍🔬",
+            "label": "Curie"
+          },
+          {
+            "emoji": "☢️",
+            "label": "radium"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "Flight",
+      "text": "The Wright brothers made the first powered aeroplane flight at Kitty Hawk in 1903.",
+      "refs": [
+        "K23",
+        "K24",
+        "K25",
+        "K26",
+        "K27",
+        "K28",
+        "K29",
+        "K30",
+        "K31",
+        "K32"
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "👬",
+            "label": "Wright brothers"
+          },
+          {
+            "emoji": "✈️",
+            "label": "Kitty Hawk"
+          }
+        ]
+      }
+    }
+  ],
+  "sequence": {
+    "title": "Invention Timeline",
+    "instructions": "Jump onto the correct chronological steps of discovery!",
+    "steps": [
+      {
+        "label": "Reflecting Telescope",
+        "icon": "🔭",
+        "detail": "In 1668, Isaac Newton built the first practical reflecting telescope.",
+        "refs": [
+          "K3"
+        ]
+      },
+      {
+        "label": "Principia Published",
+        "icon": "📜",
+        "detail": "In 1687, Isaac Newton published the laws of motion and gravitation.",
+        "refs": [
+          "K2"
+        ]
+      },
+      {
+        "label": "Steam Engine",
+        "icon": "🚂",
+        "detail": "In 1769, James Watt patented a separate condenser for the steam engine.",
+        "refs": [
+          "K6"
+        ]
+      },
+      {
+        "label": "Telephone Patent",
+        "icon": "☎️",
+        "detail": "In 1876, Alexander Graham Bell received the first US patent for the telephone.",
+        "refs": [
+          "K9"
+        ]
+      },
+      {
+        "label": "Light Bulb",
+        "icon": "💡",
+        "detail": "In 1879, Thomas Edison developed a practical incandescent light bulb.",
+        "refs": [
+          "K12"
+        ]
+      },
+      {
+        "label": "AC Motor",
+        "icon": "⚡",
+        "detail": "In 1888, Nikola Tesla patented the AC induction motor.",
+        "refs": [
+          "K15"
+        ]
+      },
+      {
+        "label": "Radium Discovery",
+        "icon": "☢️",
+        "detail": "In 1898, Marie Curie discovered polonium and radium.",
+        "refs": [
+          "K21"
+        ]
+      },
+      {
+        "label": "First Flight",
+        "icon": "✈️",
+        "detail": "In 1903, the Wright brothers made the first powered aeroplane flight.",
+        "refs": [
+          "K23"
+        ]
+      },
+      {
+        "label": "World Wide Web",
+        "icon": "🌐",
+        "detail": "In 1989, Tim Berners-Lee invented the World Wide Web while at CERN.",
+        "refs": [
+          "K32"
+        ]
+      }
+    ]
+  },
+  "arena": {
+    "title": "Direct vs Alternating",
+    "instructions": "Sort the power systems and inventors correctly.",
+    "categoryA": {
+      "name": "Direct Current",
+      "hint": "Promoted by Edison"
+    },
+    "categoryB": {
+      "name": "Alternating Current",
+      "hint": "Promoted by Tesla"
+    },
+    "items": [
+      {
+        "label": "Pearl Street Station",
+        "category": "A",
+        "icon": "🏭",
+        "refs": [
+          "K13"
+        ]
+      },
+      {
+        "label": "Edison",
+        "category": "A",
+        "icon": "💡",
+        "refs": [
+          "K10"
+        ]
+      },
+      {
+        "label": "Tesla Coil",
+        "category": "B",
+        "icon": "⚡",
+        "refs": [
+          "K17"
+        ]
+      },
+      {
+        "label": "Westinghouse",
+        "category": "B",
+        "icon": "🤝",
+        "refs": [
+          "K16"
+        ]
+      },
+      {
+        "label": "Long Distance Power",
+        "category": "B",
+        "icon": "📈",
+        "refs": [
+          "K19"
+        ]
+      },
+      {
+        "label": "War of Currents",
+        "category": "B",
+        "icon": "⚔️",
+        "refs": [
+          "K18"
+        ]
+      }
+    ]
+  },
+  "inspect": {
+    "title": "Inventor Claims Lab",
+    "room": "Patent Office",
+    "choiceA": "True",
+    "choiceB": "Myth",
+    "clues": [
+      {
+        "icon": "🍎",
+        "label": "Gravity & Motion",
+        "claim": "Isaac Newton published laws of motion in 1687.",
+        "answer": "A",
+        "why": "Newton published them in the Principia in 1687.",
+        "refs": [
+          "K2"
+        ]
+      },
+      {
+        "icon": "🔢",
+        "label": "Calculus",
+        "claim": "Newton developed calculus entirely alone without others.",
+        "answer": "B",
+        "why": "Newton co-developed calculus, which Leibniz developed independently.",
+        "refs": [
+          "K4"
+        ]
+      },
+      {
+        "icon": "🏆",
+        "label": "Nobel Prizes",
+        "claim": "Marie Curie won two Nobel Prizes in different fields.",
+        "answer": "A",
+        "why": "She won in Physics in 1903 and Chemistry in 1911.",
+        "refs": [
+          "K22"
+        ]
+      },
+      {
+        "icon": "💻",
+        "label": "Turing Machine",
+        "claim": "Alan Turing described the Turing machine in 1936.",
+        "answer": "A",
+        "why": "This description provided the foundation of computer science.",
+        "refs": [
+          "K25"
+        ]
+      }
+    ]
+  },
+  "showdown": {
+    "title": "Inventor Showdown",
+    "instructions": "Every inventor attacks with their invention. Take down the one the poster wants.",
+    "fighters": [
+      {
+        "name": "Newton",
+        "avatar": "👨‍🦳",
+        "weapon": {
+          "name": "Gravity & motion laws",
+          "icon": "🍎"
+        },
+        "fact": "Newton published his laws of motion and gravity in the Principia (1687).",
+        "refs": [
+          "K1",
+          "K2"
+        ]
+      },
+      {
+        "name": "Watt",
+        "avatar": "👷",
+        "weapon": {
+          "name": "Steam condenser",
+          "icon": "🚂"
+        },
+        "fact": "Watt's separate condenser (1769) made steam engines efficient and powered the Industrial Revolution.",
+        "refs": [
+          "K5",
+          "K6",
+          "K7"
+        ]
+      },
+      {
+        "name": "Bell",
+        "avatar": "🧔",
+        "weapon": {
+          "name": "Telephone",
+          "icon": "☎️"
+        },
+        "fact": "Bell got the first US telephone patent in 1876.",
+        "refs": [
+          "K8",
+          "K9"
+        ]
+      },
+      {
+        "name": "Edison",
+        "avatar": "👨‍💼",
+        "weapon": {
+          "name": "Light bulb",
+          "icon": "💡"
+        },
+        "fact": "Edison made a practical, long-lasting light bulb in 1879.",
+        "refs": [
+          "K10",
+          "K12"
+        ]
+      },
+      {
+        "name": "Tesla",
+        "avatar": "🧔‍♂️",
+        "weapon": {
+          "name": "AC motor",
+          "icon": "⚡"
+        },
+        "fact": "Tesla patented the AC induction motor in 1888 and built the AC power system with Westinghouse.",
+        "refs": [
+          "K14",
+          "K15",
+          "K16"
+        ]
+      },
+      {
+        "name": "Marie Curie",
+        "avatar": "👩‍🔬",
+        "weapon": {
+          "name": "Radium & polonium",
+          "icon": "☢️"
+        },
+        "fact": "Curie discovered polonium and radium in 1898.",
+        "refs": [
+          "K20",
+          "K21"
+        ]
+      },
+      {
+        "name": "Wright Brothers",
+        "avatar": "👬",
+        "weapon": {
+          "name": "First powered flight",
+          "icon": "✈️"
+        },
+        "fact": "Orville and Wilbur flew at Kitty Hawk on 17 December 1903.",
+        "refs": [
+          "K23"
+        ]
+      },
+      {
+        "name": "Turing",
+        "avatar": "🕵️",
+        "weapon": {
+          "name": "Enigma-cracking Bombe",
+          "icon": "🔐"
+        },
+        "fact": "Turing's Bombe helped break Enigma at Bletchley Park in WWII.",
+        "refs": [
+          "K24",
+          "K26"
+        ]
+      },
+      {
+        "name": "Oppenheimer",
+        "avatar": "🎩",
+        "weapon": {
+          "name": "Atomic bomb",
+          "icon": "💣"
+        },
+        "fact": "Oppenheimer led Los Alamos; the first atomic bomb was tested at Trinity on 16 July 1945.",
+        "refs": [
+          "K27",
+          "K28",
+          "K29"
+        ]
+      },
+      {
+        "name": "Berners-Lee",
+        "avatar": "👨‍💻",
+        "weapon": {
+          "name": "World Wide Web",
+          "icon": "🌐"
+        },
+        "fact": "Berners-Lee invented the World Wide Web at CERN in 1989.",
+        "refs": [
+          "K31",
+          "K32"
+        ]
+      }
+    ]
+  }
+}

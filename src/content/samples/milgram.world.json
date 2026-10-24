@@ -222,7 +222,20 @@
         "K1",
         "K2",
         "K6"
-      ]
+      ],
+      "scene": {
+        "style": "versus",
+        "actors": [
+          {
+            "emoji": "🥼",
+            "label": "authority"
+          },
+          {
+            "emoji": "🧑",
+            "label": "ordinary person"
+          }
+        ]
+      }
     },
     {
       "keyword": "Sample & Setup",
@@ -233,7 +246,24 @@
         "K5",
         "K7",
         "K8"
-      ]
+      ],
+      "scene": {
+        "style": "group",
+        "actors": [
+          {
+            "emoji": "📰",
+            "label": "advert"
+          },
+          {
+            "emoji": "👨",
+            "label": "40 men"
+          },
+          {
+            "emoji": "💵",
+            "label": "$4.50"
+          }
+        ]
+      }
     },
     {
       "keyword": "Shock Generator",
@@ -242,7 +272,24 @@
         "K9",
         "K10",
         "K11"
-      ]
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "🎛️",
+            "label": "15V"
+          },
+          {
+            "emoji": "⚡",
+            "label": "shocks"
+          },
+          {
+            "emoji": "☠️",
+            "label": "450V"
+          }
+        ]
+      }
     },
     {
       "keyword": "Results & Conclusion",
@@ -252,14 +299,48 @@
         "K19",
         "K20",
         "K21"
-      ]
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "👥",
+            "label": "participants"
+          },
+          {
+            "emoji": "📊",
+            "label": "65% obey"
+          },
+          {
+            "emoji": "🥼",
+            "label": "authority wins"
+          }
+        ]
+      }
     },
     {
       "keyword": "Agentic State",
       "text": "The agentic state is a situational explanation where an individual sees themselves as an agent carrying out another person's wishes.",
       "refs": [
         "K22"
-      ]
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "🧑",
+            "label": "you"
+          },
+          {
+            "emoji": "🤖",
+            "label": "agent"
+          },
+          {
+            "emoji": "🥼",
+            "label": "their wishes"
+          }
+        ]
+      }
     }
   ],
   "sequence": {

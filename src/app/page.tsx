@@ -60,7 +60,7 @@ export default function Home() {
       setAutoStart(false);
       setNonce((n) => n + 1);
     }
-    if (p.startsWith("play:")) ["runner", "shooter", "arena"].forEach((k) => bus.emit(`${k}:begin`));
+    if (p.startsWith("play:")) ["runner", "shooter", "arena", "board", "showdown"].forEach((k) => bus.emit(`${k}:begin`));
     phaseRef.current = p;
     setPhaseState(p);
   }, []);

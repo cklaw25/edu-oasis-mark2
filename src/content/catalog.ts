@@ -4,6 +4,7 @@ import type { WorldSpec } from "@/lib/worldSpec";
 import milgram from "./samples/milgram.world.json";
 import photosynthesis from "./samples/photosynthesis.world.json";
 import ww1 from "./samples/ww1.world.json";
+import inventors from "./samples/inventors.world.json";
 
 export interface CatalogEntry {
   assetId: string;
@@ -18,6 +19,16 @@ export interface CatalogEntry {
 }
 
 export const CATALOG: CatalogEntry[] = [
+  {
+    assetId: "InV3nt0rsSh0wd0wnWor1dAsset6EuA1oRiPq2Xn8Bt7x",
+    spec: inventors as WorldSpec,
+    subject: "⚡",
+    creator: "5LhJ4sYg6EuA1oRiPq2Xn8Bt7xKpQ2mZr9TfW3bN8cVd",
+    creatorName: "techhistory.sam",
+    price: 0.04,
+    learners: 97,
+    avgRecallGain: 0.34,
+  },
   {
     assetId: "MiLgRaMob3d1enc3Wor1dAsset9xQ7r2Lk5vT8nB4mCs",
     spec: milgram as WorldSpec,

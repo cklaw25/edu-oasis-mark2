@@ -102,12 +102,15 @@ export function disconnectWallet() {
 /** Seed listings (other creators' worlds) once; idempotent. */
 export function seedListings(seed: Listing[]) {
   const s = load();
+  const fresh = new Map(seed.map((l) => [l.assetId, l]));
+  // catalog worlds already listed keep their history but take the current file hash (the sample files get updated)
+  s.listings = s.listings.map((l) => {
+    const f = fresh.get(l.assetId);
+    return f ? { ...l, specHash: f.specHash, coverage: f.coverage, title: f.title } : l;
+  });
   const have = new Set(s.listings.map((l) => l.assetId));
-  const add = seed.filter((l) => !have.has(l.assetId));
-  if (add.length) {
-    s.listings.push(...add);
-    save(s);
-  }
+  s.listings.push(...seed.filter((l) => !have.has(l.assetId)));
+  save(s);
 }
 
 export function listWorlds(): Listing[] {

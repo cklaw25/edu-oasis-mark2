@@ -174,7 +174,28 @@
         "K1",
         "K8",
         "K10"
-      ]
+      ],
+      "scene": {
+        "style": "group",
+        "actors": [
+          {
+            "emoji": "💣",
+            "label": "militarism"
+          },
+          {
+            "emoji": "🤝",
+            "label": "alliances"
+          },
+          {
+            "emoji": "🗺️",
+            "label": "empire"
+          },
+          {
+            "emoji": "📣",
+            "label": "nationalism"
+          }
+        ]
+      }
     },
     {
       "keyword": "Armies & Pacts",
@@ -184,7 +205,20 @@
         "K5",
         "K6",
         "K7"
-      ]
+      ],
+      "scene": {
+        "style": "versus",
+        "actors": [
+          {
+            "emoji": "🚢",
+            "label": "arms race"
+          },
+          {
+            "emoji": "⚔️",
+            "label": "rival blocs"
+          }
+        ]
+      }
     },
     {
       "keyword": "The Spark",
@@ -193,7 +227,20 @@
         "K12",
         "K13",
         "K14"
-      ]
+      ],
+      "scene": {
+        "style": "crash",
+        "actors": [
+          {
+            "emoji": "🔫",
+            "label": "assassin"
+          },
+          {
+            "emoji": "👑",
+            "label": "Franz Ferdinand"
+          }
+        ]
+      }
     },
     {
       "keyword": "Escalation",
@@ -203,14 +250,44 @@
         "K16",
         "K17",
         "K18"
-      ]
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "📝",
+            "label": "blank cheque"
+          },
+          {
+            "emoji": "⏰",
+            "label": "ultimatum"
+          },
+          {
+            "emoji": "🪖",
+            "label": "mobilise"
+          }
+        ]
+      }
     },
     {
       "keyword": "War Declaration on France",
       "text": "Germany declared war on France on 3 August 1914.",
       "refs": [
         "K20"
-      ]
+      ],
+      "scene": {
+        "style": "crash",
+        "actors": [
+          {
+            "emoji": "🪖",
+            "label": "Germany"
+          },
+          {
+            "emoji": "🏰",
+            "label": "France"
+          }
+        ]
+      }
     }
   ],
   "sequence": {

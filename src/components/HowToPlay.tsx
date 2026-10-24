@@ -220,3 +220,124 @@ export function HowToRunner({ spec }: { spec: WorldSpec }) {
     </div>
   );
 }
+
+export function HowToBoard({ spec }: { spec: WorldSpec }) {
+  const b = spec.board;
+  const piece = b?.pieces[0];
+  const zones = (b?.zones ?? []).slice(0, 3);
+  const target = Math.max(0, zones.findIndex((z) => z.id === piece?.zone));
+  const zx = (i: number) => 20 + i * 110;
+  return (
+    <div>
+      <h2 className="text-xl font-bold">How to play: {b?.title ?? "Squad Board"} 🖐</h2>
+      <svg viewBox="0 0 360 200" className="mt-3 w-full rounded-xl bg-[#9fd8f0]" role="img" aria-label="Example of dragging a character to its zone">
+        {zones.map((z, i) => (
+          <g key={z.id}>
+            <rect x={zx(i)} y="14" width="100" height="90" rx="8" fill="#ffffff" fillOpacity="0.35" stroke="#fff" strokeWidth="2" />
+            <text x={zx(i) + 50} y="46" textAnchor="middle" fontSize="22">
+              {z.icon}
+            </text>
+            <text x={zx(i) + 50} y="66" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#0b2a3d">
+              {clip(z.name, 18)}
+            </text>
+          </g>
+        ))}
+        <rect x="0" y="160" width="360" height="40" fill="#333a44" />
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="translate"
+            values={`0,0;40,0;${zx(target) + 50 - 60},-95;${zx(target) + 50 - 60},-95`}
+            keyTimes="0;0.3;0.6;1"
+            dur="4s"
+            repeatCount="indefinite"
+          />
+          <circle cx="60" cy="172" r="16" fill="#fff8e7" stroke="#ffd166" strokeWidth="3" />
+          <text x="60" y="179" textAnchor="middle" fontSize="18">
+            {piece?.icon ?? "🧑"}
+          </text>
+          <text x="60" y="198" textAnchor="middle" fontSize="8" fill="#fff">
+            {clip(piece?.name ?? "Character", 16)}
+          </text>
+          <text x="74" y="186" fontSize="14">
+            👆
+          </text>
+        </g>
+        <text x={zx(target) + 50} y="98" textAnchor="middle" fontSize="16" fill="#1f6b2a" opacity="0">
+          ✔
+          <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.6;0.65;1" dur="4s" repeatCount="indefinite" />
+        </text>
+      </svg>
+      <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm">
+        <li>Characters and things ride the conveyor belt at the bottom.</li>
+        <li>
+          <b>Drag</b> each one with the mouse and <b>drop</b> it on the zone where it belongs.
+        </li>
+        <li>Right = it joins the zone and you learn a fact (chain them for a 🔥 combo). Wrong = it bounces back.</li>
+        <li>Too slow? It rolls off and comes round again. Place them all to finish.</li>
+      </ol>
+    </div>
+  );
+}
+
+export function HowToShowdown({ spec }: { spec: WorldSpec }) {
+  const fs = spec.showdown?.fighters ?? [];
+  const a = fs[0];
+  const b = fs[1];
+  return (
+    <div>
+      <h2 className="text-xl font-bold">How to play: {spec.showdown?.title ?? "Showdown"} ⚔️</h2>
+      <svg viewBox="0 0 360 200" className="mt-3 w-full rounded-xl bg-[#6b5a3e]" role="img" aria-label="Example of a showdown">
+        <rect x="0" y="0" width="360" height="26" fill="#000" fillOpacity="0.5" />
+        <text x="180" y="17" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#ffd166">
+          🎯 WANTED: whoever throws {a?.weapon.icon} {clip(a?.weapon.name ?? "?", 20)}
+        </text>
+        {/* fighter A throws its weapon at the player */}
+        <text x="70" y="90" textAnchor="middle" fontSize="28">
+          {a?.avatar ?? "🧔"}
+          <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.75;0.8;1" dur="4s" repeatCount="indefinite" />
+        </text>
+        <text x="70" y="108" textAnchor="middle" fontSize="9" fill="#fff">
+          {clip(a?.name ?? "Fighter A", 16)}
+        </text>
+        <text fontSize="18" textAnchor="middle">
+          {a?.weapon.icon ?? "⚡"}
+          <animate attributeName="x" values="80;175;175" keyTimes="0;0.35;1" dur="4s" repeatCount="indefinite" />
+          <animate attributeName="y" values="90;150;150" keyTimes="0;0.35;1" dur="4s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.34;0.36;1" dur="4s" repeatCount="indefinite" />
+        </text>
+        {/* decoy B */}
+        <text x="290" y="80" textAnchor="middle" fontSize="28">
+          {b?.avatar ?? "👩‍🔬"}
+        </text>
+        <text x="290" y="98" textAnchor="middle" fontSize="9" fill="#fff">
+          {clip(b?.name ?? "Fighter B", 16)}
+        </text>
+        {/* player dodges, then shoots A */}
+        <circle r="9" fill="#3d5afe" stroke="#fff" strokeWidth="2">
+          <animate attributeName="cx" values="180;215;215;215" keyTimes="0;0.3;0.5;1" dur="4s" repeatCount="indefinite" />
+          <animate attributeName="cy" values="155;160;160;160" keyTimes="0;0.3;0.5;1" dur="4s" repeatCount="indefinite" />
+        </circle>
+        <circle r="3" fill="#fff3b0">
+          <animate attributeName="cx" values="215;215;80;80" keyTimes="0;0.5;0.75;1" dur="4s" repeatCount="indefinite" />
+          <animate attributeName="cy" values="160;160;85;85" keyTimes="0;0.5;0.75;1" dur="4s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.49;0.5;0.76;1" dur="4s" repeatCount="indefinite" />
+        </circle>
+        <text x="70" y="90" textAnchor="middle" fontSize="30" opacity="0">
+          💥
+          <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.76;0.8;1" dur="4s" repeatCount="indefinite" />
+        </text>
+      </svg>
+      <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm">
+        <li>
+          Move with <b>WASD</b>. Aim with the <b>mouse</b>, <b>click</b> (or SPACE) to shoot.
+        </li>
+        <li>Every fighter attacks with the thing they&apos;re known for. Watch what they throw — and dodge it!</li>
+        <li>
+          The <b>WANTED</b> poster names a thing. Take down whoever it belongs to (2 hits).
+        </li>
+        <li>Shoot the wrong one and they tell you who they really are. Lose all ❤️ and you just get back up.</li>
+      </ol>
+    </div>
+  );
+}

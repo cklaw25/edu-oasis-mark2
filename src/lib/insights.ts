@@ -5,11 +5,11 @@ import { daysUntilDue, halfLifeH, hoursUntil, intervalDays, lifespanAt, recallAt
 import { readEvents, type TelemetryEvent } from "./telemetry";
 import type { Profile, WorldSummary } from "./types";
 import { loadSpec } from "./worldStore";
-import type { WorldSpec } from "./worldSpec";
+import { GAME_IDS, type GameId, type WorldSpec } from "./worldSpec";
 
 export interface Answer {
   world: string;
-  mode: "experiment" | "arena" | "inspect";
+  mode: "experiment" | GameId;
   label: string;
   correct: boolean;
   ms?: number;
@@ -25,9 +25,11 @@ export function answersFrom(events: TelemetryEvent[]): Answer[] {
       out.push({ world: e.world, mode: "inspect", label: clue?.label ?? String(d.id), correct: !!d.correct, ms: Number(d.ms), t: e.t });
     } else if (e.type === "inspect_answer") {
       out.push({ world: e.world, mode: "inspect", label: String(d.label), correct: !!d.correct, ms: Number(d.ms), t: e.t });
-    } else if (e.type === "arena_done") {
+    } else if (GAME_IDS.some((g) => e.type === `${g}_done`)) {
+      // every action game logs its answers the same way
+      const mode = e.type.replace(/_done$/, "") as GameId;
       for (const a of (d.answers as { label: string; correct: boolean }[]) ?? [])
-        out.push({ world: e.world, mode: "arena", label: a.label, correct: a.correct, t: e.t });
+        out.push({ world: e.world, mode, label: a.label, correct: a.correct, t: e.t });
     } else if (e.type === "experiment_done") {
       // each strike = a broken condition, each round survived = kept it
       const strikes = Number(d.strikes ?? 0);

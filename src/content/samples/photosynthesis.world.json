@@ -124,7 +124,28 @@
       "text": "You turn carbon dioxide and water into glucose and oxygen using light energy absorbed by chlorophyll.",
       "refs": [
         "K1"
-      ]
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "💨",
+            "label": "CO₂"
+          },
+          {
+            "emoji": "💧",
+            "label": "water"
+          },
+          {
+            "emoji": "☀️",
+            "label": "light"
+          },
+          {
+            "emoji": "🍬",
+            "label": "glucose"
+          }
+        ]
+      }
     },
     {
       "keyword": "Chloroplasts",
@@ -133,7 +154,24 @@
         "K2",
         "K3",
         "K4"
-      ]
+      ],
+      "scene": {
+        "style": "group",
+        "actors": [
+          {
+            "emoji": "🟢",
+            "label": "chloroplast"
+          },
+          {
+            "emoji": "🥞",
+            "label": "grana"
+          },
+          {
+            "emoji": "🫧",
+            "label": "stroma"
+          }
+        ]
+      }
     },
     {
       "keyword": "Reactions",
@@ -141,7 +179,20 @@
       "refs": [
         "K5",
         "K9"
-      ]
+      ],
+      "scene": {
+        "style": "versus",
+        "actors": [
+          {
+            "emoji": "☀️",
+            "label": "light-dependent"
+          },
+          {
+            "emoji": "🔄",
+            "label": "Calvin cycle"
+          }
+        ]
+      }
     },
     {
       "keyword": "Limiting Factors",
@@ -149,14 +200,52 @@
       "refs": [
         "K12",
         "K14"
-      ]
+      ],
+      "scene": {
+        "style": "group",
+        "actors": [
+          {
+            "emoji": "💡",
+            "label": "light"
+          },
+          {
+            "emoji": "💨",
+            "label": "CO₂"
+          },
+          {
+            "emoji": "🌡️",
+            "label": "temperature"
+          }
+        ]
+      }
     },
     {
       "keyword": "Glucose Uses",
       "text": "You utilize produced glucose for respiration, starch storage, cellulose walls, sucrose transport, and amino acids.",
       "refs": [
         "K15"
-      ]
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "🍬",
+            "label": "glucose"
+          },
+          {
+            "emoji": "🏃",
+            "label": "respiration"
+          },
+          {
+            "emoji": "🥔",
+            "label": "starch"
+          },
+          {
+            "emoji": "🧱",
+            "label": "cellulose"
+          }
+        ]
+      }
     }
   ],
   "sequence": {

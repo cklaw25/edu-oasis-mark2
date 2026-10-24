@@ -11,10 +11,17 @@ export interface KnowledgeItem {
   source: string; // file name + page/section, for the pet to cite
 }
 
+/** A picture for a slide, drawn from emoji "actors" and a little animation. */
+export interface SlideScene {
+  style: "flow" | "versus" | "crash" | "group";
+  actors: { emoji: string; label?: string }[]; // 2-4
+}
+
 export interface IntroSlide {
   keyword: string;
   text: string;
   refs: string[];
+  scene?: SlideScene;
 }
 
 export interface ArenaItem {
@@ -25,7 +32,23 @@ export interface ArenaItem {
 }
 
 export type Theme = "war" | "lab" | "nature" | "space" | "ancient" | "ocean" | "city";
-export type GameId = "runner" | "shooter" | "arena" | "inspect";
+export type GameId = "runner" | "shooter" | "arena" | "inspect" | "board" | "showdown";
+export const GAME_IDS: GameId[] = ["runner", "shooter", "arena", "inspect", "board", "showdown"];
+
+/** "Squad Board": drag characters/things onto the zone (team, department, place, group) they belong to. */
+export interface Board {
+  title: string;
+  instructions: string;
+  zones: { id: string; name: string; icon: string }[]; // 2-5
+  pieces: { name: string; icon: string; zone: string; fact: string; refs: string[] }[]; // 6-14
+}
+
+/** "Showdown": each fighter attacks with the thing they are linked to; take down the one the wanted poster names. */
+export interface Showdown {
+  title: string;
+  instructions: string;
+  fighters: { name: string; avatar: string; weapon: { name: string; icon: string }; fact: string; refs: string[] }[]; // 4-10
+}
 
 export interface SequenceStep {
   label: string; // max ~5 words
@@ -79,6 +102,8 @@ export interface WorldSpec {
   sequence?: Sequence;
   /** games to play, in order (older worlds: undefined → arena, inspect) */
   games?: GameId[];
+  board?: Board;
+  showdown?: Showdown;
 }
 
 /**
@@ -92,9 +117,25 @@ export function orderByYear(seq: Sequence): Sequence {
   return { ...seq, steps };
 }
 
+/** Point every board piece at a real zone (the model sometimes uses the zone's name instead of its id). */
+export function cleanBoard(board: Board | undefined): Board | undefined {
+  if (!board) return board;
+  const zoneOf = (z: string) =>
+    board.zones.find((x) => x.id === z) ?? board.zones.find((x) => x.name.toLowerCase() === z.toLowerCase());
+  const pieces = board.pieces.flatMap((p) => {
+    const z = zoneOf(p.zone);
+    return z ? [{ ...p, zone: z.id }] : [];
+  });
+  return { ...board, zones: board.zones.slice(0, 5), pieces: pieces.slice(0, 14) };
+}
+
 export function gamesOf(spec: WorldSpec): GameId[] {
   const valid = (spec.games ?? []).filter(
-    (g) => (g !== "runner" || (spec.sequence?.steps.length ?? 0) >= 3) && ["runner", "shooter", "arena", "inspect"].includes(g),
+    (g) =>
+      GAME_IDS.includes(g) &&
+      (g !== "runner" || (spec.sequence?.steps.length ?? 0) >= 3) &&
+      (g !== "board" || ((spec.board?.pieces.length ?? 0) >= 3 && (spec.board?.zones.length ?? 0) >= 2)) &&
+      (g !== "showdown" || (spec.showdown?.fighters.length ?? 0) >= 2),
   );
   return valid.length ? valid : ["arena", "inspect"];
 }
@@ -105,13 +146,17 @@ export interface Coverage {
   missing: KnowledgeItem[];
 }
 
-export function coverage(spec: Pick<WorldSpec, "knowledge" | "intro" | "arena" | "inspect" | "sequence">): Coverage {
+/** Counts only what the learner actually meets: the intro plus the games that are played. */
+export function coverage(spec: WorldSpec): Coverage {
   const used = new Set<string>();
   const add = (refs: string[] | undefined) => refs?.forEach((r) => used.add(r));
+  const games = gamesOf(spec);
   spec.intro.forEach((s) => add(s.refs));
-  spec.arena.items.forEach((i) => add(i.refs));
-  spec.inspect.clues.forEach((c) => add(c.refs));
-  spec.sequence?.steps.forEach((s) => add(s.refs));
+  if (games.includes("arena") || games.includes("shooter")) spec.arena.items.forEach((i) => add(i.refs));
+  if (games.includes("inspect")) spec.inspect.clues.forEach((c) => add(c.refs));
+  if (games.includes("runner")) spec.sequence?.steps.forEach((s) => add(s.refs));
+  if (games.includes("board")) spec.board?.pieces.forEach((p) => add(p.refs));
+  if (games.includes("showdown")) spec.showdown?.fighters.forEach((f) => add(f.refs));
   const missing = spec.knowledge.filter((k) => !used.has(k.id));
   return { covered: spec.knowledge.length - missing.length, total: spec.knowledge.length, missing };
 }
@@ -145,12 +190,25 @@ export const KNOWLEDGE_SCHEMA = {
   required: ["title", "topic", "summary", "knowledge"],
 };
 
+const sceneSchema = {
+  type: "object",
+  description: "the slide's picture: 2-4 emoji actors and how they move",
+  properties: {
+    style: { type: "string", enum: ["flow", "versus", "crash", "group"] },
+    actors: {
+      type: "array",
+      items: { type: "object", properties: { emoji: str, label: str }, required: ["emoji"] },
+    },
+  },
+  required: ["style", "actors"],
+};
+
 const introSchema = {
   type: "array",
   items: {
     type: "object",
-    properties: { keyword: str, text: str, refs },
-    required: ["keyword", "text", "refs"],
+    properties: { keyword: str, text: str, refs, scene: sceneSchema },
+    required: ["keyword", "text", "refs", "scene"],
   },
 };
 
@@ -209,25 +267,69 @@ const sequenceSchema = {
   required: ["title", "instructions", "steps"],
 };
 
+const boardSchema = {
+  type: "object",
+  properties: {
+    title: str,
+    instructions: str,
+    zones: { type: "array", items: { type: "object", properties: { id: str, name: str, icon: str }, required: ["id", "name", "icon"] } },
+    pieces: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { name: str, icon: str, zone: { type: "string", description: "id of the zone it belongs to" }, fact: str, refs },
+        required: ["name", "icon", "zone", "fact", "refs"],
+      },
+    },
+  },
+  required: ["title", "instructions", "zones", "pieces"],
+};
+
+const showdownSchema = {
+  type: "object",
+  properties: {
+    title: str,
+    instructions: str,
+    fighters: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          name: str,
+          avatar: { type: "string", description: "one person/creature/object emoji for the fighter" },
+          weapon: { type: "object", properties: { name: str, icon: str }, required: ["name", "icon"] },
+          fact: str,
+          refs,
+        },
+        required: ["name", "avatar", "weapon", "fact", "refs"],
+      },
+    },
+  },
+  required: ["title", "instructions", "fighters"],
+};
+
 export const DESIGN_SCHEMA = {
   type: "object",
   properties: {
     theme: { type: "string", enum: ["war", "lab", "nature", "space", "ancient", "ocean", "city"] },
-    games: { type: "array", items: { type: "string", enum: ["runner", "shooter", "arena", "inspect"] } },
+    games: { type: "array", items: { type: "string", enum: GAME_IDS } },
     intro: introSchema,
     sequence: sequenceSchema,
     arena: arenaSchema,
     inspect: inspectSchema,
+    board: boardSchema,
+    showdown: showdownSchema,
   },
-  required: ["theme", "games", "intro", "sequence", "arena", "inspect"],
+  required: ["theme", "games", "intro", "sequence", "arena", "inspect", "board", "showdown"],
 };
 
 export const PATCH_SCHEMA = {
   type: "object",
   properties: {
     intro: introSchema,
-    arenaItems: arenaSchema.properties.items,
     clues: inspectSchema.properties.clues,
+    fighters: showdownSchema.properties.fighters,
+    pieces: boardSchema.properties.pieces,
   },
-  required: ["intro", "arenaItems", "clues"],
+  required: ["intro", "clues", "fighters", "pieces"],
 };

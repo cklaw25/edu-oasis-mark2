@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { btn, Card, Stat } from "./BoboFlow";
-import { HowToArena, HowToInspect, HowToRunner, HowToShooter } from "./HowToPlay";
+import { HowToArena, HowToBoard, HowToInspect, HowToRunner, HowToShooter, HowToShowdown } from "./HowToPlay";
+import SlideScene from "./SlideScene";
 import { bus } from "@/game/bus";
 import { layoutObjects } from "@/game/layout";
 import { track } from "@/lib/telemetry";
@@ -31,6 +32,10 @@ export function sceneFor(spec: WorldSpec, game: GameId, autoStart: boolean) {
       return { key: "arena" as const, data: { arena: spec.arena, autoStart } };
     case "inspect":
       return { key: "lab" as const, data: { clues: labClues(spec), title: spec.inspect.room } };
+    case "board":
+      return { key: "board" as const, data: { board: spec.board, theme: spec.theme, autoStart } };
+    case "showdown":
+      return { key: "showdown" as const, data: { showdown: spec.showdown, theme: spec.theme, autoStart } };
   }
 }
 
@@ -39,6 +44,8 @@ const GAME_NAMES: Record<GameId, string> = {
   shooter: "Hold the Line",
   arena: "Sort Storm",
   inspect: "Inspect Room",
+  board: "Squad Board",
+  showdown: "Showdown",
 };
 
 type Result = { correct: number; mistakes: number; answers: { label: string; correct: boolean }[] };
@@ -83,6 +90,8 @@ export default function WorldFlow({
       bus.on("runner:done", finished("runner")),
       bus.on("shooter:done", finished("shooter")),
       bus.on("arena:done", finished("arena")),
+      bus.on("board:done", finished("board")),
+      bus.on("showdown:done", finished("showdown")),
       bus.on("lab:inspect", (id) => setInspecting(id as string)),
       bus.on("lab:done", (p) => {
         setHearts((p as { hearts: number }).hearts);
@@ -110,6 +119,7 @@ export default function WorldFlow({
             <div className="inline-block rounded-full bg-[#ffd166] px-2 py-0.5 text-xs font-bold">{s.keyword}</div>
           </div>
         </div>
+        <SlideScene key={slide} scene={s.scene} theme={spec.theme} />
         <p className="text-lg leading-relaxed">{s.text}</p>
         {last && (
           <div className="mt-4 flex flex-wrap gap-2 text-xs">
@@ -145,6 +155,8 @@ export default function WorldFlow({
         {g === "shooter" && <HowToShooter spec={spec} />}
         {g === "arena" && <HowToArena spec={spec} />}
         {g === "inspect" && <HowToInspect spec={spec} />}
+        {g === "board" && <HowToBoard spec={spec} />}
+        {g === "showdown" && <HowToShowdown spec={spec} />}
         <button className={btn} onClick={() => setPhase(`play:${gi}`)}>
           Start {GAME_NAMES[g]}
         </button>

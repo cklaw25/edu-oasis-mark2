@@ -180,8 +180,8 @@
   ],
   "theme": "lab",
   "games": [
-    "runner",
-    "shooter",
+    "board",
+    "showdown",
     "inspect"
   ],
   "intro": [
@@ -191,7 +191,24 @@
       "refs": [
         "K1",
         "K2"
-      ]
+      ],
+      "scene": {
+        "style": "group",
+        "actors": [
+          {
+            "emoji": "👩‍🏫",
+            "label": "Loftus"
+          },
+          {
+            "emoji": "👨‍🏫",
+            "label": "Palmer"
+          },
+          {
+            "emoji": "🧠",
+            "label": "memory"
+          }
+        ]
+      }
     },
     {
       "keyword": "Experiment 1",
@@ -200,16 +217,46 @@
         "K3",
         "K4",
         "K5"
-      ]
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "👥",
+            "label": "45 students"
+          },
+          {
+            "emoji": "🎞️",
+            "label": "7 crash clips"
+          },
+          {
+            "emoji": "❓",
+            "label": "how fast?"
+          }
+        ]
+      }
     },
     {
       "keyword": "Variables",
-      "text": "You test critical verbs like smashed or hit and measure speed estimates in mph.",
+      "text": "The only thing that changes is ONE verb: smashed, collided, bumped, hit or contacted. You measure their speed guesses in mph.",
       "refs": [
         "K6",
         "K7",
         "K8"
-      ]
+      ],
+      "scene": {
+        "style": "versus",
+        "actors": [
+          {
+            "emoji": "💥",
+            "label": "smashed"
+          },
+          {
+            "emoji": "🤏",
+            "label": "contacted"
+          }
+        ]
+      }
     },
     {
       "keyword": "Experiment 2",
@@ -218,7 +265,24 @@
         "K14",
         "K15",
         "K17"
-      ]
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "📽️",
+            "label": "crash film"
+          },
+          {
+            "emoji": "📅",
+            "label": "1 week later"
+          },
+          {
+            "emoji": "🥛",
+            "label": "glass?"
+          }
+        ]
+      }
     },
     {
       "keyword": "Conclusion",
@@ -226,7 +290,24 @@
       "refs": [
         "K22",
         "K23"
-      ]
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "❓",
+            "label": "leading question"
+          },
+          {
+            "emoji": "🧠",
+            "label": "memory"
+          },
+          {
+            "emoji": "🧩",
+            "label": "rebuilt"
+          }
+        ]
+      }
     }
   ],
   "sequence": {
@@ -458,11 +539,263 @@
       {
         "icon": "👁️",
         "label": "Real witnesses",
-        "claim": "Yuille and Cutshall proved real witnesses can be immune to misleading questions.",
-        "answer": "A",
-        "why": "Counter-evidence shows real witnesses were accurate.",
+        "claim": "Real witnesses of a shooting stayed accurate despite misleading questions (Yuille & Cutshall, 1986).",
+        "answer": "B",
+        "why": "This challenges Loftus & Palmer: real, emotional events may be remembered better than lab film clips.",
         "refs": [
           "K29"
+        ]
+      }
+    ]
+  },
+  "board": {
+    "title": "Which Experiment?",
+    "instructions": "Drag each piece into the experiment it belongs to.",
+    "zones": [
+      {
+        "id": "e1",
+        "name": "Experiment 1: Speed",
+        "icon": "🎬"
+      },
+      {
+        "id": "e2",
+        "name": "Experiment 2: Glass",
+        "icon": "🥛"
+      },
+      {
+        "id": "c",
+        "name": "Conclusion",
+        "icon": "🧠"
+      }
+    ],
+    "pieces": [
+      {
+        "name": "45 students",
+        "icon": "👥",
+        "zone": "e1",
+        "fact": "Experiment 1 used 45 American students.",
+        "refs": [
+          "K3"
+        ]
+      },
+      {
+        "name": "7 crash clips",
+        "icon": "🎞️",
+        "zone": "e1",
+        "fact": "They watched 7 film clips of traffic accidents.",
+        "refs": [
+          "K5"
+        ]
+      },
+      {
+        "name": "Independent measures",
+        "icon": "🔀",
+        "zone": "e1",
+        "fact": "Each person heard only one verb: independent measures.",
+        "refs": [
+          "K4"
+        ]
+      },
+      {
+        "name": "\"How fast…?\"",
+        "icon": "❓",
+        "zone": "e1",
+        "fact": "\"About how fast were the cars going when they ___ each other?\"",
+        "refs": [
+          "K6"
+        ]
+      },
+      {
+        "name": "The verb (IV)",
+        "icon": "🔤",
+        "zone": "e1",
+        "fact": "IV = the verb: smashed, collided, bumped, hit, contacted.",
+        "refs": [
+          "K7"
+        ]
+      },
+      {
+        "name": "Speed in mph (DV)",
+        "icon": "🏎️",
+        "zone": "e1",
+        "fact": "DV = their speed estimate in mph.",
+        "refs": [
+          "K8"
+        ]
+      },
+      {
+        "name": "150 students",
+        "icon": "👥",
+        "zone": "e2",
+        "fact": "Experiment 2 used 150 students.",
+        "refs": [
+          "K14"
+        ]
+      },
+      {
+        "name": "1-minute crash",
+        "icon": "📽️",
+        "zone": "e2",
+        "fact": "They watched a 1-minute film of a multiple car crash.",
+        "refs": [
+          "K15"
+        ]
+      },
+      {
+        "name": "3 groups of 50",
+        "icon": "👨‍👩‍👧",
+        "zone": "e2",
+        "fact": "50 heard 'smashed', 50 heard 'hit', 50 got no speed question.",
+        "refs": [
+          "K16"
+        ]
+      },
+      {
+        "name": "1 week later",
+        "icon": "📅",
+        "zone": "e2",
+        "fact": "A week later: \"Did you see any broken glass?\"",
+        "refs": [
+          "K17"
+        ]
+      },
+      {
+        "name": "No glass in film",
+        "icon": "🚫",
+        "zone": "e2",
+        "fact": "Trick! There was no broken glass in the film at all.",
+        "refs": [
+          "K18"
+        ]
+      },
+      {
+        "name": "Leading Qs distort",
+        "icon": "❗",
+        "zone": "c",
+        "fact": "Leading questions can distort memory.",
+        "refs": [
+          "K22"
+        ]
+      },
+      {
+        "name": "Memory rebuilt",
+        "icon": "🧩",
+        "zone": "c",
+        "fact": "New info gets mixed into the memory: memory is reconstructive.",
+        "refs": [
+          "K23"
+        ]
+      },
+      {
+        "name": "The study",
+        "icon": "🚗",
+        "zone": "c",
+        "fact": "Loftus & Palmer (1974): 'Reconstruction of automobile destruction'.",
+        "refs": [
+          "K1",
+          "K2"
+        ]
+      }
+    ]
+  },
+  "showdown": {
+    "title": "Crash Course",
+    "instructions": "Each driver throws their speed. Take down the one the poster wants.",
+    "fighters": [
+      {
+        "name": "Smashed",
+        "avatar": "😡",
+        "weapon": {
+          "name": "40.8 mph",
+          "icon": "💥"
+        },
+        "fact": "'Smashed' made people guess the fastest: 40.8 mph.",
+        "refs": [
+          "K9"
+        ]
+      },
+      {
+        "name": "Collided",
+        "avatar": "😠",
+        "weapon": {
+          "name": "39.3 mph",
+          "icon": "💢"
+        },
+        "fact": "'Collided' → 39.3 mph.",
+        "refs": [
+          "K10"
+        ]
+      },
+      {
+        "name": "Bumped",
+        "avatar": "😬",
+        "weapon": {
+          "name": "38.1 mph",
+          "icon": "🎳"
+        },
+        "fact": "'Bumped' → 38.1 mph.",
+        "refs": [
+          "K11"
+        ]
+      },
+      {
+        "name": "Hit",
+        "avatar": "😐",
+        "weapon": {
+          "name": "34.0 mph",
+          "icon": "👊"
+        },
+        "fact": "'Hit' → 34.0 mph.",
+        "refs": [
+          "K12"
+        ]
+      },
+      {
+        "name": "Contacted",
+        "avatar": "🙂",
+        "weapon": {
+          "name": "31.8 mph",
+          "icon": "🤏"
+        },
+        "fact": "'Contacted' made people guess the slowest: 31.8 mph.",
+        "refs": [
+          "K13"
+        ]
+      },
+      {
+        "name": "Smashed group",
+        "avatar": "😱",
+        "weapon": {
+          "name": "32% saw glass",
+          "icon": "🥛"
+        },
+        "fact": "16 of 50 (32%) in the 'smashed' group 'remembered' glass that wasn't there.",
+        "refs": [
+          "K19"
+        ]
+      },
+      {
+        "name": "Hit group",
+        "avatar": "😶",
+        "weapon": {
+          "name": "14% saw glass",
+          "icon": "🍷"
+        },
+        "fact": "7 of 50 (14%) in the 'hit' group said yes.",
+        "refs": [
+          "K20"
+        ]
+      },
+      {
+        "name": "Control group",
+        "avatar": "🫥",
+        "weapon": {
+          "name": "12% saw glass",
+          "icon": "🪟"
+        },
+        "fact": "6 of 50 (12%) with no speed question said yes.",
+        "refs": [
+          "K21"
         ]
       }
     ]
