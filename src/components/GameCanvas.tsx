@@ -77,7 +77,29 @@ export default function GameCanvas({
       game.current.scene.add("showdown", ShowdownScene, false);
       startScene();
     })();
+
+    // Phaser tracks keys by keyCode. With an input method (e.g. Chinese IME) a release can arrive as "Process"
+    // (keyCode 229), or never arrive if focus moves away, so a key stays "held" forever (stuck on a wall).
+    // Release keys by their physical code instead, and drop everything when the window loses focus.
+    const codeToKeyCode = (code: string) => {
+      if (/^Key[A-Z]$/.test(code)) return code.charCodeAt(3);
+      return ({ Space: 32, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40 } as Record<string, number>)[code];
+    };
+    const scenesWithKeys = () => game.current?.scene.getScenes(false).flatMap((sc) => (sc.input?.keyboard ? [sc.input.keyboard] : [])) ?? [];
+    const onKeyUp = (e: KeyboardEvent) => {
+      const kc = codeToKeyCode(e.code);
+      if (kc === undefined || e.keyCode === kc) return; // Phaser handled a normal release itself
+      scenesWithKeys().forEach((kb) => kb.keys[kc]?.reset());
+    };
+    const releaseAll = () => scenesWithKeys().forEach((kb) => kb.resetKeys());
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", releaseAll);
+    document.addEventListener("visibilitychange", releaseAll);
+
     return () => {
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", releaseAll);
+      document.removeEventListener("visibilitychange", releaseAll);
       destroyed = true;
       game.current?.destroy(true);
       game.current = null;
