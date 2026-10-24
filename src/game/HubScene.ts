@@ -231,7 +231,7 @@ export class HubScene extends Phaser.Scene {
   private addPortal(c: Circle, info: PortalInfo, color: number) {
     const ring = this.add.circle(c.x, c.y, 36, color, 0.25).setStrokeStyle(4, color, 0.9).setDepth(3);
     this.tweens.add({ targets: ring, scale: 1.2, alpha: 0.6, yoyo: true, repeat: -1, duration: 900 });
-    if (info.kind === "empty") {
+    if (info.kind !== "market") {
       this.add
         .text(c.x, c.y, "+", { fontFamily: "monospace", fontSize: "40px", color: "#ffffff" })
         .setOrigin(0.5)
