@@ -1,120 +1,190 @@
 # EduOasis Mark 2 — Discussion Notes
 
-Shared notes for the team. Updated on request, not after every change.
-Last updated: 2026-10-24 (OxHack 2026, day 1)
+Shared notes for the team (Memphis + Correy). Updated on request, not after every change.
+**Last updated: Sat 24 Oct 2026, ~15:30 (OxHack day 1)** · Deadline: **Sun 25 Oct, 12:00 on Devpost**
+
+---
+
+## 0. TL;DR — where we are
+
+- **Working now (local, `npm run dev`):** a 2D island hub, the hand-made Bobo doll world, **AI-generated worlds from uploaded notes**, and **Pip**, the AI study companion, with notes and learning data.
+- **Not built yet:** the market island and Solana (Correy), the game-type picker that learns from data, the public deploy, 3D.
+- **Stack:** Next.js 15 + React 19 + **Phaser 3** (2D game) + Tailwind + **Gemini API** (`@google/genai`). The world file and recall model are TypeScript in `src/lib`.
+
+### Run it
+```bash
+git clone https://github.com/cklaw25/edu-oasis-mark2 && cd edu-oasis-mark2
+npm install
+cp .env.example .env.local   # then fill in GEMINI_API_KEY (ask Memphis; never commit it)
+npm run dev                   # http://localhost:3000
+```
+Controls: WASD/arrow keys move, **E** interacts, SPACE hits Bobo, **✦ Pip** button bottom right.
+"reset demo" (top-left card) wipes local progress.
 
 ---
 
 ## 1. Hackathon context (OxHack 2026, Oxford)
 
-- **Dates:** Sat 24 – Sun 25 Oct 2026. About 25 hours of hacking, because the clocks go back that night.
-- **Judging:** science-fair style, **4–5 minutes per judge**. A live demo matters more than slides.
-- **Main track theme:** **TIME**. Main prizes are First Place, Runner Up and Best Hand Made Project (Citadel). We can enter the main track and sponsor tracks at the same time.
-- **Submission deadline:** ❓ not confirmed yet. Check 26.oxhack.net or Discord.
+- 24–25 Oct, about 25 hours of hacking (the clocks go back). **Submission: Devpost by 12:00 Sunday**: video demo + description + GitHub (+ public URL).
+- **Judging:** science-fair style, **4–5 minutes per judge**. A live demo is better than slides.
+- **Main track theme: TIME.** Prizes are First, Runner Up and Best Hand Made (Citadel). We can enter the main track and sponsor tracks at the same time.
 
-### Tracks relevant to us
-| Track | Prize | Fit |
+| Track | Prize | How EduOasis fits |
 |---|---|---|
-| **Solana** (our main sponsor target) | Unruggable hardware wallets | "Show us how you can innovate with Solana". The MLH talk called out games and real-time marketplaces. |
-| Gemini API | Swag kits | Free and easy to add. Use it for resource → game generation. |
-| ElevenLabs | Earbuds | Cheap add: narrated NPCs, which suit dyslexic and ADHD learners. |
-| Presage | Fitbit | Camera-based focus/attention sensing that could adapt the game for ADHD learners. Stretch goal only. |
-| Delta (sponsor talk) | — | Scores speed/UX 30%, tech 25%, innovation 25%, polish 20%. Only worth it if we actually use Delta. |
+| **Solana** (main sponsor target) | Unruggable hardware wallets | World NFTs, membership pass, creator royalties, badges (section 6) |
+| **HRT: data for prediction & decision-making** | — | Forgetting-curve recall prediction, Pip's recommendations, the game-type picker (section 5) |
+| **Gemini API** | Swag | Already powers world generation and Pip |
+| Tiger Data | Stream Deck | Time-series storage for learning telemetry. Strong fit if we have time |
+| ElevenLabs | Earbuds | Give Pip a voice (good for dyslexic and ADHD learners) |
+| Presage | Fitbit | Camera-based focus sensing to adapt the game. Stretch only |
+
+**Idea graded vs alternative:** the "draw weather, simulate in 3D" idea for HRT scored about 5/10 (a toy, hard 3D work, "better than the Met Office?" problem). EduOasis scored about 8/10 (it has won before, has a real user group, and fits Solana + TIME + HRT at once). **Decision: EduOasis only.**
 
 ---
 
-## 2. Origin
+## 2. The product
 
-EduOasis v1 was built at the HKUST Hackathon 2026 and won. It was a 2D pixel-art world where you interact with map elements: a tutor, a quiz, a file-upload corrector. 3D was planned but there wasn't time.
-Old repo: https://github.com/SpectrumTantrum/EDU-Oasis-V2 (Next.js + R3F + Supabase). **Mark 2 is a rebuild from scratch.** We only reference the old repo, we don't reuse it.
+An edtech platform for **neurodivergent / ADHD learners**: upload resources and they become a **game world**. It is deliberately not Kahoot-style quizzing.
 
----
+- **Hub ("Inside Out" style):** a main island with bridges to **3 world islands** (one per generated world) and a **market island** on the opposite side.
+- **3 free generations** per user. After that, buy access to other people's worlds (Solana).
+- **Pip:** an AI companion (like a Genshin teammate or Jarvis) that guides you, recaps, quizzes, takes notes and lets you jump between topics non-linearly.
+- **Islands dry up over time** as predicted recall falls (the TIME theme). Replaying a world waters it again.
 
-## 3. Core idea (agreed by the team)
-
-1. **The game:** an edtech platform where you upload learning resources (PDF, notes, slides) and they become an **interactive 3D game world**. It's built for neurodivergent and ADHD learners, and it is deliberately not a Kahoot-style quiz.
-2. **The economy (Solana track):** each user can generate **3 free games**. After that they either pay, or they **buy or trade access** to games other users have generated. Payments and trades go through **Solana and a digital wallet**.
-
----
-
-## 4. Proposed refinements (Claude's suggestions, for team review)
-
-### 4.1 Architecture: a "game" is a data file
-Generating real 3D geometry with AI in 24 hours is not realistic. Instead:
-- We build **one hand-made 3D oasis world engine**: islands, NPCs, stations, collectibles, gates.
-- The AI (Gemini) turns a resource into a **Game Spec JSON**: zones = topics, NPC dialogue = explanations, in-world challenges = checks, collectibles = key facts, a boss gate = mastery check.
-- **Game = Spec JSON + engine.** This keeps generation reliable. It also makes each game a small, hashable object, which is exactly what we can mint, own and trade on-chain. The Solana side is built around the spec file.
-
-### 4.2 Make Solana necessary rather than added on
-Avoid "crypto as a payment button". Judges see that a lot. Things a card payment can't do:
-
-| Feature | Why it needs a blockchain | Priority |
-|---|---|---|
-| **Each game is minted as an NFT asset** (Metaplex Core). The metadata stores the creator, a hash of the spec and the source topic | Provable creator ownership and authenticity. Anyone can verify who made a game and that it hasn't been changed | **MVP** |
-| **Buy an access pass**: one atomic transaction pays the creator (plus a small platform fee) and mints an access-pass asset to the buyer's wallet. The game unlocks if the wallet holds a pass | Creators are paid instantly, directly and without a middleman. **Micro-payments** (e.g. £0.10 per game) are only possible because Solana fees are a fraction of a cent, while card fees (~20p fixed) would eat the price | **MVP** |
-| **Creator royalties on resale** (Core Royalties plugin). Access passes can be resold or traded, and the original creator earns a % every time | Royalties are enforced by the protocol, not by our platform's goodwill. Students and teachers who make good games earn ongoing income | Stretch |
-| **Remix provenance**: forking someone's game records the parent asset, so royalties flow back to the original author | A transparent family tree of who built on whose work | Stretch |
-| **Proof-of-learning badges**: completing a game mints a **non-transferable** (soulbound) badge with a timestamp | A tamper-proof, timestamped learning record a student owns forever. **It also ties into the TIME theme** (see 4.3) | MVP-lite |
-
-The pitch line: *"Learners own their progress, creators own their games, and the blockchain is the permanent, timestamped record of both."*
-
-**Practical decisions:**
-- Use **devnet only**: no real money, and it avoids financial and age-related regulation questions from judges.
-- Use the **free-generation counter off-chain** (database). Not everything needs to be on-chain.
-- **No custom Anchor program** unless there's spare time. Metaplex Core + SystemProgram transfers + one server-co-signed transaction covers the MVP.
-- Wallet: Phantom through the Solana wallet-adapter. Mention embedded wallets for non-crypto users as future work.
-
-### 4.3 Hitting the TIME theme (main prizes)
-- **The oasis dries up over time.** Each zone's water and plants fade along the **forgetting curve** (spaced repetition). Revisiting a zone re-waters it. Time becomes the core mechanic, it suits ADHD learners (visual and low-pressure), and it's very easy to demo.
-- On-chain timestamped badges give a **learning timeline** you can prove.
-- Optional: short, time-boxed "focus sprints" (Pomodoro-style) built into quests.
+Origin: EduOasis v1 won at HKUST Hackathon 2026 (2D pixel world). Old repo, reference only: https://github.com/SpectrumTantrum/EDU-Oasis-V2. **Mark 2 is a rebuild from scratch.**
 
 ---
 
-## 5. Work split
+## 3. What's built
 
-| Person | Owns |
+### 3.1 Hub (`src/game/HubScene.ts`)
+- Code-drawn islands, bridges, palm trees, ocean and portals. **No image files**: all art is shapes drawn in code plus emoji.
+- Island greenness and palm colour follow predicted recall. Each label shows "recall X%".
+- The player's position is kept across restarts, so you come back next to the island you just played.
+
+### 3.2 Bobo doll world (hand-made showcase, IB Psych: Bandura, Ross & Ross 1961)
+1. **Intro:** 5 cards from Pip covering aim, sample, **matched pairs design** (with a diagram), IV/DV, and your role.
+2. **Experiment** (`ExperimentScene.ts`): **you are the adult model** inside a TV-framed playroom. Kids watch through a one-way mirror. The condition swaps **every 10 seconds**:
+   - *Aggressive:* hit Bobo (SPACE). Bobo wobbles back up and shouts lines from the study ("Sock him in the nose!"). The aggression meter empties after 3 seconds without a hit.
+   - *Non-aggressive:* quietly collect tinker toys. Hitting Bobo counts as a strike.
+   - Watching kids **shake and turn redder** as agitation builds, and calm down in quiet rounds.
+   - 3 strikes ruins the experiment (the game explains the confounded IV); survive 4 rounds to pass.
+3. **Results:** an animated chart of the **real 1961 numbers** (e.g. boys with a same-sex aggressive model = 25.8), plus key findings.
+4. **Peer Review** (`LabScene.ts`): walk Bandura's lab and inspect 8 objects (nursery sign, one-way mirror, Bobo, rating sheet, clock, locked cupboard, script, lab room). For each one, judge **strength or weakness**, then get an explanation. **Prof. Skeptic** 🧐 chases you, and getting caught costs a heart.
+5. **Summary:** scores feed the recall model.
+
+### 3.3 AI world generation (`src/app/api/generate/route.ts`)
+Upload a PDF, text or images plus a topic and special requests, and you get a playable world in **about 15 seconds**.
+- **Model:** `gemini-3.5-flash-lite`. The bigger Flash models took 1–6 minutes per call on the free tier during the event. It can be changed with `GEMINI_MODEL` in `.env.local`.
+- Generated worlds play as **intro slides → sorting arena → inspect room → summary**:
+  - **Arena** (`ArenaScene.ts`): floating labels. The wanted category (e.g. "Experiment 1" vs "Experiment 2") **flips every 10 seconds**. Touch matching labels and dodge the others. There's no fail state; mistakes come back later.
+  - **Inspect room:** the Bobo lab generalised. AI-chosen emoji objects, a binary judgement (Strength/Limitation, True/False…), and an explanation.
+
+### 3.4 How detail is kept ("nothing lost" guarantee)
+1. **Pass 1, extract:** Gemini pulls out **every** term, number, study detail, process and evaluation point as separate facts `K1..Kn`, each with its source (file + page).
+2. **Pass 2, design:** every slide, arena item and room object **cites the fact IDs it teaches** (`refs`).
+3. **Code checks coverage** (`coverage()` in `src/lib/worldSpec.ts`). Any missing facts go to **pass 3, patch**, which adds elements for them.
+4. Pip gets the full fact list, so even facts that don't suit gameplay can still be asked about.
+- Test result: Loftus & Palmer notes gave **21/21 facts covered**, numbers exact.
+- **See it yourself:** Pip → Notes. It shows "X/Y facts taught", where each fact is taught, and a **Download world file (JSON)** button.
+
+### 3.5 Pip (`src/components/PipPanel.tsx`, `src/app/api/pip/route.ts`)
+- **Chat:** grounded in every island's facts plus the learner's recall and weak spots. Cites sources like `[K3 · source]`. Quick buttons: "What should I revisit?", "Quiz me", "Recap".
+- **Notes:** readable study notes grouped by type (study / term / number / evaluation…), plus where each is taught.
+- **My notes:** personal notes per world, autosaved.
+- **Data:** the prediction and decision dashboard (section 5).
+
+### 3.6 Storage (for now)
+Everything is in the browser's `localStorage`: the profile, world files (`eo2.world.<id>`), the interaction log (`eo2.events`) and notes. Moving to a database (Supabase / Tiger Data) comes with deploy and market work.
+
+---
+
+## 4. Decisions made
+
+| Topic | Decision |
 |---|---|
-| **Memphis** | EduOasis Mark 2 game: 3D engine, resource → Game Spec generation, gameplay, forgetting-curve mechanic |
-| **Teammate** | Solana side: wallet connect, minting games, the buy-access-pass transaction, ownership checks, badges |
-
-### Interface contract (agree on this first so we can work in parallel)
-```
-GameSpec JSON  -> { id, title, creator, topic, zones[], npcs[], challenges[], collectibles[], createdAt }
-specHash       =  sha256(GameSpec JSON)
-
-Teammate exposes (frontend functions or API routes):
-  connectWallet()                       -> pubkey
-  mintGame(spec, specHash, priceSol)    -> gameAssetId
-  buyAccess(gameAssetId)                -> txSignature   (pay creator + mint pass, atomic)
-  hasAccess(pubkey, gameAssetId)        -> boolean
-  mintBadge(pubkey, gameAssetId, score) -> badgeAssetId   (non-transferable)
-  listGames()                           -> [{ assetId, title, creator, price, ... }]
-```
-The game side only calls these functions. Until the real versions exist, both sides work against mocks.
+| 2D vs 3D | **2D first (Phaser)**, 3D (React Three Fiber, Bruno Simon style) later only if time allows. |
+| AI provider | Gemini (free tier, reads PDFs directly, Gemini prize track). |
+| Running cost | Generating a world on Flash-Lite costs about a penny or less on paid tiers. **Never generate AI images per world** (expensive), so all art is code-drawn. Hosting on Vercel's free tier = £0. |
+| Analysis gameplay | Peer Review room with Prof. Skeptic, rather than simple matching. |
+| Membership vs per-world | **Resellable membership pass (NFT).** Membership fees go into a pool **split between creators by measured learning** (the pool split can be pitch-only). |
+| Network | **Solana devnet only** (no real money; avoids financial and age-regulation questions). |
 
 ---
 
-## 6. Timeline (to adjust once the deadline is confirmed)
+## 5. Data · prediction · decision-making (HRT track)
 
-| Block | Game (Memphis) | Chain (Teammate) |
+**Prediction: recall per island**, using a half-life forgetting curve (a simplified version of Duolingo's half-life regression):
+```
+recall = 2^(−time since last review ÷ half-life)
+after a session: accuracy ≥ 50% → half-life × (1 + (acc − 0.5)·4)   (100% ≈ ×3)
+                 accuracy < 50% → half-life × (0.5 + acc)            (0%  = ×0.5)
+```
+Recall = the predicted chance you'd still answer this island's questions correctly. Islands dry up in real time. **Demo:** Pip → Data → "⏩ +1 day".
+
+**Decisions Pip makes:**
+- Which island to revisit next (lowest predicted recall)
+- Which concepts to focus on (weak spots = answered wrong, or **hesitated**, i.e. more than 1.6× your median answer time)
+- Which game type suits you (accuracy per game type, with at least 3 samples)
+
+**Collected now:** every answer (correct or not, time taken), arena mistakes per item, experiment strikes and hits, session accuracy and timestamps.
+**To add:** idle time and pauses, questions asked to Pip, which notes are opened, game type chosen vs results.
+**Next model:** a **game-type picker that learns** (multi-armed bandit / Thompson sampling) for "Let EduOasis decide". It tries game types, measures the learning that results, and favours what works while still occasionally trying others.
+
+---
+
+## 6. Solana plan (Correy)
+
+**Principle:** use the chain for things a card payment can't do, not just "pay with crypto".
+
+| Feature | Why on-chain | Priority |
 |---|---|---|
-| H0–2 | Agree the stack, contract and repo scaffold | Same; set up the devnet wallet and test SOL |
-| H2–8 | 3D oasis engine renders a hard-coded Game Spec | Wallet connect, mint a game asset on devnet |
-| H8–12 | Gemini: resource → Game Spec | buyAccess atomic transaction and hasAccess |
-| **H~12** | **🔔 Ask judges and mentors for feedback in person** | |
-| H12–18 | Forgetting-curve mechanic and polish | Marketplace page, badges |
-| H18–21 | Integration: generate → mint → buy → play → badge | |
-| H21–end | **Freeze features.** Demo script, Devpost, video and backup recording | |
+| **Each world = an NFT** (Metaplex Core). It stores the creator, a **sha256 hash of the world file** and a parent ID if it's a remix | Proof of who made a world and that it hasn't been changed | MVP |
+| **Membership pass NFT**, resellable | One wallet check unlocks the market worlds; it can be resold | MVP |
+| Per-world access pass (alternative / extra) | Paying the creator directly. Very small payments work because fees are a fraction of a penny (card fees of ~20p would eat a 10p world) | MVP-lite |
+| Creator royalties on resale (Core Royalties plugin) | Enforced by the chain, not by our goodwill | Stretch |
+| Remix family tree: a remixed world records its parent, and royalties flow back | A transparent record of who built on whose work | Stretch |
+| **Completion badges** that can't be transferred, with a timestamp | A tamper-proof learning record you own (also fits TIME) | MVP-lite |
+| Membership pool split between creators by measured learning | Links Solana to the data story | Pitch |
 
-**Demo flow (4–5 min):** upload notes → a world is generated → play one zone → time skips forward and the oasis dries → revisit and restore it → mint and list the game → second wallet buys access → completion badge appears in the wallet.
+**How a bought world reaches the buyer:**
+1. The world file JSON is stored **off-chain** (our database or storage). The NFT holds its **hash** + URI.
+2. The buyer connects a wallet. The server checks they hold the membership/access pass and returns the world file.
+3. The client **re-hashes the file and compares it with the on-chain hash** (integrity check). The world is added to one of the buyer's islands **without using a free generation**.
+4. Optional **Remix**: regenerate a version tailored to the buyer from the same facts (uses a generation), minting a child NFT with `parent` set.
+
+**Functions the game side will call** (build against mocks first):
+```
+connectWallet()                        -> pubkey
+mintWorld(spec, specHash, priceSol)    -> worldAssetId
+buyMembership() / buyAccess(assetId)   -> txSignature
+hasAccess(pubkey, assetId?)            -> boolean
+mintBadge(pubkey, worldId, score)      -> badgeAssetId   (non-transferable)
+listWorlds()                           -> [{ assetId, title, creator, price, coverage, avgRecall }]
+```
+Suggested libraries: `@solana/web3.js`, the wallet adapter (Phantom), and Metaplex Core via Umi. No custom Anchor program unless there's spare time.
 
 ---
 
-## 7. Open questions
-- [ ] Submission deadline and platform (Devpost?)
-- [ ] Teammate's name and Solana/JS experience
-- [ ] Memphis's full feature list for the game (to come)
-- [ ] Brain dump from the presentation slides (to come)
-- [ ] Stack confirmation. Suggested: Next.js + React Three Fiber + Gemini API + @solana/web3.js + Metaplex Core (Umi), deployed on Vercel
-- [ ] Are we entering Gemini / ElevenLabs / Presage as well as Solana?
+## 7. Timeline / remaining plan (it's ~15:30 Sat)
+
+| When | What |
+|---|---|
+| **17:30–18:30** | 🔔 **Ask judges and sponsors for feedback in person** (demo Bobo → Pip → generate a world) |
+| next | Market island UI + mocks for the Solana functions, so Correy can plug in |
+| tonight | **Deploy to Vercel** (public URL so the submission is a link). Maybe a free domain from MLH |
+| tonight | Game-type picker that learns (bandit) + more data collection |
+| overnight | Solana integration end to end: mint → buy → unlock → badge |
+| if time | 3D version, ElevenLabs voice for Pip, Tiger Data |
+| **09:00 Sun** | **Feature freeze.** Demo video, Devpost write-up, final push |
+
+**4–5 min demo flow:** upload notes → world generated (show 21/21 coverage) → play arena and inspect → Pip Data: recall + "+1 day" (the island dries) → replay waters it → market: mint the world, a second wallet buys membership, the world unlocks → completion badge in the wallet.
+
+---
+
+## 8. Open items
+- [ ] Correy: confirm collaborator access to this repo; pull and run locally
+- [ ] Brain dump from the presentation slides (Memphis to send)
+- [ ] Memphis's full feature list (some already covered above)
+- [ ] Which extra sponsor tracks we submit to (Gemini for sure; HRT; ElevenLabs/Tiger Data if time)
+- [ ] Remaining reminders: public URL; use collected data for prediction; 3D attempt
