@@ -40,6 +40,8 @@ export interface Badge {
   title: string;
   score: number;
   t: number;
+  /** set for bounty badges: bronze | silver | gold | diamond */
+  tier?: string;
 }
 
 interface ChainState {
@@ -195,6 +197,18 @@ export async function mintBadge(worldId: string, title: string, score: number): 
   const badge = { badgeId: rand(44), worldId, title, score, t: Date.now() };
   s.badges.unshift(badge);
   record(s, { kind: "mint-badge", summary: `Completion badge (non-transferable) · "${title}" · ${Math.round(score * 100)}%` });
+  save(s);
+  return badge;
+}
+
+/** Bounty badge for passing an island's bounty pool; its tier counts towards the learner's rank. */
+export async function mintBountyBadge(worldId: string, title: string, score: number, tier: { id: string; name: string; icon: string }): Promise<Badge> {
+  getWallet();
+  const s = load();
+  await latency();
+  const badge = { badgeId: rand(44), worldId, title, score, t: Date.now(), tier: tier.id };
+  s.badges.unshift(badge);
+  record(s, { kind: "mint-badge", summary: `${tier.icon} ${tier.name} bounty badge (non-transferable) · "${title}" · ${Math.round(score * 100)}%` });
   save(s);
   return badge;
 }
