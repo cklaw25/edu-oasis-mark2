@@ -15,8 +15,21 @@ export const DEMO_WORLD: WorldSummary = {
   gameType: "rpg-experiment",
 };
 
-/** A brand-new learner: three free empty islands. */
-export function newProfile(): Profile {
+/** Island slot every learner gets for free; the other slots are claimed by buying worlds. */
+export const FREE_SLOT = 0;
+
+/** A slot is yours if it's your free island or it holds a world you own. */
+export function isClaimed(p: Profile, slot: number) {
+  return slot === FREE_SLOT || p.worlds[slot] !== null;
+}
+
+/** Where the next bought world goes: the first unclaimed island, or -1 if every island is claimed. */
+export function nextIslandSlot(p: Profile) {
+  return p.worlds.findIndex((_, i) => !isClaimed(p, i));
+}
+
+/** A brand-new learner: one free empty island and 30,000 MOE to buy their first island. */
+export function defaultProfile(): Profile {
   return {
     name: "Learner",
     generationsLeft: 2,
@@ -29,11 +42,6 @@ export function newProfile(): Profile {
 }
 
 const DEMO_BOBO_NFT = "EO-BOBO01";
-
-/** The demo learner has already bought the Bobo Doll world from the World Market. */
-export function defaultProfile(): Profile {
-  return { ...newProfile(), worlds: [{ ...DEMO_WORLD, bought: true, nftId: DEMO_BOBO_NFT }, null, null], owned: ["bobo"] };
-}
 
 export function loadProfile(): Profile {
   try {

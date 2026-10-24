@@ -14,7 +14,7 @@ import { newNftId, topicForWorld, type MarketTopic, type PlayerListing } from "@
 import { WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
 import { sessionReward } from "@/lib/rewards";
 import { nextHalfLife, recallAt } from "@/lib/recall";
-import { defaultProfile, loadProfile, saveProfile } from "@/lib/profile";
+import { defaultProfile, loadProfile, nextIslandSlot, saveProfile } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
 import type { WorldSpec } from "@/lib/worldSpec";
 import type { PortalInfo, Profile, WorldSummary } from "@/lib/types";
@@ -147,9 +147,9 @@ export default function Home() {
     if (reward) setEarned({ amount: reward, accuracy });
   };
 
-  // a bought world lands on the first free island as a fresh island NFT
+  // a bought world claims the next unclaimed island as a fresh island NFT
   const place = (world: WorldSummary, price: number, extra: Partial<Profile>) => {
-    const slot = profile.worlds.findIndex((w) => !w);
+    const slot = nextIslandSlot(profile);
     if (slot < 0 || profile.moe < price) return;
     const worlds = [...profile.worlds];
     worlds[slot] = {

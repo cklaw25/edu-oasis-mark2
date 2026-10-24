@@ -4,6 +4,7 @@ import { useState } from "react";
 import MoeCoin from "@/components/MoeCoin";
 import { PLAYER_LISTINGS, SUBJECTS, type MarketTopic, type PlayerListing } from "@/lib/market";
 import { WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
+import { nextIslandSlot } from "@/lib/profile";
 import type { Profile } from "@/lib/types";
 
 export interface MarketActions {
@@ -64,7 +65,7 @@ const buyBtn =
 
 function whyNot(profile: Profile, price: number) {
   if (profile.moe < price) return `You need ${formatMoe(price - profile.moe)} more MOE.`;
-  if (!profile.worlds.some((w) => !w)) return "All your islands are full. Sell one first.";
+  if (nextIslandSlot(profile) < 0) return "You've claimed every island. Sell one first.";
   return null;
 }
 

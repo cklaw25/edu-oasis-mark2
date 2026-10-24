@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
 import { bus } from "./bus";
 import { makeTextures } from "./textures";
+import { FREE_SLOT } from "@/lib/profile";
 import type { PortalInfo, Profile } from "@/lib/types";
 
 // Hub layout ("Inside Out" style): main island in the middle, 3 world islands branching out,
@@ -70,9 +71,12 @@ export class HubScene extends Phaser.Scene {
       if (world) {
         this.drawIsland(c, lerpColor(world.recall), world.title, world.recall);
         this.addPortal(c, { kind: "world", slot: i, world }, world.bought ? 0x7fe0ff : 0xffffff);
-      } else {
-        this.drawIsland(c, 0xd8c79a, "Empty island", 0, true);
+      } else if (i === FREE_SLOT) {
+        this.drawIsland(c, 0xd8c79a, "Your free island", 0, true);
         this.addPortal(c, { kind: "empty", slot: i, world: null }, 0xffffff);
+      } else {
+        // claimed by buying a world in the World Market
+        this.drawIsland(c, 0x9fb4bf, "Unclaimed island", 0, true);
       }
     });
     this.drawIsland(MARKET, 0x9d7be0, "World Market");
