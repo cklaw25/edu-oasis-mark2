@@ -65,16 +65,5 @@ export function makeTextures(scene: Phaser.Scene) {
   face("kid-calm", false);
   face("kid-angry", true);
 
-  // gold key: marks a world that needs MOE to unlock, 64x32
-  g.fillStyle(0x000000, 0.25).fillEllipse(34, 29, 54, 6);
-  g.fillStyle(0xb8860b).fillCircle(14, 14, 13); // bow outline
-  g.fillStyle(0xffd166).fillCircle(14, 14, 10);
-  g.fillStyle(0x0b2a3d).fillCircle(14, 14, 4); // hole
-  g.fillStyle(0xb8860b).fillRect(24, 10, 38, 8); // shaft outline
-  g.fillStyle(0xffd166).fillRect(24, 12, 37, 4);
-  g.fillStyle(0xb8860b).fillRect(46, 18, 5, 8).fillRect(55, 18, 5, 10); // teeth
-  g.generateTexture("key", 64, 32);
-  g.clear();
-
   g.destroy();
 }

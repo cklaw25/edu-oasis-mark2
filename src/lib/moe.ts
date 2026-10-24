@@ -1,5 +1,5 @@
 // MOE (Moe Done) prices, plus the demo balance kept in the profile until player wallets are wired up.
-export const WORLD_UNLOCK_MOE = 10_000;
+export const WORLD_PRICE_MOE = 10_000;
 export const STARTING_MOE = 30_000;
 
 export function formatMoe(n: number) {

@@ -27,8 +27,8 @@ export interface Profile {
   worlds: (WorldSummary | null)[];
   /** demo MOE balance (whole tokens) */
   moe: number;
-  /** island slots paid for with MOE; every other world slot is locked */
-  unlockedSlots: number[];
+  /** World Market topic ids this player has bought */
+  owned: string[];
 }
 
 export type PortalKind = "world" | "empty" | "market";
@@ -37,6 +37,4 @@ export interface PortalInfo {
   kind: PortalKind;
   slot?: number;
   world?: WorldSummary | null;
-  /** needs WORLD_UNLOCK_MOE before it can be entered */
-  locked?: boolean;
 }

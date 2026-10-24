@@ -1,7 +1,6 @@
 import * as Phaser from "phaser";
 import { bus } from "./bus";
 import { makeTextures } from "./textures";
-import { WORLD_UNLOCK_MOE, formatMoe } from "@/lib/moe";
 import type { PortalInfo, Profile } from "@/lib/types";
 
 // Hub layout ("Inside Out" style): main island in the middle, 3 world islands branching out,
@@ -68,15 +67,13 @@ export class HubScene extends Phaser.Scene {
     this.drawIsland(MAIN, 0x5cbf68, "Home Island");
     SLOTS.forEach((c, i) => {
       const world = this.profile.worlds[i];
-      const locked = !this.profile.unlockedSlots.includes(i);
       if (world) {
         this.drawIsland(c, lerpColor(world.recall), world.title, world.recall);
-        this.addPortal(c, { kind: "world", slot: i, world, locked }, 0xffffff);
+        this.addPortal(c, { kind: "world", slot: i, world }, 0xffffff);
       } else {
         this.drawIsland(c, 0xd8c79a, "Empty island", 0, true);
-        this.addPortal(c, { kind: "empty", slot: i, world: null, locked }, 0xffffff);
+        this.addPortal(c, { kind: "empty", slot: i, world: null }, 0xffffff);
       }
-      if (locked) this.addLock(c);
     });
     this.drawIsland(MARKET, 0x9d7be0, "World Market");
     this.drawStalls(MARKET);
@@ -92,10 +89,7 @@ export class HubScene extends Phaser.Scene {
       string,
       Phaser.Input.Keyboard.Key
     >;
-    const enter = () => {
-      if (!this.nearPortal) return;
-      bus.emit(this.nearPortal.locked ? "portal:locked" : "portal:enter", this.nearPortal);
-    };
+    const enter = () => this.nearPortal && bus.emit("portal:enter", this.nearPortal);
     this.keys.E.on("down", enter);
     this.keys.SPACE.on("down", enter);
     bus.emit("portal:near", null); // clear any prompt left over from before a scene switch
@@ -238,38 +232,5 @@ export class HubScene extends Phaser.Scene {
         .setDepth(4);
     }
     this.portals.push({ x: c.x, y: c.y, info });
-  }
-
-  // Gold key floating over a world island; hovering it shows the MOE unlock price.
-  private addLock(c: Circle) {
-    const key = this.add
-      .image(c.x, c.y - 80, "key")
-      .setDepth(20)
-      .setInteractive({ useHandCursor: true });
-    this.tweens.add({ targets: key, y: key.y - 8, yoyo: true, repeat: -1, duration: 1100, ease: "Sine.easeInOut" });
-
-    const label = this.add
-      .text(0, 0, `🔒 ${formatMoe(WORLD_UNLOCK_MOE)} MOE to unlock`, {
-        fontFamily: "monospace",
-        fontSize: "18px",
-        color: "#ffd166",
-      })
-      .setOrigin(0.5);
-    const bg = this.add
-      .rectangle(0, 0, label.width + 28, label.height + 16, 0x0b2a3d, 0.92)
-      .setStrokeStyle(2, 0xffd166);
-    const tip = this.add
-      .container(c.x, c.y - 140, [bg, label])
-      .setDepth(30)
-      .setVisible(false);
-
-    key.on("pointerover", () => {
-      tip.setVisible(true);
-      key.setScale(1.15);
-    });
-    key.on("pointerout", () => {
-      tip.setVisible(false);
-      key.setScale(1);
-    });
   }
 }

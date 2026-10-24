@@ -7,9 +7,11 @@ import BoboFlow, { type BoboPhase } from "@/components/BoboFlow";
 import WorldFlow, { labClues, type WorldPhase } from "@/components/WorldFlow";
 import PipPanel from "@/components/PipPanel";
 import MoeCoin from "@/components/MoeCoin";
+import MarketPanel from "@/components/MarketPanel";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
-import { WORLD_UNLOCK_MOE, formatMoe } from "@/lib/moe";
+import type { MarketTopic } from "@/lib/market";
+import { WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
 import { nextHalfLife, recallAt } from "@/lib/recall";
 import { defaultProfile, loadProfile, saveProfile } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
@@ -20,7 +22,6 @@ type Panel =
   | { kind: "create"; slot: number }
   | { kind: "market" }
   | { kind: "world"; info: PortalInfo }
-  | { kind: "unlock"; info: PortalInfo }
   | null;
 type Active = { kind: "bobo" } | { kind: "gen"; id: string; spec: WorldSpec } | null;
 type Phase = BoboPhase | WorldPhase;
@@ -79,7 +80,6 @@ export default function Home() {
     const offInspect = bus.on("lab:inspect", () => setReviewOpen(true));
     const offResolved = bus.on("lab:resolved", () => setReviewOpen(false));
     const offNear = bus.on("portal:near", (p) => setNear(p as PortalInfo | null));
-    const offLocked = bus.on("portal:locked", (p) => setPanel({ kind: "unlock", info: p as PortalInfo }));
     const offEnter = bus.on("portal:enter", (p) => {
       const info = p as PortalInfo;
       if (info.kind === "empty") setPanel({ kind: "create", slot: info.slot! });
@@ -95,7 +95,6 @@ export default function Home() {
       offInspect();
       offResolved();
       offNear();
-      offLocked();
       offEnter();
     };
   }, [enter]);
@@ -133,20 +132,19 @@ export default function Home() {
     setActive(null);
   };
 
-  const unlock = (slot: number) => {
-    const next = {
-      ...profile,
-      moe: profile.moe - WORLD_UNLOCK_MOE,
-      unlockedSlots: [...profile.unlockedSlots, slot],
-    };
+  // buying a market world puts it on the first free island
+  const buy = (topic: MarketTopic) => {
+    const slot = profile.worlds.findIndex((w) => !w);
+    if (slot < 0 || profile.moe < WORLD_PRICE_MOE || profile.owned.includes(topic.id)) return;
+    const worlds = [...profile.worlds];
+    worlds[slot] = { ...topic.world, createdAt: Date.now(), lastVisitedAt: now(), recall: 1 };
+    const next = { ...profile, worlds, moe: profile.moe - WORLD_PRICE_MOE, owned: [...profile.owned, topic.id] };
     saveProfile(next);
     setProfile(next);
-    setPanel(null);
   };
 
-  const prompt = near?.locked
-    ? `🔒 E — unlock for ${formatMoe(WORLD_UNLOCK_MOE)} MOE`
-    : near?.kind === "empty"
+  const prompt =
+    near?.kind === "empty"
       ? "E — grow a new world here"
       : near?.kind === "market"
         ? "E — enter the World Market"
@@ -270,43 +268,18 @@ export default function Home() {
 
       {panel?.kind === "market" && (
         <Overlay title="World Market" onClose={() => setPanel(null)}>
-          <p className="text-sm opacity-80">Browse and unlock worlds made by other learners. (Solana wiring: Correy)</p>
-        </Overlay>
-      )}
-
-      {panel?.kind === "unlock" && (
-        <Overlay title={`🔒 ${panel.info.world?.title ?? "Empty island"}`} onClose={() => setPanel(null)}>
-          <p className="text-sm opacity-80">This world is locked. Pay MOE DONE to unlock it for good.</p>
-          <div className="mt-4 flex items-center justify-between rounded-xl bg-[#0b2a3d]/5 px-4 py-3">
-            <span className="text-sm">Price</span>
-            <span className="flex items-center gap-2 font-bold">
-              <MoeCoin size={20} />
-              {formatMoe(WORLD_UNLOCK_MOE)} MOE
-            </span>
-          </div>
-          <div className="mt-2 flex items-center justify-between px-4 text-sm opacity-80">
-            <span>Your balance</span>
-            <span>{formatMoe(profile.moe)} MOE</span>
-          </div>
-          {profile.moe >= WORLD_UNLOCK_MOE ? (
-            <button
-              onClick={() => unlock(panel.info.slot!)}
-              className="mt-5 w-full rounded-xl bg-[#e0a526] px-4 py-3 font-bold text-[#2b2118] hover:bg-[#ffd166]"
-            >
-              Unlock for {formatMoe(WORLD_UNLOCK_MOE)} MOE
-            </button>
-          ) : (
-            <p className="mt-5 rounded-xl bg-[#ffb4a2]/40 px-4 py-3 text-center text-sm font-bold">
-              You need {formatMoe(WORLD_UNLOCK_MOE - profile.moe)} more MOE to unlock this world.
-            </p>
-          )}
+          <MarketPanel profile={profile} onBuy={buy} />
         </Overlay>
       )}
 
       {panel?.kind === "world" && (
         <Overlay title={panel.info.world!.title} onClose={() => setPanel(null)}>
           <p className="text-sm opacity-80">{panel.info.world!.topic}</p>
-          <p className="mt-2 text-sm">This world&apos;s file isn&apos;t on this device.</p>
+          <p className="mt-2 text-sm">
+            {panel.info.world!.creator === "EduOasis"
+              ? "You own this world. Its game is still being built, so check back soon."
+              : "This world's file isn't on this device."}
+          </p>
         </Overlay>
       )}
     </main>
