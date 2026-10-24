@@ -76,7 +76,7 @@ function BountyCard({
   const g = bounty.growth(b, t);
   const days = bounty.predictedSolveDays(b, t);
   const mine = b.positions.filter((p) => p.me).reduce((s, p) => s + p.stake, 0);
-  const preview = b.status === "open" ? bounty.previewSolve(b, t, { who: "Next solver", me: false }) : null;
+  const preview = b.status === "open" ? bounty.previewSolve(b, t, { who: "Next solver (Gold)", me: false }, 0.9) : null;
   const myIfSolved = preview ? bounty.myTake(preview) : 0;
   const owns = allWorlds(profile).some((w) => w.id === b.worldId);
   const canAttempt = b.status === "open" && !b.ownerIsMe && !mine;
@@ -97,7 +97,8 @@ function BountyCard({
       chain.recordMoe("bounty-payout", `"${b.title}" was mastered by ${r.bounty.solver?.who}: your stake back + bonus`, r.delta);
       onProfile({ ...profile, moe: profile.moe + r.delta });
       const bonus = r.delta - mine;
-      return `${r.bounty.solver?.who} mastered "${b.title}". You received ${formatMoe(r.delta)} MOE (your ${formatMoe(mine)} stake + ${formatMoe(bonus)} bonus).${
+      const tier = bounty.tierById(r.bounty.solver?.tier);
+      return `${r.bounty.solver?.who} passed "${b.title}" with ${pct(r.bounty.solver?.score ?? 0)} (${tier?.icon} ${tier?.name}). ${formatMoe(r.bounty.burned ?? 0)} MOE was burned. You received ${formatMoe(r.delta)} MOE (your ${formatMoe(mine)} stake + ${formatMoe(bonus)} bonus).${
         bonus === 0 ? " No bonus because you'd only just staked: the bonus is weighted by time staked." : ""
       }`;
     });
@@ -114,7 +115,9 @@ function BountyCard({
                 b.status === "open" ? "bg-amber-100 text-amber-800" : b.status === "solved" ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-700"
               }`}
             >
-              {b.status === "open" ? "Open bounty" : b.status === "solved" ? `Mastered by ${b.solver?.me ? "you" : b.solver?.who}` : "Expired"}
+              {b.status === "open" ? "Open bounty" : b.status === "solved"
+                  ? `${bounty.tierById(b.solver?.tier)?.icon ?? ""} Passed by ${b.solver?.me ? "you" : b.solver?.who}${b.solver?.score ? ` (${pct(b.solver.score)})` : ""}`
+                  : "Expired"}
             </span>
           </div>
           <div className="text-xs opacity-70">
@@ -138,7 +141,7 @@ function BountyCard({
         </div>
         <div className="rounded bg-[#fff8e7] p-1">
           <b>{pct(bounty.bestScore(b, t))}</b>
-          <div className="opacity-60">best score (needs {pct(bounty.SOLVE_ACCURACY)})</div>
+          <div className="opacity-60">best score (pass at {pct(bounty.PASS_SCORE)})</div>
         </div>
         <div className="rounded bg-[#fff8e7] p-1">
           <b>{b.status !== "open" ? "–" : days === null ? "?" : days === 0 ? "any moment" : `~${days} days`}</b>
@@ -166,20 +169,84 @@ function BountyCard({
           {canAttempt && (
             <span className="text-xs opacity-70">
               {owns
-                ? `Play this island and score ${pct(bounty.SOLVE_ACCURACY)}+ to win ${formatMoe(Math.floor(g * bounty.SPLIT_SOLVED.solver))} MOE (each try costs ${bounty.ATTEMPT_FEE}).`
-                : "Buy this world in the Shop, then master it to win the solver prize."}
+                ? `Play this island and score ${pct(bounty.PASS_SCORE)}+ to win it (each try costs ${bounty.ATTEMPT_FEE}). The higher your score, the bigger the prize:`
+                : "Buy this world in the Shop, then pass it to win the solver prize. The higher your score, the bigger the prize:"}
             </span>
           )}
           {(mine > 0 || b.ownerIsMe) && (
-            <button disabled={!!busy} onClick={demoSolve} className={ghost} title="Demo control: another learner masters this island">
-              ▶ Demo: a learner masters it
+            <button disabled={!!busy} onClick={demoSolve} className={ghost} title="Demo control: another learner passes this island with a Silver score">
+              ▶ Demo: a learner passes it
             </button>
           )}
         </div>
       )}
 
-      {preview && mine > 0 && <PayoutTable payouts={preview} title="If it were solved right now" />}
+      {b.status === "open" && (
+        <div className="mt-2 grid grid-cols-4 gap-1 text-center text-[11px]">
+          {[...bounty.TIERS].reverse().map((tier) => (
+            <div key={tier.id} className="rounded bg-[#f3efff] p-1">
+              <div>
+                {tier.icon} <b>{tier.name}</b> {pct(tier.min)}+
+              </div>
+              <Moe n={bounty.solverPrize(b, tier.min, t)} />
+            </div>
+          ))}
+        </div>
+      )}
+      {b.status !== "open" && b.burned ? (
+        <div className="mt-2 text-xs text-orange-700">🔥 {formatMoe(b.burned)} MOE burned at settlement</div>
+      ) : null}
+
+      {preview && mine > 0 && <PayoutTable payouts={preview} title="If someone passed with Gold right now" />}
       {b.payouts && <PayoutTable payouts={b.payouts} title={b.status === "solved" ? "Paid out" : "Returned at the deadline"} />}
+    </div>
+  );
+}
+
+function RankPanel() {
+  const myBadges = chain.badges().filter((x) => x.tier);
+  const points = bounty.pointsFor(myBadges.map((x) => x.tier));
+  const rank = bounty.rankFor(points);
+  const board = [...bounty.RIVALS.map((r) => ({ ...r, me: false })), { name: "You", points, me: true }].sort((a, b) => b.points - a.points);
+  return (
+    <div className="mt-3 grid gap-2 sm:grid-cols-3">
+      <div className="rounded-xl bg-[#ece2ff] p-3 text-[#3b2a70]">
+        <div className="text-[11px] uppercase tracking-wide opacity-70">Your bounty rank</div>
+        <div className="text-lg font-bold">
+          {rank.icon} {rank.name}
+        </div>
+        <div className="text-xs">
+          {points} pts{rank.next ? ` · ${rank.next.min - points} more for ${rank.next.icon} ${rank.next.name}` : " · top rank"}
+        </div>
+        <div className="mt-1 text-[11px] opacity-70">
+          Badge points: {[...bounty.TIERS].reverse().map((tier) => `${tier.icon} ${tier.points}`).join(" · ")}
+        </div>
+      </div>
+      <div className="rounded-xl bg-white p-3">
+        <div className="text-[11px] uppercase tracking-wide opacity-60">Your bounty badges</div>
+        {myBadges.length ? (
+          <div className="mt-1 flex flex-wrap gap-1">
+            {myBadges.map((x) => (
+              <span key={x.badgeId} className="rounded-full bg-[#fff3c4] px-2 py-0.5 text-[11px]" title={`${x.title} · ${pct(x.score)}`}>
+                {bounty.tierById(x.tier)?.icon} {x.title}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-1 text-xs opacity-60">Pass a bounty island to earn your first badge.</div>
+        )}
+        <div className="mt-2 text-xs text-orange-700">🔥 {formatMoe(bounty.totalBurned())} MOE burned by bounties so far</div>
+      </div>
+      <div className="rounded-xl bg-white p-3">
+        <div className="text-[11px] uppercase tracking-wide opacity-60">Leaderboard</div>
+        <ol className="mt-1 space-y-0.5 text-xs">
+          {board.map((r, i) => (
+            <li key={r.name} className={r.me ? "font-bold text-[#5b3fa0]" : ""}>
+              {i + 1}. {bounty.rankFor(r.points).icon} {r.name} · {r.points} pts
+            </li>
+          ))}
+        </ol>
+      </div>
     </div>
   );
 }
@@ -217,14 +284,14 @@ export default function BountiesTab({
   return (
     <>
       <p className="text-sm opacity-80">
-        Hard islands become <b>bounty pools</b>. Stakers lock MOE, the pool grows with every attempt ({bounty.ATTEMPT_FEE} MOE each) and a
-        daily top-up from the learning pool. When someone masters the island ({pct(bounty.SOLVE_ACCURACY)}+ in one run), every staker gets
-        their stake back in full, and the growth is split{" "}
-        <b>
-          {pct(bounty.SPLIT_SOLVED.solver)} solver · {pct(bounty.SPLIT_SOLVED.stakers)} stakers · {pct(bounty.SPLIT_SOLVED.creator)} creator
-        </b>
-        . Stakers&apos; share is weighted by <b>stake × time staked</b>, so patience pays.
+        Hard islands become <b>bounty pools</b>. Stakers lock MOE, and the pool grows with every attempt ({bounty.ATTEMPT_FEE} MOE each) and a
+        daily top-up from the learning pool. The first learner to <b>pass</b> ({pct(bounty.PASS_SCORE)}+ in one run) settles it: every
+        staker gets their stake back in full, stakers share {pct(bounty.SPLIT_SOLVED.stakers)} of the growth (weighted by{" "}
+        <b>stake × time staked</b>), the creator gets {pct(bounty.SPLIT_SOLVED.creator)}, and the solver wins up to{" "}
+        {pct(bounty.SPLIT_SOLVED.solver)}: <b>the higher the score, the bigger the prize</b>, plus a tiered badge that counts towards their rank.
       </p>
+
+      <RankPanel />
 
       <div className="mt-3 flex items-center gap-2">
         <button
@@ -248,7 +315,7 @@ export default function BountiesTab({
         <div className="font-bold">Open a bounty on one of your islands</div>
         <p className="text-xs opacity-70">
           Got an island people find hard? Lock a stake to attract learners. You can still sell or swap the island: the pool stays with it.
-          Minimum {formatMoe(bounty.MIN_STAKE)} MOE, open for {bounty.BOUNTY_DAYS} days. If nobody solves it, you get your stake back plus{" "}
+          Minimum {formatMoe(bounty.MIN_STAKE)} MOE, open for {bounty.BOUNTY_DAYS} days. If nobody passes it, you get your stake back plus{" "}
           {pct(bounty.SPLIT_EXPIRED.stakers)} of the growth.
         </p>
         {mineToOpen.length ? (
@@ -279,7 +346,8 @@ export default function BountiesTab({
 
       <p className="mt-4 text-xs opacity-60">
         Safety: stakers never lose their stake, returns are never promised (the bonus is only what attempts and the learning pool add), owners
-        and stakers can&apos;t solve their own bounty, and MOE stays in-game. Simulated on devnet like the rest of the market; other learners&apos;
+        and stakers can&apos;t solve their own bounty, and MOE stays in-game. No inflation: bounties never create MOE, they only move
+        MOE that already exists, and every attempt and settlement burns some. Simulated on devnet like the rest of the market; other learners&apos;
         stakes and attempts are demo data.
       </p>
     </>
