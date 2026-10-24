@@ -30,7 +30,10 @@ export default function GameCanvas({
     const g = game.current;
     if (!g) return;
     const { scene: key, profile: p, sceneData: extra } = latest.current;
-    g.scene.getScenes(true).forEach((s) => s.scene.key !== key && s.scene.stop());
+    // stop paused/sleeping scenes too, otherwise they keep running and render on top
+    g.scene.getScenes(false).forEach((s) => {
+      if (s.scene.key !== key && (s.scene.isActive() || s.scene.isPaused() || s.scene.isSleeping())) s.scene.stop();
+    });
     g.scene.start(key, { profile: p, ...extra });
     // start is queued, so apply a pending pause once the scene exists
     g.scene.getScene(key)?.events.once("create", (sc: import("phaser").Scene) => {
@@ -82,11 +85,12 @@ export default function GameCanvas({
     if (!g) return;
     // a disabled manager ignores key events entirely, so modal inputs can receive W/A/S/D/E/space
     g.input.keyboard!.enabled = !paused;
-    g.scene.getScenes(false).forEach((s) => {
-      if (paused && s.scene.isActive()) s.scene.pause();
-      else if (!paused && s.scene.isPaused()) s.scene.resume();
-    });
-  }, [paused]);
+    // only touch the current scene: resuming one that was just told to stop revives it half torn down
+    const s = g.scene.getScene(scene);
+    if (!s) return;
+    if (paused && s.scene.isActive()) s.scene.pause();
+    else if (!paused && s.scene.isPaused()) s.scene.resume();
+  }, [paused, scene]);
 
   return <div ref={host} className="absolute inset-0" />;
 }

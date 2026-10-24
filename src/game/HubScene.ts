@@ -88,6 +88,7 @@ export class HubScene extends Phaser.Scene {
     const enter = () => this.nearPortal && bus.emit("portal:enter", this.nearPortal);
     this.keys.E.on("down", enter);
     this.keys.SPACE.on("down", enter);
+    bus.emit("portal:near", null); // clear any prompt left over from before a scene switch
   }
 
   update(_t: number, dtMs: number) {
