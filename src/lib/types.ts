@@ -22,13 +22,24 @@ export interface WorldSummary {
   gameType: GameType;
   /** how many extracted knowledge items the world teaches */
   coverage?: { covered: number; total: number };
+  /** bought on the World Market (its island portal shows blue) */
+  bought?: boolean;
+  /** demo NFT id: the island token that can be listed and sold */
+  nftId?: string;
 }
 
 export interface Profile {
   name: string;
+  /** free generations left; after that each new world costs GENERATE_PRICE_MOE */
   generationsLeft: number;
-  /** island slots 0..2; null = empty slot */
+  /** the 3 islands shown in the hub (slots 0..2); null = empty island */
   worlds: (WorldSummary | null)[];
+  /** owned worlds that aren't on an island right now (swap them in from the library) */
+  library: WorldSummary[];
+  /** demo MOE balance (whole tokens) */
+  moe: number;
+  /** my worlds listed for sale on the World Market */
+  listings: { worldId: string; price: number }[];
 }
 
 export type PortalKind = "world" | "empty" | "market";

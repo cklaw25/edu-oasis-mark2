@@ -21,10 +21,15 @@ export interface CreateWorldRequest {
 
 export default function CreateWorldModal({
   generationsLeft,
+  price,
+  moe,
   onClose,
   onSubmit,
 }: {
   generationsLeft: number;
+  /** MOE cost once the free generations are used up */
+  price: number;
+  moe: number;
   onClose: () => void;
   onSubmit: (req: CreateWorldRequest) => Promise<void>;
 }) {
@@ -36,6 +41,8 @@ export default function CreateWorldModal({
   const [requests, setRequests] = useState("");
   const [gameType, setGameType] = useState<GameType | "auto">("auto");
   const [files, setFiles] = useState<File[]>([]);
+  const free = generationsLeft > 0;
+  const affordable = free || moe >= price;
 
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 p-4">
@@ -43,7 +50,9 @@ export default function CreateWorldModal({
         <div className="mb-4 flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold">Grow a new world</h2>
-            <p className="text-sm opacity-70">{generationsLeft} free generations left</p>
+            <p className="text-sm opacity-70">
+              {free ? `${generationsLeft} free generations left` : `Costs ${price.toLocaleString("en-US")} MOE (you have ${moe.toLocaleString("en-US")})`}
+            </p>
           </div>
           <button onClick={onClose} disabled={busy} className="text-2xl leading-none opacity-60 hover:opacity-100">
             ×
@@ -107,7 +116,7 @@ export default function CreateWorldModal({
           </p>
         )}
         <button
-          disabled={!topic || generationsLeft <= 0 || busy}
+          disabled={!topic || !affordable || busy}
           onClick={async () => {
             setBusy(true);
             setError(null);
@@ -124,7 +133,13 @@ export default function CreateWorldModal({
           }}
           className="w-full rounded-xl bg-[#2a6f97] py-3 font-bold text-white disabled:opacity-40"
         >
-          {busy ? "Growing…" : generationsLeft > 0 ? "Generate world" : "No free generations left — visit the market"}
+          {busy
+            ? "Growing…"
+            : free
+              ? "Generate world"
+              : affordable
+                ? `Generate world · ${price.toLocaleString("en-US")} MOE`
+                : `You need ${(price - moe).toLocaleString("en-US")} more MOE`}
         </button>
       </div>
     </div>

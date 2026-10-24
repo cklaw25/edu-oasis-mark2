@@ -1,11 +1,11 @@
 // Solana interface used by the game. ⚠ SIMULATED for now (state in localStorage, fake signatures) so the
-// market UI can be built and demoed. Corey: replace each function body with the real devnet call
-// (wallet adapter + Metaplex Core + SPL); keep the signatures and return shapes the same.
+// market UI can be built and demoed. Prices are in MOE, our real Token-2022 token on devnet (see ./moe.ts); the
+// learner's MOE balance lives in the profile until transfers go on-chain. Corey: replace each function body with
+// the real devnet call (Metaplex Core + SPL); keep the signatures and return shapes the same.
 import type { WorldSpec } from "../worldSpec";
 
 export const SIMULATED = true;
 export const ROYALTY_BPS = 1000; // 10% to the original creator on every resale
-export const MEMBERSHIP_PRICE = 0.2;
 
 export interface Listing {
   assetId: string;
@@ -14,7 +14,7 @@ export interface Listing {
   subject: string; // emoji
   creator: string; // wallet address
   creatorName: string;
-  price: number; // SOL
+  price: number; // MOE
   specHash: string; // sha256 of the world file, stored in the NFT metadata
   specUri: string; // where the world file lives off-chain
   coverage: { covered: number; total: number };
@@ -26,7 +26,7 @@ export interface Listing {
 
 export interface Tx {
   signature: string;
-  kind: "airdrop" | "mint-world" | "buy-access" | "buy-membership" | "mint-badge";
+  kind: "wallet" | "mint-world" | "buy-access" | "buy-membership" | "mint-badge" | "list-world" | "sell-world" | "generate";
   summary: string;
   amount?: number;
   t: number;
@@ -41,7 +41,7 @@ export interface Badge {
 }
 
 interface ChainState {
-  wallet: { pubkey: string; sol: number } | null;
+  wallet: { pubkey: string } | null;
   listings: Listing[];
   passes: string[]; // assetIds the wallet holds access passes for
   membership: { assetId: string; t: number } | null;
@@ -78,25 +78,23 @@ export function shortAddr(a: string) {
   return `${a.slice(0, 4)}…${a.slice(-4)}`;
 }
 
-export function getWallet() {
-  return load().wallet;
-}
-
-export async function connectWallet(): Promise<string> {
-  await latency();
+/** The learner's built-in devnet wallet, created on first use (no seed phrases to manage). */
+export function getWallet(): { pubkey: string } {
   const s = load();
   if (!s.wallet) {
-    s.wallet = { pubkey: rand(44), sol: 2 };
-    record(s, { kind: "airdrop", summary: "Devnet airdrop", amount: 2 });
+    s.wallet = { pubkey: rand(44) };
+    record(s, { kind: "wallet", summary: "Created your EduOasis wallet" });
+    save(s);
   }
-  save(s);
-  return s.wallet.pubkey;
+  return s.wallet;
 }
 
-export function disconnectWallet() {
+/** Log an in-app MOE payment (the balance itself lives in the profile). */
+export function recordMoe(kind: Tx["kind"], summary: string, amount?: number) {
   const s = load();
-  s.wallet = null;
+  const sig = record(s, { kind, summary, amount });
   save(s);
+  return sig;
 }
 
 /** Seed listings (other creators' worlds) once; idempotent. */
@@ -123,8 +121,8 @@ export async function mintWorld(
   price: number,
   meta: { subject: string; creatorName: string; coverage: Listing["coverage"]; specUri: string; parent?: string },
 ): Promise<{ assetId: string; signature: string }> {
+  const me = getWallet();
   const s = load();
-  if (!s.wallet) throw new Error("Connect a wallet first");
   await latency();
   const assetId = rand(44);
   s.listings.unshift({
@@ -132,7 +130,7 @@ export async function mintWorld(
     title: spec.title,
     topic: spec.topic,
     subject: meta.subject,
-    creator: s.wallet.pubkey,
+    creator: me.pubkey,
     creatorName: meta.creatorName,
     price,
     specHash,
@@ -143,60 +141,54 @@ export async function mintWorld(
     parent: meta.parent,
     mintedAt: Date.now(),
   });
-  const signature = record(s, { kind: "mint-world", summary: `Minted world NFT "${spec.title}"` });
+  const signature = record(s, { kind: "mint-world", summary: `Minted world NFT "${spec.title}" · listed at ${price.toLocaleString("en-US")} MOE` });
   save(s);
   return { assetId, signature };
 }
 
-export async function buyAccess(assetId: string): Promise<string> {
+/** Pay for a world (the caller checks and deducts the MOE balance) and mint an access pass to the buyer. */
+export async function buyAccess(assetId: string, price: number, seller?: string): Promise<string> {
+  getWallet();
   const s = load();
-  if (!s.wallet) throw new Error("Connect a wallet first");
   const l = s.listings.find((x) => x.assetId === assetId);
   if (!l) throw new Error("World not found");
-  if (s.wallet.sol < l.price) throw new Error("Not enough SOL");
   await latency();
-  // one atomic transaction: pay the creator + mint an access pass to the buyer
-  s.wallet.sol = +(s.wallet.sol - l.price).toFixed(4);
-  s.passes.push(assetId);
-  const sig = record(s, {
-    kind: "buy-access",
-    summary: `Access pass for "${l.title}" · ◎${l.price} paid to ${l.creatorName}`,
-    amount: -l.price,
-  });
+  // one atomic transaction: pay the seller (+ royalty to the creator on a resale) and mint an access pass
+  if (!s.passes.includes(assetId)) s.passes.push(assetId);
+  const to = seller ? `${seller} (${ROYALTY_BPS / 100}% royalty to ${l.creatorName})` : l.creatorName;
+  const sig = record(s, { kind: "buy-access", summary: `Access pass for "${l.title}" · paid to ${to}`, amount: -price });
   save(s);
   return sig;
 }
 
-export async function buyMembership(): Promise<string> {
+export async function buyMembership(price: number): Promise<string> {
+  getWallet();
   const s = load();
-  if (!s.wallet) throw new Error("Connect a wallet first");
-  if (s.wallet.sol < MEMBERSHIP_PRICE) throw new Error("Not enough SOL");
   await latency();
-  s.wallet.sol = +(s.wallet.sol - MEMBERSHIP_PRICE).toFixed(4);
   s.membership = { assetId: rand(44), t: Date.now() };
   const sig = record(s, {
     kind: "buy-membership",
     summary: "Membership pass NFT (resellable) · fee goes to the creator pool",
-    amount: -MEMBERSHIP_PRICE,
+    amount: -price,
   });
   save(s);
   return sig;
 }
 
 export function hasAccess(assetId: string): boolean {
+  const me = getWallet();
   const s = load();
-  if (!s.wallet) return false;
   const l = s.listings.find((x) => x.assetId === assetId);
-  return !!s.membership || s.passes.includes(assetId) || l?.creator === s.wallet.pubkey;
+  return !!s.membership || s.passes.includes(assetId) || l?.creator === me.pubkey;
 }
 
 export function hasMembership() {
   return !!load().membership;
 }
 
-export async function mintBadge(worldId: string, title: string, score: number): Promise<Badge | null> {
+export async function mintBadge(worldId: string, title: string, score: number): Promise<Badge> {
+  getWallet();
   const s = load();
-  if (!s.wallet) return null;
   await latency();
   const badge = { badgeId: rand(44), worldId, title, score, t: Date.now() };
   s.badges.unshift(badge);
@@ -211,4 +203,11 @@ export function badges() {
 
 export function ledger() {
   return load().ledger;
+}
+
+/** "reset demo": forget the wallet, passes, badges and history (catalog listings are re-seeded by the market). */
+export function resetChain() {
+  try {
+    localStorage.removeItem(KEY);
+  } catch {}
 }

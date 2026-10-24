@@ -8,12 +8,14 @@ import WorldFlow, { phaseGame, sceneFor, type WorldPhase } from "@/components/Wo
 import { gamesOf } from "@/lib/worldSpec";
 import PipPanel from "@/components/PipPanel";
 import MarketPanel from "@/components/MarketPanel";
-import { getWallet, mintBadge } from "@/lib/solana";
+import MoeCoin from "@/components/MoeCoin";
+import { mintBadge, recordMoe, resetChain } from "@/lib/solana";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
 import { track } from "@/lib/telemetry";
 import { lifespanAt, nextHalfLife, nextStreak, recallAt } from "@/lib/recall";
-import { defaultProfile, loadProfile, saveProfile } from "@/lib/profile";
+import { GENERATE_PRICE_MOE, formatMoe } from "@/lib/moe";
+import { addWorld, defaultProfile, loadProfile, saveProfile, showOnIsland, storeWorld, updateWorld } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
 import type { WorldSpec } from "@/lib/worldSpec";
 import type { PortalInfo, Profile } from "@/lib/types";
@@ -37,6 +39,7 @@ export default function Home() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [pipOpen, setPipOpen] = useState(false);
   const [clockTick, setClockTick] = useState(0);
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
   // recall is derived from the forgetting curve at the current (possibly time-travelled) clock
   const view = useMemo(
@@ -115,27 +118,27 @@ export default function Home() {
   }
   const paused = pipOpen || panel !== null || (active !== null && (isCardPhase(phase) || reviewOpen));
 
-  const exitWorld = (id: string, accuracy: number) => {
-    const t = now();
-    const worlds = profile.worlds.map((w) =>
-      w?.id === id
-        ? {
-            ...w,
-            halfLifeH: nextHalfLife(w, accuracy),
-            streak: nextStreak(w, accuracy),
-            lastVisitedAt: t,
-            recall: 1,
-            sessions: [...(w.sessions ?? []), { t, accuracy }],
-          }
-        : w,
-    );
-    const next = { ...profile, worlds };
+  const save = (next: Profile) => {
     saveProfile(next);
     setProfile(next);
+  };
+
+  const exitWorld = (id: string, accuracy: number) => {
+    const t = now();
+    save(
+      updateWorld(profile, id, (w) => ({
+        ...w,
+        halfLifeH: nextHalfLife(w, accuracy),
+        streak: nextStreak(w, accuracy),
+        lastVisitedAt: t,
+        recall: 1,
+        sessions: [...(w.sessions ?? []), { t, accuracy }],
+      })),
+    );
     setActive(null);
-    // proof-of-learning badge, if a wallet is connected
+    // proof-of-learning badge in the learner's wallet
     const title = profile.worlds.find((w) => w?.id === id)?.title ?? id;
-    if (getWallet()) void mintBadge(id, title, accuracy);
+    void mintBadge(id, title, accuracy);
   };
 
   const prompt =
@@ -200,24 +203,36 @@ export default function Home() {
       >
         <div className="text-lg font-bold">EduOasis</div>
         <div className="text-xs opacity-80">{profile.name}</div>
-        <div className="mt-1 text-xs">🌱 {profile.generationsLeft} free generations</div>
+        <div className="mt-1 text-xs">
+          🌱 {profile.generationsLeft > 0 ? `${profile.generationsLeft} free generations` : `new worlds cost ${formatMoe(GENERATE_PRICE_MOE)} MOE`}
+        </div>
+        <Library
+          profile={profile}
+          open={libraryOpen}
+          setOpen={setLibraryOpen}
+          onShow={(id, slot) => save(showOnIsland(profile, id, slot))}
+          onStore={(slot) => save(storeWorld(profile, slot))}
+        />
         <button
-          className="mt-2 text-[10px] underline opacity-50"
+          className="mt-2 block text-[10px] underline opacity-50"
           onClick={() => {
-            const p = defaultProfile();
-            saveProfile(p);
-            setProfile(p);
+            resetChain();
+            save(defaultProfile());
           }}
         >
           reset demo
         </button>
       </div>
 
-      <div
-        hidden={active !== null}
-        className="absolute right-4 top-4 z-10 rounded-xl bg-[#0b2a3d]/80 px-3 py-2 text-xs text-white"
-      >
-        WASD / arrows to move · E to interact
+      <div hidden={active !== null} className="absolute right-4 top-4 z-10">
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2 rounded-full bg-[#0b2a3d]/80 py-1.5 pl-1.5 pr-4 text-white" title="Your MOE balance">
+            <MoeCoin size={28} />
+            <span className="text-base font-bold text-[#ffd166]">{formatMoe(profile.moe)}</span>
+            <span className="text-xs opacity-70">MOE</span>
+          </div>
+          <div className="rounded-xl bg-[#0b2a3d]/80 px-3 py-2 text-xs text-white">WASD / arrows to move · E to interact</div>
+        </div>
       </div>
 
       {prompt && !panel && !active && (
@@ -229,6 +244,8 @@ export default function Home() {
       {panel?.kind === "create" && (
         <CreateWorldModal
           generationsLeft={profile.generationsLeft}
+          price={GENERATE_PRICE_MOE}
+          moe={profile.moe}
           onClose={() => setPanel(null)}
           onSubmit={async (req) => {
             const form = new FormData();
@@ -244,8 +261,7 @@ export default function Home() {
 
             const id = crypto.randomUUID();
             saveSpec(id, spec);
-            const worlds = [...profile.worlds];
-            worlds[panel.slot] = {
+            const world = {
               id,
               title: spec.title.slice(0, 32),
               topic: spec.topic,
@@ -253,12 +269,16 @@ export default function Home() {
               createdAt: Date.now(),
               lastVisitedAt: now(),
               recall: 1,
-              gameType: "explore-collect",
+              gameType: "explore-collect" as const,
               coverage: body.coverage,
             };
-            const next = { ...profile, worlds, generationsLeft: profile.generationsLeft - 1 };
-            saveProfile(next);
-            setProfile(next);
+            // the first 2 worlds are free, then each one costs MOE
+            const free = profile.generationsLeft > 0;
+            if (!free) recordMoe("generate", `Grew a new world "${world.title}"`, -GENERATE_PRICE_MOE);
+            const paid = free
+              ? { ...profile, generationsLeft: profile.generationsLeft - 1 }
+              : { ...profile, moe: profile.moe - GENERATE_PRICE_MOE };
+            save(addWorld(paid, world, panel.slot).profile);
             setPanel(null);
           }}
         />
@@ -267,10 +287,7 @@ export default function Home() {
       {panel?.kind === "market" && (
         <MarketPanel
           profile={profile}
-          onProfile={(next) => {
-            saveProfile(next);
-            setProfile(next);
-          }}
+          onProfile={save}
           onClose={() => setPanel(null)}
         />
       )}
@@ -278,10 +295,66 @@ export default function Home() {
       {panel?.kind === "world" && (
         <Overlay title={panel.info.world!.title} onClose={() => setPanel(null)}>
           <p className="text-sm opacity-80">{panel.info.world!.topic}</p>
-          <p className="mt-2 text-sm">This world&apos;s file isn&apos;t on this device.</p>
+          <p className="mt-2 text-sm">This world&apos;s file isn&apos;t on this device. Buy it again in the World Market.</p>
         </Overlay>
       )}
     </main>
+  );
+}
+
+// Every owned world, collapsed by default: choose which 3 sit on the islands.
+function Library({
+  profile,
+  open,
+  setOpen,
+  onShow,
+  onStore,
+}: {
+  profile: Profile;
+  open: boolean;
+  setOpen: (o: boolean) => void;
+  onShow: (id: string, slot: number) => void;
+  onStore: (slot: number) => void;
+}) {
+  const count = profile.worlds.filter(Boolean).length + profile.library.length;
+  return (
+    <div className="mt-2 text-xs">
+      <button onClick={() => setOpen(!open)} className="rounded-full bg-white/15 px-2 py-0.5 font-bold hover:bg-white/25">
+        📚 My worlds ({count}) {open ? "▴" : "▾"}
+      </button>
+      {open && (
+        <div className="mt-2 max-h-[50vh] w-64 space-y-1 overflow-y-auto">
+          {profile.worlds.map((w, i) => (
+            <div key={`island-${i}`} className="flex items-center gap-2 rounded-lg bg-white/10 px-2 py-1">
+              <span className="opacity-60">🏝{i + 1}</span>
+              <span className="min-w-0 flex-1 truncate">{w ? w.title : <i className="opacity-50">empty</i>}</span>
+              {w && (
+                <button onClick={() => onStore(i)} className="underline opacity-70 hover:opacity-100" title="Move to the library">
+                  store
+                </button>
+              )}
+            </div>
+          ))}
+          {profile.library.length > 0 && <div className="pt-1 opacity-60">Library: pick an island to show it on</div>}
+          {profile.library.map((w) => (
+            <div key={w.id} className="flex items-center gap-1 rounded-lg bg-white/5 px-2 py-1">
+              <span className="min-w-0 flex-1 truncate">{w.title}</span>
+              {[0, 1, 2].map((slot) => (
+                <button
+                  key={slot}
+                  onClick={() => onShow(w.id, slot)}
+                  className="rounded bg-white/20 px-1.5 hover:bg-white/40"
+                  title={profile.worlds[slot] ? `Swap with ${profile.worlds[slot]!.title}` : `Put on island ${slot + 1}`}
+                >
+                  {slot + 1}
+                </button>
+              ))}
+            </div>
+          ))}
+          {count === 0 && <div className="opacity-60">No worlds yet: grow one on an island or buy one in the World Market.</div>}
+        </div>
+      )}
+    </div>
   );
 }
 

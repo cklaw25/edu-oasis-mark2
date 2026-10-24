@@ -70,7 +70,8 @@ export class HubScene extends Phaser.Scene {
       if (world) {
         const life = world.lifespan ?? world.recall;
         this.drawIsland(c, lerpColor(life), world.title, life, false, { lifespan: life, recall: world.recall });
-        this.addPortal(c, { kind: "world", slot: i, world }, 0x7fe0ff);
+        // blue portal = bought on the World Market, white = grown from your own notes
+        this.addPortal(c, { kind: "world", slot: i, world }, world.bought ? 0x7fe0ff : 0xffffff);
       } else {
         this.drawIsland(c, 0xd8c79a, "Empty island", 0, true);
         this.addPortal(c, { kind: "empty", slot: i, world: null }, 0xffffff);
@@ -245,12 +246,6 @@ export class HubScene extends Phaser.Scene {
   private addPortal(c: Circle, info: PortalInfo, color: number) {
     const ring = this.add.circle(c.x, c.y, 36, color, 0.25).setStrokeStyle(4, color, 0.9).setDepth(3);
     this.tweens.add({ targets: ring, scale: 1.2, alpha: 0.6, yoyo: true, repeat: -1, duration: 900 });
-    if (info.kind === "empty") {
-      this.add
-        .text(c.x, c.y, "+", { fontFamily: "monospace", fontSize: "40px", color: "#ffffff" })
-        .setOrigin(0.5)
-        .setDepth(4);
-    }
     this.portals.push({ x: c.x, y: c.y, info });
   }
 }
