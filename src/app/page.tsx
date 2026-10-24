@@ -6,8 +6,11 @@ import CreateWorldModal from "@/components/CreateWorldModal";
 import BoboFlow, { type BoboPhase } from "@/components/BoboFlow";
 import WorldFlow, { labClues, type WorldPhase } from "@/components/WorldFlow";
 import PipPanel from "@/components/PipPanel";
+import MarketPanel from "@/components/MarketPanel";
+import { getWallet, mintBadge } from "@/lib/solana";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
+import { track } from "@/lib/telemetry";
 import { lifespanAt, nextHalfLife, nextStreak, recallAt } from "@/lib/recall";
 import { defaultProfile, loadProfile, saveProfile } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
@@ -19,7 +22,7 @@ type Active = { kind: "bobo" } | { kind: "gen"; id: string; spec: WorldSpec } | 
 type Phase = BoboPhase | WorldPhase;
 
 // phases where the player reads a card instead of playing
-const CARD_PHASES: Phase[] = ["intro", "results", "summary", "arenaDone"];
+const CARD_PHASES: Phase[] = ["intro", "howArena", "results", "summary", "arenaDone"];
 
 export default function Home() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -58,6 +61,7 @@ export default function Home() {
 
   const enter = useCallback((world: Active) => {
     setPanel(null);
+    setReviewOpen(false); // may be left set if the player quit mid-card
     setAutoStart(false);
     phaseRef.current = "intro";
     setPhaseState("intro");
@@ -123,6 +127,9 @@ export default function Home() {
     saveProfile(next);
     setProfile(next);
     setActive(null);
+    // proof-of-learning badge, if a wallet is connected
+    const title = profile.worlds.find((w) => w?.id === id)?.title ?? id;
+    if (getWallet()) void mintBadge(id, title, accuracy);
   };
 
   const prompt =
@@ -149,6 +156,18 @@ export default function Home() {
           setPhase={setPhase}
           onExit={(acc) => exitWorld(active.id, acc)}
         />
+      )}
+
+      {active && (
+        <button
+          onClick={() => {
+            track(active.kind === "bobo" ? "demo-bobo" : active.id, "world_quit", { phase });
+            setActive(null);
+          }}
+          className="absolute left-4 top-4 z-[26] rounded-full bg-[#0b2a3d]/85 px-4 py-2 text-sm font-bold text-white shadow-lg hover:bg-[#0b2a3d]"
+        >
+          ← Back to islands
+        </button>
       )}
 
       {!pipOpen && (
@@ -240,9 +259,14 @@ export default function Home() {
       )}
 
       {panel?.kind === "market" && (
-        <Overlay title="World Market" onClose={() => setPanel(null)}>
-          <p className="text-sm opacity-80">Browse and unlock worlds made by other learners. (Solana wiring: Correy)</p>
-        </Overlay>
+        <MarketPanel
+          profile={profile}
+          onProfile={(next) => {
+            saveProfile(next);
+            setProfile(next);
+          }}
+          onClose={() => setPanel(null)}
+        />
       )}
 
       {panel?.kind === "world" && (

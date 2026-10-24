@@ -1,0 +1,366 @@
+{
+  "title": "Milgram (1963) Obedience Study",
+  "topic": "IB Psychology - Milgram (1963) obedience",
+  "summary": "Extraction of all examinable knowledge points from the Milgram (1963) obedience study notes.",
+  "knowledge": [
+    {
+      "id": "K1",
+      "kind": "study",
+      "text": "Aim: to investigate how far people would obey an authority figure instructing them to harm another person.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K2",
+      "kind": "study",
+      "text": "Sample: 40 American men aged 20-50 from New Haven, recruited by newspaper advert, paid $4.50 (volunteer / self-selected sample).",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K3",
+      "kind": "study",
+      "text": "Procedure: lab at Yale University. Participant always assigned role of teacher; a confederate (Mr Wallace) was the learner.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K4",
+      "kind": "study",
+      "text": "Procedure: Teacher gave electric shocks (fake) from 15V to 450V in 15V steps for wrong answers on a word-pair task.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K5",
+      "kind": "study",
+      "text": "Procedure: Experimenter in grey lab coat used four verbal prods.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K6",
+      "kind": "quote",
+      "text": "Verbal prod 1: Please continue",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K7",
+      "kind": "quote",
+      "text": "Verbal prod 2: The experiment requires that you continue",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K8",
+      "kind": "quote",
+      "text": "Verbal prod 3: It is absolutely essential that you continue",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K9",
+      "kind": "quote",
+      "text": "Verbal prod 4: You have no other choice, you must go on",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K10",
+      "kind": "study",
+      "text": "Procedure: Learner pounded on wall at 300V and went silent after 315V.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K11",
+      "kind": "study",
+      "text": "Results: 100% went to at least 300V.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K12",
+      "kind": "study",
+      "text": "Results: 65% (26 of 40) went to the full 450V.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K13",
+      "kind": "study",
+      "text": "Results: Many showed extreme tension: sweating, trembling, nervous laughter; 3 had seizures.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K14",
+      "kind": "study",
+      "text": "Conclusion: ordinary people will obey orders from a legitimate authority even when it conflicts with their conscience.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K15",
+      "kind": "term",
+      "text": "Situational factors (agentic state) explain obedience.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K16",
+      "kind": "evaluation",
+      "text": "Strength: high control in lab, standardised procedure (prods).",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K17",
+      "kind": "evaluation",
+      "text": "Strength: replicated in variations (e.g. Bridgeport office: 47.5%; experimenter giving orders by phone: 20.5%).",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K18",
+      "kind": "evaluation",
+      "text": "Limitation: ethics - deception, lack of informed consent, psychological harm, right to withdraw made difficult.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K19",
+      "kind": "evaluation",
+      "text": "Limitation: sample of American men only (gender and culture bias).",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K20",
+      "kind": "evaluation",
+      "text": "Limitation: low ecological validity / artificial task.",
+      "source": "milgram.txt"
+    },
+    {
+      "id": "K21",
+      "kind": "evaluation",
+      "text": "Limitation: Orne and Holland argued participants may not have believed the shocks were real (demand characteristics).",
+      "source": "milgram.txt"
+    }
+  ],
+  "intro": [
+    {
+      "keyword": "Aim",
+      "text": "Milgram (1963) wanted to test how far ordinary people would obey an authority figure instructing them to harm another person.",
+      "refs": [
+        "K1",
+        "K14"
+      ]
+    },
+    {
+      "keyword": "Sample",
+      "text": "The sample had 40 American men aged 20 to 50 from New Haven. They were recruited via a newspaper ad and paid $4.50 as a volunteer sample.",
+      "refs": [
+        "K2"
+      ]
+    },
+    {
+      "keyword": "Procedure",
+      "text": "Held in a Yale lab. The participant was always the teacher and a confederate named Mr Wallace was the learner. Fake shocks ranged from 15V to 450V in 15V steps.",
+      "refs": [
+        "K3",
+        "K4"
+      ]
+    },
+    {
+      "keyword": "Prods",
+      "text": "An experimenter in a grey lab coat used four strict verbal prods like Please continue or You must go on when teachers hesitated.",
+      "refs": [
+        "K5",
+        "K6",
+        "K7",
+        "K8",
+        "K9"
+      ]
+    },
+    {
+      "keyword": "Reactions",
+      "text": "The learner pounded on the wall at 300V and went silent after 315V. Many participants showed extreme tension, including sweating, trembling, and three full seizures.",
+      "refs": [
+        "K10",
+        "K13"
+      ]
+    },
+    {
+      "keyword": "Results",
+      "text": "100% of participants went to at least 300V, and 65% went all the way to the maximum 450V. Situational factors like an agentic state explain this.",
+      "refs": [
+        "K11",
+        "K12",
+        "K15"
+      ]
+    }
+  ],
+  "arena": {
+    "title": "Milgram's Study Sorter",
+    "instructions": "Sort each study detail into Method or Evaluation strengths and limitations.",
+    "categoryA": {
+      "name": "Method Detail",
+      "hint": "Part of the original design or procedure"
+    },
+    "categoryB": {
+      "name": "Evaluation Point",
+      "hint": "A strength or limitation of the study"
+    },
+    "items": [
+      {
+        "label": "40 American men",
+        "category": "A",
+        "refs": [
+          "K2"
+        ]
+      },
+      {
+        "label": "Yale University lab",
+        "category": "A",
+        "refs": [
+          "K3"
+        ]
+      },
+      {
+        "label": "Teacher and learner roles",
+        "category": "A",
+        "refs": [
+          "K3"
+        ]
+      },
+      {
+        "label": "Shocks from 15V to 450V",
+        "category": "A",
+        "refs": [
+          "K4"
+        ]
+      },
+      {
+        "label": "Grey lab coat experimenter",
+        "category": "A",
+        "refs": [
+          "K5"
+        ]
+      },
+      {
+        "label": "Verbal prods used",
+        "category": "A",
+        "refs": [
+          "K5"
+        ]
+      },
+      {
+        "label": "Learner silent at 315V",
+        "category": "A",
+        "refs": [
+          "K10"
+        ]
+      },
+      {
+        "label": "65% went to 450V",
+        "category": "A",
+        "refs": [
+          "K12"
+        ]
+      },
+      {
+        "label": "High control in lab",
+        "category": "B",
+        "refs": [
+          "K16"
+        ]
+      },
+      {
+        "label": "Bridgeport office replication",
+        "category": "B",
+        "refs": [
+          "K17"
+        ]
+      },
+      {
+        "label": "Deception and harm ethics",
+        "category": "B",
+        "refs": [
+          "K18"
+        ]
+      },
+      {
+        "label": "Gender and culture bias",
+        "category": "B",
+        "refs": [
+          "K19"
+        ]
+      },
+      {
+        "label": "Low ecological validity",
+        "category": "B",
+        "refs": [
+          "K20"
+        ]
+      },
+      {
+        "label": "Demand characteristics risk",
+        "category": "B",
+        "refs": [
+          "K21"
+        ]
+      }
+    ]
+  },
+  "inspect": {
+    "title": "Milgram Lab Inspector",
+    "room": "Yale Experiment Room",
+    "choiceA": "Strength",
+    "choiceB": "Limitation",
+    "clues": [
+      {
+        "icon": "🔬",
+        "label": "Standardised Prods",
+        "claim": "The experimenter used the exact same four verbal prods for every participant.",
+        "answer": "A",
+        "why": "High standardisation and control in the lab is a key methodological strength.",
+        "refs": [
+          "K16"
+        ]
+      },
+      {
+        "icon": "🏢",
+        "label": "Bridgeport Variation",
+        "claim": "The study was replicated in a run-down office, yielding 47.5% obedience.",
+        "answer": "A",
+        "why": "Replications in variations demonstrate reliability and validity of the situational effect.",
+        "refs": [
+          "K17"
+        ]
+      },
+      {
+        "icon": "⚠️",
+        "label": "Informed Consent",
+        "claim": "Participants were fully aware of the true nature of the shock generator.",
+        "answer": "B",
+        "why": "Deception was used and informed consent was lacking, representing an ethical limitation.",
+        "refs": [
+          "K18"
+        ]
+      },
+      {
+        "icon": "👥",
+        "label": "Sample Bias",
+        "claim": "The sample consisted entirely of American men aged 20 to 50.",
+        "answer": "B",
+        "why": "Using only American men creates gender and culture bias, lowering population validity.",
+        "refs": [
+          "K19"
+        ]
+      },
+      {
+        "icon": "🎯",
+        "label": "Artificial Task",
+        "claim": "Giving word-pair tests and fake electric shocks is not a normal everyday activity.",
+        "answer": "B",
+        "why": "This causes low ecological validity because it does not reflect real-life obedience settings.",
+        "refs": [
+          "K20"
+        ]
+      },
+      {
+        "icon": "🎭",
+        "label": "Doubtful Shocks",
+        "claim": "Orne and Holland argued that participants may not have believed the shocks were real.",
+        "answer": "B",
+        "why": "If participants suspected demand characteristics, it threatens the internal validity of the findings.",
+        "refs": [
+          "K21"
+        ]
+      }
+    ]
+  }
+}

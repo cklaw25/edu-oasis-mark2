@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { btn, Card, Stat } from "./BoboFlow";
+import { HowToArena, HowToInspect } from "./HowToPlay";
 import type { ArenaResult } from "@/game/ArenaScene";
 import { bus } from "@/game/bus";
 import { layoutObjects } from "@/game/layout";
 import { track } from "@/lib/telemetry";
 import type { WorldSpec } from "@/lib/worldSpec";
 
-export type WorldPhase = "intro" | "arena" | "arenaDone" | "inspect" | "summary";
+export type WorldPhase = "intro" | "howArena" | "arena" | "arenaDone" | "inspect" | "summary";
 
 export function labClues(spec: WorldSpec) {
   return layoutObjects(spec.inspect.clues);
@@ -69,22 +70,27 @@ export default function WorldFlow({
           </div>
         </div>
         <p className="leading-relaxed">{s.text}</p>
-        {last && (
-          <div className="mt-4 rounded-lg bg-white p-3 text-sm">
-            <b>Next: {spec.arena.title}.</b> {spec.arena.instructions} The wanted category flips every 10 seconds —
-            touch only the matching labels!
-          </div>
-        )}
         <div className="flex gap-2">
           {slide > 0 && (
             <button className={`${btn} bg-[#d9c9a3] text-[#2b2118] hover:bg-[#cdbb92]`} onClick={() => setSlide(slide - 1)}>
               Back
             </button>
           )}
-          <button className={btn} onClick={() => (last ? setPhase("arena") : setSlide(slide + 1))}>
-            {last ? "Start" : "Next"}
+          <button className={btn} onClick={() => (last ? setPhase("howArena") : setSlide(slide + 1))}>
+            {last ? "How to play →" : "Next"}
           </button>
         </div>
+      </Card>
+    );
+  }
+
+  if (phase === "howArena") {
+    return (
+      <Card>
+        <HowToArena spec={spec} />
+        <button className={btn} onClick={() => setPhase("arena")}>
+          Start sorting
+        </button>
       </Card>
     );
   }
@@ -108,10 +114,9 @@ export default function WorldFlow({
             </ul>
           </div>
         )}
-        <p className="mt-3 text-sm opacity-80">
-          Next: explore <b>{spec.inspect.room}</b>. Inspect every object and judge it — {spec.inspect.choiceA} or{" "}
-          {spec.inspect.choiceB}? Watch out for Prof. Skeptic.
-        </p>
+        <div className="mt-4 border-t border-[#e8d9b5] pt-4">
+          <HowToInspect spec={spec} />
+        </div>
         <button className={btn} onClick={() => setPhase("inspect")}>
           Enter {spec.inspect.room} →
         </button>

@@ -1,0 +1,385 @@
+{
+  "title": "Causes of World War One",
+  "topic": "History - Causes of World War One",
+  "summary": "Detailed breakdown of the long-term MAIN causes, short-term trigger, July Crisis timeline, and historical interpretations regarding the origins of the First World War.",
+  "knowledge": [
+    {
+      "id": "K1",
+      "kind": "term",
+      "text": "Militarism: A long-term cause of World War One characterized by an arms race, particularly the Anglo-German naval race.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K2",
+      "kind": "fact",
+      "text": "The Dreadnought battleship was launched in 1906 as part of the Anglo-German naval race.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K3",
+      "kind": "fact",
+      "text": "The Schlieffen Plan was a military strategy to attack France through Belgium.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K4",
+      "kind": "term",
+      "text": "Alliances: A long-term cause of World War One where mutual defense pacts could turn a local conflict into a European war.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K5",
+      "kind": "fact",
+      "text": "The Triple Alliance consisted of Germany, Austria-Hungary, and Italy.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K6",
+      "kind": "fact",
+      "text": "The Triple Entente consisted of Britain, France, and Russia.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K7",
+      "kind": "term",
+      "text": "Imperialism: A long-term cause of World War One involving rivalry for colonies, exemplified by the Moroccan Crises of 1905 and 1911.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K8",
+      "kind": "term",
+      "text": "Nationalism: A long-term cause of World War One driven by Slav nationalism in the Balkans, Serbian ambitions, and the French desire to regain Alsace-Lorraine.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K9",
+      "kind": "fact",
+      "text": "France lost Alsace-Lorraine in the year 1871.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K10",
+      "kind": "fact",
+      "text": "Archduke Franz Ferdinand was assassinated on 28 June 1914 in Sarajevo.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K11",
+      "kind": "fact",
+      "text": "Gavrilo Princip, who assassinated Archduke Franz Ferdinand, was a member of the Black Hand, a Serbian nationalist group.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K12",
+      "kind": "fact",
+      "text": "Germany gave Austria-Hungary the blank cheque on 5-6 July during the July Crisis.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K13",
+      "kind": "fact",
+      "text": "Austria-Hungary issued an ultimatum to Serbia on 23 July.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K14",
+      "kind": "fact",
+      "text": "Austria declared war on Serbia on 28 July.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K15",
+      "kind": "fact",
+      "text": "Germany declared war on Russia on 1 August and on France on 3 August, following Russian mobilization.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K16",
+      "kind": "fact",
+      "text": "Britain declared war on Germany on 4 August 1914, citing the 1839 Treaty of London which guaranteed Belgian neutrality after Germany invaded Belgium.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K17",
+      "kind": "study",
+      "text": "Fischer thesis (1961): Argued that Germany bore main responsibility for World War One, actively seeking expansion.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K18",
+      "kind": "study",
+      "text": "Christopher Clark interpretation (2012): Stressed shared responsibility and the idea that European powers were 'sleepwalking' into war.",
+      "source": "ww1.txt"
+    },
+    {
+      "id": "K19",
+      "kind": "fact",
+      "text": "Treaty of Versailles Article 231, known as the 'war guilt clause', explicitly blamed Germany for the war.",
+      "source": "ww1.txt"
+    }
+  ],
+  "intro": [
+    {
+      "keyword": "M.A.I.N.",
+      "text": "Long-term tensions built Europe's powder keg. Militarism sparked an Anglo-German naval race, seen in the 1906 Dreadnought. Alliances split powers into the Triple Alliance (Germany, Austria-Hungary, Italy) and Triple Entente (Britain, France, Russia), ensuring local disputes became European wars.",
+      "refs": [
+        "K1",
+        "K2",
+        "K4",
+        "K5",
+        "K6"
+      ]
+    },
+    {
+      "keyword": "Rivalries",
+      "text": "Imperialism fueled friction over colonies, triggering Moroccan Crises in 1905 and 1911. Meanwhile, fierce nationalism surged: Balkan Slavs and Serbians pushed for dominance, while France hungered to regain Alsace-Lorraine, which had been lost in 1871.",
+      "refs": [
+        "K7",
+        "K8",
+        "K9"
+      ]
+    },
+    {
+      "keyword": "The Spark",
+      "text": "On 28 June 1914, Archduke Franz Ferdinand was assassinated in Sarajevo. The assassin, Gavrilo Princip, belonged to the Black Hand, a Serbian nationalist group. This localized outrage detonated the fragile European alliance system.",
+      "refs": [
+        "K10",
+        "K11"
+      ]
+    },
+    {
+      "keyword": "July Crisis",
+      "text": "On 5-6 July, Germany backed Austria-Hungary with a blank cheque. Emboldened, Austria delivered an ultimatum to Serbia on 23 July, then declared war on 28 July.",
+      "refs": [
+        "K12",
+        "K13",
+        "K14"
+      ]
+    },
+    {
+      "keyword": "Domino Effect",
+      "text": "Mobilization spread fast. Germany declared war on Russia on 1 August and France on 3 August, executing the Schlieffen Plan through Belgium. Citing the 1839 Treaty of London protecting Belgian neutrality, Britain declared war on 4 August.",
+      "refs": [
+        "K3",
+        "K15",
+        "K16"
+      ]
+    },
+    {
+      "keyword": "War Guilt",
+      "text": "Versailles Article 231 placed sole blame on Germany. In 1961, the Fischer thesis agreed, arguing Germany actively sought expansion. However, in 2012, Christopher Clark argued all powers shared responsibility, 'sleepwalking' into war.",
+      "refs": [
+        "K17",
+        "K18",
+        "K19"
+      ]
+    }
+  ],
+  "arena": {
+    "title": "Outbreak Timeline Sort",
+    "instructions": "Sort each item into Pre-1914 Long-Term Forces or July 1914 Crisis Escalation.",
+    "categoryA": {
+      "name": "Pre-1914 Long-Term Factor",
+      "hint": "Structural tensions and militarism before Sarajevo"
+    },
+    "categoryB": {
+      "name": "July 1914 Escalation",
+      "hint": "The diplomatic domino chain of summer 1914"
+    },
+    "items": [
+      {
+        "label": "Anglo-German naval Dreadnought race",
+        "category": "A",
+        "refs": [
+          "K1",
+          "K2"
+        ]
+      },
+      {
+        "label": "Moroccan Crises of 1905 and 1911",
+        "category": "A",
+        "refs": [
+          "K7"
+        ]
+      },
+      {
+        "label": "French loss of Alsace-Lorraine in 1871",
+        "category": "A",
+        "refs": [
+          "K9"
+        ]
+      },
+      {
+        "label": "Triple Alliance mutual defense pact",
+        "category": "A",
+        "refs": [
+          "K4",
+          "K5"
+        ]
+      },
+      {
+        "label": "Triple Entente alliance formation",
+        "category": "A",
+        "refs": [
+          "K4",
+          "K6"
+        ]
+      },
+      {
+        "label": "Schlieffen Plan invasion strategy designed",
+        "category": "A",
+        "refs": [
+          "K3"
+        ]
+      },
+      {
+        "label": "Balkan Slav nationalist ambitions",
+        "category": "A",
+        "refs": [
+          "K8"
+        ]
+      },
+      {
+        "label": "Sarajevo assassination of Franz Ferdinand",
+        "category": "B",
+        "refs": [
+          "K10"
+        ]
+      },
+      {
+        "label": "Black Hand nationalist conspiracy unfolds",
+        "category": "B",
+        "refs": [
+          "K11"
+        ]
+      },
+      {
+        "label": "German blank cheque given to Austria",
+        "category": "B",
+        "refs": [
+          "K12"
+        ]
+      },
+      {
+        "label": "Austro-Hungarian ultimatum to Serbia",
+        "category": "B",
+        "refs": [
+          "K13"
+        ]
+      },
+      {
+        "label": "Austria declares war on Serbia",
+        "category": "B",
+        "refs": [
+          "K14"
+        ]
+      },
+      {
+        "label": "German war declaration against Russia",
+        "category": "B",
+        "refs": [
+          "K15"
+        ]
+      },
+      {
+        "label": "British declaration protecting Belgian neutrality",
+        "category": "B",
+        "refs": [
+          "K16"
+        ]
+      }
+    ]
+  },
+  "inspect": {
+    "title": "Historical Dossier Review",
+    "room": "Imperial War Archive",
+    "choiceA": "True",
+    "choiceB": "False",
+    "clues": [
+      {
+        "icon": "🚢",
+        "label": "Naval Log",
+        "claim": "The Dreadnought battleship was launched in 1906 during the Anglo-German naval race.",
+        "answer": "A",
+        "why": "The Dreadnought was launched in 1906 as a centerpiece of the Anglo-German naval race.",
+        "refs": [
+          "K1",
+          "K2"
+        ]
+      },
+      {
+        "icon": "🗺️",
+        "label": "Schlieffen Map",
+        "claim": "The Schlieffen Plan aimed to attack Russia directly across the eastern border.",
+        "answer": "B",
+        "why": "The Schlieffen Plan was a military strategy to attack France by moving through Belgium.",
+        "refs": [
+          "K3"
+        ]
+      },
+      {
+        "icon": "📜",
+        "label": "Treaty Scroll",
+        "claim": "The Triple Alliance brought together Britain, France, and Russia in mutual defense.",
+        "answer": "B",
+        "why": "Britain, France, and Russia formed the Triple Entente, while Germany, Austria-Hungary, and Italy formed the Triple Alliance.",
+        "refs": [
+          "K5",
+          "K6"
+        ]
+      },
+      {
+        "icon": "🌍",
+        "label": "Diplomatic Dispatch",
+        "claim": "The Moroccan Crises of 1905 and 1911 demonstrated colonial rivalries stemming from imperialism.",
+        "answer": "A",
+        "why": "Imperialism involved rivalry for colonies, exemplified by the two Moroccan Crises.",
+        "refs": [
+          "K7"
+        ]
+      },
+      {
+        "icon": "🎯",
+        "label": "Pistol Case",
+        "claim": "Gavrilo Princip, assassin of Franz Ferdinand, belonged to the Black Hand nationalist group.",
+        "answer": "A",
+        "why": "Princip was a member of the Black Hand, a Serbian nationalist group.",
+        "refs": [
+          "K10",
+          "K11"
+        ]
+      },
+      {
+        "icon": "✉️",
+        "label": "Telegram 5 July",
+        "claim": "Germany offered Austria-Hungary unconditional support via the blank cheque in early July.",
+        "answer": "A",
+        "why": "Germany gave Austria-Hungary the blank cheque on 5-6 July during the July Crisis.",
+        "refs": [
+          "K12"
+        ]
+      },
+      {
+        "icon": "⚖️",
+        "label": "Article 231 Document",
+        "claim": "The Treaty of Versailles Article 231 explicitly blamed Germany for the war.",
+        "answer": "A",
+        "why": "Article 231, known as the war guilt clause, explicitly blamed Germany for causing the war.",
+        "refs": [
+          "K19"
+        ]
+      },
+      {
+        "icon": "📚",
+        "label": "Historian Notes",
+        "claim": "Christopher Clark's 2012 interpretation argued Germany alone actively sought expansion and bore sole responsibility.",
+        "answer": "B",
+        "why": "The Fischer thesis (1961) argued Germany sought expansion; Clark (2012) stressed shared responsibility and sleepwalking into war.",
+        "refs": [
+          "K17",
+          "K18"
+        ]
+      }
+    ]
+  }
+}
