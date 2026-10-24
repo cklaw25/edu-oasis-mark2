@@ -37,6 +37,16 @@ export interface Profile {
   listings: { worldId: string; price: number }[];
   /** other players' listings this player has bought */
   boughtListings: string[];
+  /** look of each outer island, keyed by slot */
+  cosmetics: Record<string, IslandCosmetics>;
+}
+
+export type TreeStyle = "palm" | "pine" | "blossom";
+export type FlagColor = "none" | "red" | "blue" | "gold";
+
+export interface IslandCosmetics {
+  trees: TreeStyle;
+  flag: FlagColor;
 }
 
 export type PortalKind = "world" | "empty" | "market";

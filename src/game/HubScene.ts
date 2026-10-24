@@ -1,8 +1,9 @@
 import * as Phaser from "phaser";
 import { bus } from "./bus";
 import { makeTextures } from "./textures";
+import { FLAG_COLORS, cosmeticsFor } from "@/lib/cosmetics";
 import { FREE_SLOT } from "@/lib/profile";
-import type { PortalInfo, Profile } from "@/lib/types";
+import type { IslandCosmetics, PortalInfo, Profile, TreeStyle } from "@/lib/types";
 
 // Hub layout ("Inside Out" style): main island in the middle, 3 world islands branching out,
 // market island on the opposite side. All walkable land = circles (islands) + capsules (bridges).
@@ -68,11 +69,12 @@ export class HubScene extends Phaser.Scene {
     this.drawIsland(MAIN, 0x5cbf68, "Home Island");
     SLOTS.forEach((c, i) => {
       const world = this.profile.worlds[i];
+      const look = cosmeticsFor(this.profile, i);
       if (world) {
-        this.drawIsland(c, lerpColor(world.recall), world.title, world.recall);
+        this.drawIsland(c, lerpColor(world.recall), world.title, world.recall, false, look);
         this.addPortal(c, { kind: "world", slot: i, world }, world.bought ? 0x7fe0ff : 0xffffff);
       } else if (i === FREE_SLOT) {
-        this.drawIsland(c, 0xd8c79a, "Your free island", 0, true);
+        this.drawIsland(c, 0xd8c79a, "Your free island", 0, true, look);
         this.addPortal(c, { kind: "empty", slot: i, world: null }, 0xffffff);
       } else {
         // claimed by buying a world in the World Market
@@ -97,6 +99,14 @@ export class HubScene extends Phaser.Scene {
     this.keys.E.on("down", enter);
     this.keys.SPACE.on("down", enter);
     bus.emit("portal:near", null); // clear any prompt left over from before a scene switch
+
+    // right-click an outer island (not Home or the Market) to open its cosmetics page
+    this.input.mouse?.disableContextMenu();
+    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
+      if (!p.rightButtonDown()) return;
+      const slot = SLOTS.findIndex((c) => Phaser.Math.Distance.Between(p.worldX, p.worldY, c.x, c.y) < c.r);
+      if (slot >= 0) bus.emit("island:cosmetics", slot);
+    });
   }
 
   update(_t: number, dtMs: number) {
@@ -167,7 +177,7 @@ export class HubScene extends Phaser.Scene {
     c.add(g);
   }
 
-  private drawIsland(c: Circle, grass: number, label: string, recall = 1, empty = false) {
+  private drawIsland(c: Circle, grass: number, label: string, recall = 1, empty = false, look?: IslandCosmetics) {
     const g = this.add.graphics();
     g.fillStyle(0x8fd3e8, 0.5).fillCircle(c.x, c.y, c.r + 18); // shallow water
     g.fillStyle(0xf0d9a0).fillCircle(c.x, c.y, c.r); // sand
@@ -178,8 +188,10 @@ export class HubScene extends Phaser.Scene {
     for (let i = 0; i < trees; i++) {
       const a = rng.angle() * Phaser.Math.DEG_TO_RAD;
       const d = rng.between(c.r * 0.45, c.r * 0.75);
-      this.drawPalm(c.x + Math.cos(a) * d, c.y + Math.sin(a) * d, recall);
+      this.drawTree(c.x + Math.cos(a) * d, c.y + Math.sin(a) * d, recall, look?.trees ?? "palm");
     }
+    const flag = FLAG_COLORS.find((f) => f.id === look?.flag);
+    if (flag && flag.id !== "none") this.drawFlag(c.x + c.r * 0.5, c.y - c.r * 0.5, flag.hex);
 
     this.add
       .text(c.x, c.y - c.r - 34, label, {
@@ -201,6 +213,30 @@ export class HubScene extends Phaser.Scene {
         })
         .setOrigin(0.5);
     }
+  }
+
+  private drawTree(x: number, y: number, health: number, style: TreeStyle) {
+    if (style === "palm") return this.drawPalm(x, y, health);
+    const g = this.add.graphics().setDepth(5);
+    g.fillStyle(0x000000, 0.2).fillEllipse(x + 6, y + 4, 34, 10);
+    if (style === "pine") {
+      g.fillStyle(0x6b4423).fillRect(x - 3, y - 12, 6, 14);
+      g.fillStyle(health > 0.5 ? 0x1f6b3a : health > 0.25 ? 0x6f7a3a : 0x7a6a3a);
+      g.fillTriangle(x - 18, y - 10, x + 18, y - 10, x, y - 34);
+      g.fillTriangle(x - 14, y - 24, x + 14, y - 24, x, y - 46);
+      return;
+    }
+    // blossom
+    g.fillStyle(0x7a5230).fillRect(x - 3, y - 26, 6, 28);
+    g.fillStyle(health > 0.5 ? 0xff9ecb : health > 0.25 ? 0xe8b9c9 : 0xc9a99a);
+    g.fillCircle(x, y - 34, 13).fillCircle(x - 12, y - 28, 10).fillCircle(x + 12, y - 28, 10);
+  }
+
+  private drawFlag(x: number, y: number, color: number) {
+    const g = this.add.graphics().setDepth(6);
+    g.fillStyle(0x000000, 0.2).fillEllipse(x + 4, y + 2, 16, 6);
+    g.fillStyle(0x4a2f18).fillRect(x - 2, y - 56, 4, 58);
+    g.fillStyle(color).fillTriangle(x + 2, y - 56, x + 2, y - 34, x + 32, y - 45);
   }
 
   private drawPalm(x: number, y: number, health: number) {

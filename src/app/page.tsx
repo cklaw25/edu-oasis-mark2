@@ -8,13 +8,14 @@ import WorldFlow, { labClues, type WorldPhase } from "@/components/WorldFlow";
 import PipPanel from "@/components/PipPanel";
 import MoeCoin from "@/components/MoeCoin";
 import MarketPanel from "@/components/MarketPanel";
+import CosmeticsPanel from "@/components/CosmeticsPanel";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
 import { newNftId, topicForWorld, type MarketTopic, type PlayerListing } from "@/lib/market";
 import { WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
 import { sessionReward } from "@/lib/rewards";
 import { nextHalfLife, recallAt } from "@/lib/recall";
-import { defaultProfile, loadProfile, nextIslandSlot, saveProfile } from "@/lib/profile";
+import { defaultProfile, isClaimed, loadProfile, nextIslandSlot, saveProfile } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
 import type { WorldSpec } from "@/lib/worldSpec";
 import type { PortalInfo, Profile, WorldSummary } from "@/lib/types";
@@ -23,6 +24,7 @@ type Panel =
   | { kind: "create"; slot: number }
   | { kind: "market" }
   | { kind: "world"; info: PortalInfo }
+  | { kind: "cosmetics"; slot: number }
   | null;
 type Active = { kind: "bobo" } | { kind: "gen"; id: string; spec: WorldSpec } | null;
 type Phase = BoboPhase | WorldPhase;
@@ -89,6 +91,7 @@ export default function Home() {
     const offInspect = bus.on("lab:inspect", () => setReviewOpen(true));
     const offResolved = bus.on("lab:resolved", () => setReviewOpen(false));
     const offNear = bus.on("portal:near", (p) => setNear(p as PortalInfo | null));
+    const offCosmetics = bus.on("island:cosmetics", (slot) => setPanel({ kind: "cosmetics", slot: slot as number }));
     const offEnter = bus.on("portal:enter", (p) => {
       const info = p as PortalInfo;
       if (info.kind === "empty") setPanel({ kind: "create", slot: info.slot! });
@@ -104,6 +107,7 @@ export default function Home() {
       offInspect();
       offResolved();
       offNear();
+      offCosmetics();
       offEnter();
     };
   }, [enter]);
@@ -331,6 +335,19 @@ export default function Home() {
       {panel?.kind === "market" && (
         <Overlay title="World Market" onClose={() => setPanel(null)}>
           <MarketPanel profile={profile} actions={market} />
+        </Overlay>
+      )}
+
+      {panel?.kind === "cosmetics" && (
+        <Overlay
+          title={`🎨 ${profile.worlds[panel.slot]?.title ?? (isClaimed(profile, panel.slot) ? "Your free island" : "Unclaimed island")}`}
+          onClose={() => setPanel(null)}
+        >
+          <CosmeticsPanel
+            profile={profile}
+            slot={panel.slot}
+            onChange={(look) => save({ ...profile, cosmetics: { ...profile.cosmetics, [panel.slot]: look } })}
+          />
         </Overlay>
       )}
 

@@ -65,6 +65,14 @@ export default function GameCanvas({
       game.current.scene.add("experiment", ExperimentScene, false);
       game.current.scene.add("lab", LabScene, false);
       game.current.scene.add("arena", ArenaScene, false);
+      // a scene restarted while a panel is open (e.g. buying in the market) loses the pause applied before
+      // the restart, so re-check every frame that the current scene's pause matches `paused`
+      game.current.events.on("poststep", () => {
+        const s = game.current?.scene.getScene(latest.current.scene);
+        if (!s) return;
+        if (latest.current.paused && s.scene.isActive()) s.scene.pause();
+        else if (!latest.current.paused && s.scene.isPaused()) s.scene.resume();
+      });
       startScene();
     })();
     return () => {

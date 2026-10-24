@@ -38,6 +38,7 @@ export function defaultProfile(): Profile {
     owned: [],
     listings: [],
     boughtListings: [],
+    cosmetics: {},
   };
 }
 
@@ -60,6 +61,7 @@ export function loadProfile(): Profile {
         owned: p.owned ?? owned,
         listings: p.listings ?? [],
         boughtListings: p.boughtListings ?? [],
+        cosmetics: p.cosmetics ?? {},
       };
     }
   } catch {}
