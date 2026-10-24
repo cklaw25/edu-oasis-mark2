@@ -71,7 +71,7 @@ export class HubScene extends Phaser.Scene {
       const locked = !this.profile.unlockedSlots.includes(i);
       if (world) {
         this.drawIsland(c, lerpColor(world.recall), world.title, world.recall);
-        this.addPortal(c, { kind: "world", slot: i, world, locked }, 0x7fe0ff);
+        this.addPortal(c, { kind: "world", slot: i, world, locked }, 0xffffff);
       } else {
         this.drawIsland(c, 0xd8c79a, "Empty island", 0, true);
         this.addPortal(c, { kind: "empty", slot: i, world: null, locked }, 0xffffff);
