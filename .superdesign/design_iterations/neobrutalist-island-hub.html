@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EduOasis — Island Hub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap');
+  
+  .neo-brutal-card {
+    border: 3px solid black;
+    box-shadow: 8px 8px 0px 0px black;
+  }
+
+  .neo-brutal-btn {
+    border: 3px solid black;
+    box-shadow: 8px 8px 0px 0px black;
+    transition: all 0.1s;
+  }
+
+  .neo-brutal-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0px 0px black;
+  }
+
+  .island-outline {
+    stroke: black;
+    stroke-width: 4px;
+    filter: drop-shadow(10px 10px 0px rgba(0, 0, 0, 0.4));
+  }
+
+  .bridge-outline {
+    stroke: black;
+    stroke-width: 3px;
+    filter: drop-shadow(6px 6px 0px rgba(0, 0, 0, 0.3));
+  }
+
+  .wave-line {
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+</style>
+</head>
+<body style="margin: 0; padding: 0;">
+<div class="relative h-screen w-screen overflow-hidden bg-[#1e8da1] font-['Space_Grotesk']">
+  <!-- Island hub map -->
+  <svg class="absolute inset-0 h-full w-full" viewBox="200 200 2000 1700" preserveAspectRatio="xMidYMid meet" aria-label="EduOasis island map">
+    <!-- Decorative Waves -->
+    <path d="M400,400 Q450,380 500,400" fill="none" class="wave-line" />
+    <path d="M1600,600 Q1650,580 1700,600" fill="none" class="wave-line" />
+    <path d="M800,1500 Q850,1480 900,1500" fill="none" class="wave-line" />
+    <path d="M1800,1400 Q1850,1380 1900,1400" fill="none" class="wave-line" />
+
+    <!-- Shallow Water Rings -->
+    <circle cx="1200" cy="510" r="240" fill="#38b2ac" opacity="0.4" />
+    <circle cx="560" cy="850" r="240" fill="#38b2ac" opacity="0.4" />
+    <circle cx="1200" cy="1100" r="300" fill="#38b2ac" opacity="0.4" />
+    <circle cx="1840" cy="850" r="240" fill="#38b2ac" opacity="0.4" />
+    <circle cx="1200" cy="1680" r="250" fill="#38b2ac" opacity="0.4" />
+
+    <!-- Bridges -->
+    <g transform="translate(1200 1100) rotate(-158.66)">
+      <rect x="0" y="-34" width="687" height="68" fill="#926b4d" class="bridge-outline"/>
+      <path d="M100,-34 V34 M200,-34 V34 M300,-34 V34 M400,-34 V34 M500,-34 V34" stroke="black" stroke-width="1.5" opacity="0.4"/>
+    </g>
+    <g transform="translate(1200 1100) rotate(-90.00)">
+      <rect x="0" y="-34" width="590" height="68" fill="#926b4d" class="bridge-outline"/>
+      <path d="M100,-34 V34 M200,-34 V34 M300,-34 V34 M400,-34 V34" stroke="black" stroke-width="1.5" opacity="0.4"/>
+    </g>
+    <g transform="translate(1200 1100) rotate(-21.34)">
+      <rect x="0" y="-34" width="687" height="68" fill="#926b4d" class="bridge-outline"/>
+      <path d="M100,-34 V34 M200,-34 V34 M300,-34 V34 M400,-34 V34 M500,-34 V34" stroke="black" stroke-width="1.5" opacity="0.4"/>
+    </g>
+    <g transform="translate(1200 1100) rotate(90.00)">
+      <rect x="0" y="-34" width="610" height="68" fill="#926b4d" class="bridge-outline"/>
+      <path d="M100,-34 V34 M200,-34 V34 M300,-34 V34 M400,-34 V34" stroke="black" stroke-width="1.5" opacity="0.4"/>
+    </g>
+
+    <!-- Loftus Island (Top) -->
+    <circle cx="1200" cy="510" r="200" fill="#f5e0a0" class="island-outline"/>
+    <circle cx="1200" cy="510" r="170" fill="#7cb342" class="island-outline"/>
+    <g transform="translate(1100 450)"><rect x="8" y="20" width="4" height="10" fill="#5d4037" stroke="black" stroke-width="2"/><circle cx="10" cy="15" r="12" fill="#43a047" stroke="black" stroke-width="2" filter="drop-shadow(3px 3px 0px rgba(0,0,0,0.2))"/></g>
+    <g transform="translate(1280 490)"><rect x="8" y="20" width="4" height="10" fill="#5d4037" stroke="black" stroke-width="2"/><circle cx="10" cy="15" r="12" fill="#43a047" stroke="black" stroke-width="2" filter="drop-shadow(3px 3px 0px rgba(0,0,0,0.2))"/></g>
+    <g transform="translate(1180 400)"><rect x="8" y="20" width="4" height="10" fill="#5d4037" stroke="black" stroke-width="2"/><circle cx="10" cy="15" r="12" fill="#43a047" stroke="black" stroke-width="2" filter="drop-shadow(3px 3px 0px rgba(0,0,0,0.2))"/></g>
+    <g transform="translate(1250 440)"><rect x="8" y="20" width="4" height="10" fill="#5d4037" stroke="black" stroke-width="2"/><circle cx="10" cy="15" r="12" fill="#43a047" stroke="black" stroke-width="2" filter="drop-shadow(3px 3px 0px rgba(0,0,0,0.2))"/></g>
+
+    <!-- Bobo Doll Island (Left) -->
+    <circle cx="560" cy="850" r="200" fill="#f5e0a0" class="island-outline"/>
+    <circle cx="560" cy="850" r="170" fill="#a4b42b" class="island-outline"/>
+    <g transform="translate(480 800)"><rect x="8" y="20" width="4" height="10" fill="#5d4037" stroke="black" stroke-width="2"/><circle cx="10" cy="15" r="12" fill="#c0ca33" stroke="black" stroke-width="2" filter="drop-shadow(3px 3px 0px rgba(0,0,0,0.2))"/></g>
+    <g transform="translate(600 900)"><rect x="8" y="20" width="4" height="10" fill="#5d4037" stroke="black" stroke-width="2"/><circle cx="10" cy="15" r="12" fill="#c0ca33" stroke="black" stroke-width="2" filter="drop-shadow(3px 3px 0px rgba(0,0,0,0.2))"/></g>
+    <g transform="translate(520 880)"><rect x="8" y="20" width="4" height="10" fill="#5d4037" stroke="black" stroke-width="2"/><circle cx="10" cy="15" r="12" fill="#c0ca33" stroke="black" stroke-width="2" filter="drop-shadow(3px 3px 0px rgba(0,0,0,0.2))"/></g>
+    <g transform="translate(620 780)"><rect x="8" y="20" width="4" height="10" fill="#5d4037" stroke="black" stroke-width="2"/><circle cx="10" cy="15" r="12" fill="#c0ca33" stroke="black" stroke-width="2" filter="drop-shadow(3px 3px 0px rgba(0,0,0,0.2))"/></g>
+
+    <!-- Home Island (Center) -->
+    <circle cx="1200" cy="1100" r="260" fill="#f5e0a0" class="island-outline"/>
+    <circle cx="1200" cy="1100" r="230" fill="#558b2f" class="island-outline"/>
+    <g transform="translate(1050 1050)"><rect x="10" y="30" width="6" height="15" fill="#5d4037" stroke="black" stroke-width="3"/><circle cx="13" cy="20" r="20" fill="#2e7d32" stroke="black" stroke-width="3" filter="drop-shadow(4px 4px 0px rgba(0,0,0,0.2))"/></g>
+    <g transform="translate(1320 1150)"><rect x="10" y="30" width="6" height="15" fill="#5d4037" stroke="black" stroke-width="3"/><circle cx="13" cy="20" r="20" fill="#2e7d32" stroke="black" stroke-width="3" filter="drop-shadow(4px 4px 0px rgba(0,0,0,0.2))"/></g>
+    <g transform="translate(1120 950)"><rect x="10" y="30" width="6" height="15" fill="#5d4037" stroke="black" stroke-width="3"/><circle cx="13" cy="20" r="20" fill="#2e7d32" stroke="black" stroke-width="3" filter="drop-shadow(4px 4px 0px rgba(0,0,0,0.2))"/></g>
+    <g transform="translate(1250 1000)"><rect x="10" y="30" width="6" height="15" fill="#5d4037" stroke="black" stroke-width="3"/><circle cx="13" cy="20" r="20" fill="#2e7d32" stroke="black" stroke-width="3" filter="drop-shadow(4px 4px 0px rgba(0,0,0,0.2))"/></g>
+    <g transform="translate(1080 1180)"><rect x="10" y="30" width="6" height="15" fill="#5d4037" stroke="black" stroke-width="3"/><circle cx="13" cy="20" r="20" fill="#2e7d32" stroke="black" stroke-width="3" filter="drop-shadow(4px 4px 0px rgba(0,0,0,0.2))"/></g>
+
+    <!-- Empty Island (Right) -->
+    <circle cx="1840" cy="850" r="200" fill="#f5e0a0" class="island-outline"/>
+    <circle cx="1840" cy="850" r="170" fill="#fafafa" class="island-outline"/>
+    <circle cx="1840" cy="850" r="50" fill="white" stroke="black" stroke-width="4"/>
+    <text x="1840" y="875" text-anchor="middle" font-size="80" font-weight="bold" fill="black">+</text>
+
+    <!-- World Market Island (Bottom) -->
+    <circle cx="1200" cy="1680" r="210" fill="#f5e0a0" class="island-outline"/>
+    <circle cx="1200" cy="1680" r="180" fill="#689f38" class="island-outline"/>
+    <g transform="translate(1050 1680)">
+      <rect x="0" y="30" width="80" height="50" fill="white" stroke="black" stroke-width="3"/>
+      <rect x="-5" y="10" width="90" height="20" fill="#d32f2f" stroke="black" stroke-width="3"/>
+    </g>
+    <g transform="translate(1160 1680)">
+      <rect x="0" y="30" width="80" height="50" fill="white" stroke="black" stroke-width="3"/>
+      <rect x="-5" y="10" width="90" height="20" fill="#f9a825" stroke="black" stroke-width="3"/>
+    </g>
+    <g transform="translate(1270 1680)">
+      <rect x="0" y="30" width="80" height="50" fill="white" stroke="black" stroke-width="3"/>
+      <rect x="-5" y="10" width="90" height="20" fill="#00796b" stroke="black" stroke-width="3"/>
+    </g>
+
+    <!-- Player and Pip -->
+    <g transform="translate(1184 1137)">
+      <rect x="6" y="18" width="20" height="22" fill="white" stroke="black" stroke-width="3"/>
+      <circle cx="16" cy="12" r="10" fill="#f8d1b1" stroke="black" stroke-width="3"/>
+      <rect x="6" y="2" width="20" height="7" fill="black"/>
+    </g>
+    <g transform="translate(1146 1176)">
+      <circle cx="14" cy="14" r="14" fill="#fff" stroke="black" stroke-width="3"/>
+      <circle cx="14" cy="14" r="9" fill="#0288d1" stroke="black" stroke-width="3"/>
+    </g>
+  </svg>
+
+  <!-- UI Overlay -->
+  <div class="absolute inset-0 pointer-events-none">
+    <!-- Loftus Label & Stats -->
+    <div class="absolute left-1/2 -translate-x-1/2 top-[4%]">
+      <div class="bg-white neo-brutal-card px-4 py-2 text-black uppercase font-bold text-lg whitespace-nowrap">Loftus & Palmer (1974)</div>
+      <div class="flex flex-col items-center mt-2">
+        <div class="bg-[#43a047] text-white neo-brutal-card px-3 py-1 font-black text-2xl">94%</div>
+        <div class="bg-white neo-brutal-card px-2 py-0.5 text-[10px] font-bold mt-1">RECALL 92%</div>
+      </div>
+    </div>
+
+    <!-- Bobo Label & Stats -->
+    <div class="absolute left-[20%] top-[28%] -translate-x-1/2">
+      <div class="bg-white neo-brutal-card px-4 py-2 text-black uppercase font-bold text-lg whitespace-nowrap">Bobo Doll Experiment</div>
+      <div class="flex flex-col items-center mt-2">
+        <div class="bg-[#c0ca33] text-black neo-brutal-card px-3 py-1 font-black text-2xl">50%</div>
+        <div class="bg-white neo-brutal-card px-2 py-0.5 text-[10px] font-bold mt-1">RECALL 71%</div>
+      </div>
+    </div>
+
+    <!-- Home Label -->
+    <div class="absolute left-1/2 -translate-x-1/2 top-[40%]">
+      <div class="bg-[#f5e0a0] neo-brutal-card px-4 py-2 text-black uppercase font-bold text-lg whitespace-nowrap">Home Island</div>
+    </div>
+
+    <!-- Empty Label -->
+    <div class="absolute left-[80%] top-[30%] -translate-x-1/2">
+      <div class="bg-white neo-brutal-card px-4 py-2 text-black uppercase font-bold text-lg whitespace-nowrap">Empty Island</div>
+    </div>
+
+    <!-- World Market Label -->
+    <div class="absolute left-1/2 -translate-x-1/2 bottom-[24%]">
+      <div class="bg-white neo-brutal-card px-4 py-2 text-black uppercase font-bold text-lg whitespace-nowrap">World Market</div>
+    </div>
+  </div>
+
+  <!-- Profile Card -->
+  <div class="absolute left-6 top-6 z-10 neo-brutal-card bg-[#fafafa] p-4 text-black pointer-events-auto">
+    <div class="text-2xl font-black uppercase tracking-tight">EduOasis</div>
+    <div class="text-sm font-bold opacity-80 uppercase">Learner Status</div>
+    <div class="mt-2 bg-white neo-brutal-card px-2 py-1 text-xs font-bold">
+      🌱 2 FREE GENERATIONS
+    </div>
+    <a id="reset-demo" href="#reset" class="mt-3 block text-[10px] uppercase font-bold underline hover:no-underline">Reset Demo Data</a>
+  </div>
+
+  <!-- Controls Hint -->
+  <div class="absolute right-6 top-6 z-10 neo-brutal-card bg-white p-3 text-sm font-bold uppercase pointer-events-auto">
+    WASD / ARROWS TO MOVE · E TO INTERACT
+  </div>
+
+  <!-- Interaction Prompt -->
+  <div class="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 neo-brutal-card bg-[#f5e0a0] px-8 py-3 text-lg font-black uppercase text-black pointer-events-auto">
+    E — ENTER THE WORLD MARKET
+  </div>
+
+  <!-- Pip Companion Button -->
+  <a id="open-pip" href="#pip" class="absolute bottom-8 right-8 z-[25] flex items-center gap-3 rounded-none neo-brutal-btn bg-[#0288d1] px-6 py-4 font-black text-white text-xl uppercase pointer-events-auto">
+    <iconify-icon icon="lucide:sparkles" class="text-2xl"></iconify-icon> Pip
+  </a>
+</div>
+</body>
+</html>

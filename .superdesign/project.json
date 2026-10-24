@@ -4,5 +4,14 @@
   "projectUrl": "https://superdesign.dev/teams/0990336d-28b4-4366-a102-86717596d0cc/projects/c160d456-3416-4d75-925b-c80a96b30766",
   "baselineDraftId": "9614d541-8f8e-416b-b54b-ebfb7cd8de4e",
   "baselineTemplate": "replica_html_template/island-hub.html",
+  "designs": [
+    {
+      "name": "Neobrutalist island hub (natural colours, deeper shadows)",
+      "draftId": "7d2263ab-7f9d-4e6b-83ef-4b059ab2fc87",
+      "version": 5,
+      "previewUrl": "https://p.superdesign.dev/draft/7d2263ab-7f9d-4e6b-83ef-4b059ab2fc87",
+      "file": "design_iterations/neobrutalist-island-hub.html"
+    }
+  ],
   "note": "island-hub.html is a static HTML/SVG replica of the Phaser island hub (src/game/HubScene.ts) used as the Superdesign starting point."
 }
