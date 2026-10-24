@@ -1471,3 +1471,117 @@ Prettier reformatted more than it should have. I'm reverting that and re-applyin
 ### Claude
 
 Quick check that the picker gives different mixes over several generations of the same notes:
+
+### Claude
+
+Saved and pushed. Before writing the transaction plan, I'm checking Corey's trading doc so the plan matches his.
+
+### Claude
+
+I've saved the conversation and pushed `merge1`. The game-type rule is in place too.
+
+## Game types now vary on every new island
+Gemini now builds the content for every game type each time it generates. Code then picks the games:
+- **2 action games** from Showdown, Squad Board, Timeline Run and Shooter, choosing a mix your recent islands haven't had
+- **the Inspect room** at the end, when the notes have strengths or weaknesses to judge
+- **calm sorting (Arena)** only when the notes can't support 2 action games
+
+I ran the picker 5 times in a row on the Loftus notes and got 5 different mixes. I only checked the picker on its own; a full generation hasn't been run since. Your Napoleon island was generated before this change, so try a fresh one. I've also saved this as a standing rule in memory.
+
+## Running a real test transaction: what we need
+You don't need a separate sandbox. Solana **devnet** is the sandbox: a test network with free play money. Corey's MOE token already lives there. We need three things:
+
+1. **The treasury wallet's secret key.** Corey's MOE was created by the treasury wallet and all 1,000,000 MOE sit there. It also has the 1 devnet SOL you funded, which pays the network fees. Without its key we can't send any MOE.
+   - Corey has the key in `treasury.json`.
+   - It goes in `.env.local` as `TREASURY_SECRET_KEY=[REDACTED] which git never commits.
+   - Best: you or Corey put it in yourselves. If it gets pasted in chat, I'll write it straight to the file without repeating it, and you should treat it as exposed.
+2. **A wallet for the player.** My recommendation is a demo wallet the game creates in your browser. On first use the treasury sends it the starting 30,000 MOE plus a tiny bit of SOL for fees. No extension and no seed phrase, which suits our users.
+   - The alternative is Phantom set to devnet. It looks more "real" to judges, but it's more work and needs Phantom installed.
+3. **Code, in two steps:**
+   - **Step 1 (about 15 min):** a test script that sends 100 MOE from the treasury to a new wallet and prints a Solana Explorer link. That proves the whole pipeline works.
+   - **Step 2:** "Buy" in the market sends a real MOE transfer to the creator, with the world's fingerprint in a note attached to the transaction. The toast then shows the transaction link. Your top-right MOE balance becomes the real on-chain balance.
+
+**What I need from you:** get the treasury key into `.env.local`, and tell me "browser wallet" or "Phantom". Then I'll do step 1.
+
+**The reminder you asked for at the Solana stage** (notes section 6):
+- The world file stays off the chain; the world's NFT holds its fingerprint.
+- Buying checks for a pass, then re-checks the file against the fingerprint. That part already works.
+- A bought world doesn't use one of your free generations; it doesn't now either.
+- An optional remix creates a "child" NFT that sends royalties back to the original creator.
+
+Corey's trading doc proposes a 90/5/3/2 fee split (seller / creator / learning pool / treasury). The game currently uses 10% to the creator. We should pick one before the real transfers.
+
+## The plan, one at a time
+1. **Real devnet transaction** (now)
+2. **Combine the newer branches:** Corey's cosmetics, his trading doc and the new hub design, then put `merge1` into `main`
+3. **Public URL:** a Vercel deploy, maybe a free MLH domain
+
+## Still missing for submission
+- **Team name** for the script (it's `[TEAM]` right now)
+- **The demo video:** recorded and edited
+- **Devpost:** the description, plus the GitHub and URL links
+- **Clean-up:** remove `DISCUSSION_NOTES.md`, Corey's notes file and `docs/convo/` from git
+
+## Reminders now due
+- **Ask the judges for feedback in person** while you're still building. We're past the halfway mark.
+- **Still owed from you:** the slide brain dump and the game feature list.
+- **Running cost** (due at pitch/deploy time): about a penny of Gemini per world on paid tiers, £0 hosting on Vercel's free tier, and devnet fees cost nothing.
+
+## Parked for later
+- Learn-to-earn rewards, which you've put on hold
+- The Data tab in plain language, plus Tiger Data, when we work on data
+- A game picker that learns per player
+- 3D
+
+### Memphis
+
+ok if u check histroy or maybe u cant i basically tried generating a new island called marvel cinematic universe but the game mode is still the same boring shit like the platformer up and down one, and then its the same for one of the psychology ones i bought using moes, we will have to tackle this after along with giving our platform more research data on what game modes and how to prompt it correctly, no more generic ones but unique ones, also another quesiton it can read pdf slides and documents right ? where is treasury.json is it on his computer or his branch ? cant i just pull from his branch ? ye lets use demo for now, also for this test transaction can we try by doing it between my account or computer with correys computer ? how can we do so ?
+
+### Claude
+
+**Marvel island and the bought world.** I can't see what you generated; it's stored in your browser, not anywhere I can read. Two things explain what you saw:
+- **The bought psychology world** is a ready-made file with its games fixed inside it, so the variety rule doesn't touch it. All the shop worlds are like that.
+- **The Marvel island** should now get a different mix of 2 action games each time, but they're picked from only four types (Showdown, Squad Board, the platformer, Shooter). So the platformer still comes up often, and the mixes feel generic.
+
+The real fix is what you said: research which game modes fit which content, prompt better, and design a unique game per topic. I've saved that as the next game task, after the transaction.
+
+**Can it read PDF slides and documents?** Yes. PDFs (slides exported to PDF included), .txt, .md, and PNG/JPG images such as slide screenshots all go straight to Gemini, which reads the whole thing. It can't take PowerPoint files directly, so export them to PDF first. Keep uploads under about 20 MB in total.
+
+**Where is treasury.json? Can we pull it from his branch?** No. I checked every branch and its full history: it isn't in any of them. It only exists on Corey's laptop, and it should stay that way. It holds the secret key that controls all 1,000,000 MOE, so it must never go into git.
+
+## Testing a transaction between your laptop and Corey's
+The demo wallet works on any computer. Each laptop's browser makes its own wallet with its own address, and both are on the same devnet, so you can send MOE to each other.
+
+1. **I build:**
+   - the demo wallet: your MOE balance becomes the real on-chain balance
+   - a "Send MOE" box in the Wallet tab (paste an address, enter an amount)
+   - a small funding script for Corey
+2. **You both** pull `merge1`, run the app, and open Wallet & history. Each of you copies your wallet address.
+3. **Corey runs the funding script on his laptop:** `node scripts/fund.mjs <your address> 30000`. The treasury key never leaves his computer and never goes in git. It sends you 30,000 MOE plus a little SOL to pay fees, and he funds his own wallet the same way.
+4. **You send Corey 500 MOE** from the Send box. His balance goes up when he refreshes, and you both open the same Solana Explorer link to see it confirmed on-chain.
+
+**What this test doesn't cover yet:** buying a world Corey listed from his laptop. Listings are still saved in each browser, so your laptop can't see his. Shared listings come with the public deploy (step 3), when we both use the same site and a shared database. At that point the treasury key lives in Vercel's secret settings and new players get their 30,000 MOE automatically.
+
+**One thing to know:** the demo wallet's key sits in the browser. That's fine on devnet, where the money is fake, but it isn't how we'd do it with real money.
+
+Say "go" and I'll build step 1, then give you the exact message to send Corey.
+
+### Memphis
+
+for the differnet game mdes, can u help me do extensive research on possible game modes popular in the gaming industry and what games mode u feel like will be compatible with us or not, whatever happens i want at least 50 possible game types for our AI to choose from generating new island not the 4 bullshit, do the research ur talking about, and is tiger data implemented as a side quest ? also remind me we nede to add a part where user can prompt their own game type and what game it will look like and the gameplay will be like but in hte futuer (how people use claude to make game development ask in reminder alongside this), KEY = [REDACTED KEYPAIR BYTES]
+
+### Claude
+
+First, the key you pasted: I'm writing it straight into `.env.local` without repeating it, then checking it matches the treasury wallet.
+
+### Claude
+
+The key matches the treasury wallet and git ignores `.env.local`. Next, the game-mode research.
+
+### Claude
+
+The research is enough to write the catalogue. Writing it into the repo.
+
+### Claude
+
+Saving the reminders you asked for in memory, then committing, re-exporting the conversation and pushing.
