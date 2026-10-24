@@ -1,438 +1,376 @@
 {
-  "title": "Photosynthesis Knowledge Base",
-  "topic": "Biology - Photosynthesis",
-  "summary": "Comprehensive revision knowledge base covering the overall equation, chloroplast structure, light-dependent and light-independent stages, limiting factors, uses of glucose, and common misconceptions in photosynthesis.",
+  "title": "Biology Photosynthesis Knowledge Base",
+  "topic": "Photosynthesis",
+  "summary": "Comprehensive extraction of examinable knowledge regarding photosynthesis, including equations, locations, light-dependent and light-independent reactions, limiting factors, uses of glucose, and common misconceptions.",
   "knowledge": [
     {
       "id": "K1",
       "kind": "fact",
-      "text": "The overall equation for photosynthesis is 6CO2 + 6H2O -> C6H12O6 + 6O2.",
+      "text": "Overall equation for photosynthesis: 6CO2 + 6H2O -> C6H12O6 + 6O2, using light energy absorbed by chlorophyll.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K2",
-      "kind": "fact",
-      "text": "Photosynthesis uses light energy absorbed by chlorophyll.",
+      "kind": "term",
+      "text": "Location of photosynthesis: chloroplasts.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K3",
-      "kind": "term",
-      "text": "Chloroplast: The organelle where photosynthesis takes place.",
+      "kind": "fact",
+      "text": "Thylakoid membranes are stacked into grana and hold chlorophyll.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K4",
-      "kind": "term",
-      "text": "Thylakoid membranes: Internal chloroplast membranes stacked into grana that hold chlorophyll.",
+      "kind": "fact",
+      "text": "The fluid around the thylakoid membranes is the stroma.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K5",
-      "kind": "term",
-      "text": "Grana: Stacks of thylakoid membranes inside the chloroplast.",
+      "kind": "process",
+      "text": "Light-dependent reaction (thylakoid membranes): light excites electrons in chlorophyll (photosystems II and I).",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K6",
-      "kind": "term",
-      "text": "Stroma: The fluid surrounding the thylakoid membranes in the chloroplast.",
+      "kind": "process",
+      "text": "Photolysis splits water into H+ ions, electrons, and oxygen, with oxygen released as a by-product.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K7",
-      "kind": "fact",
-      "text": "The light-dependent reaction occurs in the thylakoid membranes.",
+      "kind": "process",
+      "text": "Electron transport chain pumps H+ and drives ATP synthase to make ATP (photophosphorylation).",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K8",
       "kind": "process",
-      "text": "During the light-dependent reaction, light excites electrons in chlorophyll within photosystems II and I.",
+      "text": "NADP is reduced to NADPH during the light-dependent reaction.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K9",
-      "kind": "term",
-      "text": "Photolysis: The splitting of water into H+ ions, electrons, and oxygen using light energy.",
+      "kind": "process",
+      "text": "Light-independent reaction / Calvin cycle (stroma): enzyme RuBisCO fixes CO2 onto RuBP (5C) making two GP (3C).",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K10",
-      "kind": "fact",
-      "text": "Oxygen is released as a by-product of photolysis during the light-dependent reaction.",
+      "kind": "process",
+      "text": "GP is reduced to TP (triose phosphate) using ATP and NADPH in the Calvin cycle.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K11",
       "kind": "process",
-      "text": "The electron transport chain pumps H+ ions across the thylakoid membrane.",
+      "text": "Some TP makes glucose and other organic molecules, while most regenerates RuBP using ATP.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K12",
-      "kind": "process",
-      "text": "The flow of H+ ions drives ATP synthase to produce ATP, a process known as photophosphorylation.",
+      "kind": "fact",
+      "text": "Limiting factors of photosynthesis include light intensity, CO2 concentration, and temperature.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K13",
-      "kind": "process",
-      "text": "NADP is reduced to NADPH during the light-dependent reaction.",
+      "kind": "evaluation",
+      "text": "Temperature affects enzymes in photosynthesis; temperatures that are too high denature the enzymes.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K14",
-      "kind": "term",
-      "text": "Calvin cycle: The light-independent reaction of photosynthesis occurring in the stroma.",
+      "kind": "fact",
+      "text": "The factor in shortest supply limits the rate of photosynthesis.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K15",
       "kind": "fact",
-      "text": "The light-independent reaction takes place in the stroma of the chloroplast.",
+      "text": "Uses of glucose produced in plants: respiration, starch for storage, cellulose for cell walls, sucrose for transport, and amino acids/proteins with nitrates.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K16",
-      "kind": "term",
-      "text": "RuBisCO: The enzyme that fixes carbon dioxide onto ribulose bisphosphate (RuBP).",
+      "kind": "fact",
+      "text": "Common misconception: plants also respire all the time.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K17",
-      "kind": "number",
-      "text": "RuBP is a 5-carbon (5C) molecule.",
+      "kind": "fact",
+      "text": "Common misconception: oxygen comes from water, not CO2.",
       "source": "photosynthesis.txt"
     },
     {
       "id": "K18",
-      "kind": "process",
-      "text": "RuBisCO fixes CO2 onto RuBP (5C) to produce two molecules of glycerate 3-phosphate (GP).",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K19",
-      "kind": "number",
-      "text": "Glycerate 3-phosphate (GP) is a 3-carbon (3C) molecule.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K20",
-      "kind": "process",
-      "text": "GP is reduced to triose phosphate (TP) using ATP and NADPH from the light-dependent reaction.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K21",
-      "kind": "process",
-      "text": "Some triose phosphate (TP) is used to synthesise glucose and other organic molecules.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K22",
-      "kind": "process",
-      "text": "Most triose phosphate (TP) is used to regenerate RuBP, requiring ATP.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K23",
       "kind": "fact",
-      "text": "The three main limiting factors of photosynthesis are light intensity, carbon dioxide concentration, and temperature.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K24",
-      "kind": "fact",
-      "text": "Excessively high temperatures denature photosynthetic enzymes, reducing the rate of photosynthesis.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K25",
-      "kind": "fact",
-      "text": "The factor in shortest supply is the limiting factor that determines and limits the rate of photosynthesis.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K26",
-      "kind": "fact",
-      "text": "Glucose produced in photosynthesis is used in respiration to release energy.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K27",
-      "kind": "fact",
-      "text": "Glucose can be converted into insoluble starch for storage.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K28",
-      "kind": "fact",
-      "text": "Glucose is converted into cellulose to build plant cell walls.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K29",
-      "kind": "fact",
-      "text": "Glucose is converted into sucrose for transport around the plant.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K30",
-      "kind": "fact",
-      "text": "Glucose is combined with nitrates to produce amino acids and proteins.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K31",
-      "kind": "fact",
-      "text": "Plants respire continuously, both day and night.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K32",
-      "kind": "fact",
-      "text": "The oxygen released in photosynthesis originates from the splitting of water, not from carbon dioxide.",
-      "source": "photosynthesis.txt"
-    },
-    {
-      "id": "K33",
-      "kind": "fact",
-      "text": "The Calvin cycle does not directly require light, but it depends on the products (ATP and NADPH) of the light-dependent reaction.",
+      "text": "Common misconception: the Calvin cycle does not need light directly but needs products of the light-dependent reaction.",
       "source": "photosynthesis.txt"
     }
+  ],
+  "theme": "nature",
+  "games": [
+    "runner",
+    "arena",
+    "inspect"
   ],
   "intro": [
     {
       "keyword": "Equation",
-      "text": "The overall equation for photosynthesis is 6CO2 + 6H2O -> C6H12O6 + 6O2. Photosynthesis uses light energy absorbed by chlorophyll.",
+      "text": "You turn carbon dioxide and water into glucose and oxygen using light energy absorbed by chlorophyll.",
       "refs": [
-        "K1",
-        "K2"
+        "K1"
       ]
     },
     {
-      "keyword": "Chloroplast",
-      "text": "Chloroplast is the organelle where photosynthesis takes place. Inside, thylakoid membranes are stacked into grana holding chlorophyll, all surrounded by fluid called the stroma.",
+      "keyword": "Chloroplasts",
+      "text": "You explore chloroplasts containing thylakoid membranes stacked into grana holding chlorophyll, surrounded by the fluid stroma.",
       "refs": [
+        "K2",
         "K3",
-        "K4",
+        "K4"
+      ]
+    },
+    {
+      "keyword": "Reactions",
+      "text": "You power the light-dependent reaction in thylakoids and the light-independent Calvin cycle in the stroma.",
+      "refs": [
         "K5",
-        "K6"
+        "K9"
       ]
     },
     {
-      "keyword": "Light Reactions",
-      "text": "The light-dependent reaction occurs in the thylakoid membranes. Light excites electrons in chlorophyll within photosystems II and I. Photolysis splits water into H+ ions, electrons, and oxygen using light energy.",
+      "keyword": "Limiting Factors",
+      "text": "You see how light intensity, carbon dioxide concentration, temperature, and shortage dictate the rate.",
       "refs": [
-        "K7",
-        "K8",
-        "K9",
-        "K10",
-        "K32"
-      ]
-    },
-    {
-      "keyword": "ATP & NADPH",
-      "text": "The electron transport chain pumps H+ ions across the thylakoid membrane. The flow drives ATP synthase to produce ATP via photophosphorylation, and NADP is reduced to NADPH.",
-      "refs": [
-        "K11",
         "K12",
-        "K13"
+        "K14"
       ]
     },
     {
-      "keyword": "Calvin Cycle",
-      "text": "The Calvin cycle is the light-independent reaction occurring in the stroma. It does not directly require light, but depends on ATP and NADPH from the light-dependent reaction.",
+      "keyword": "Glucose Uses",
+      "text": "You utilize produced glucose for respiration, starch storage, cellulose walls, sucrose transport, and amino acids.",
       "refs": [
-        "K14",
-        "K15",
-        "K33"
-      ]
-    },
-    {
-      "keyword": "Carbon Fixation",
-      "text": "RuBisCO fixes carbon dioxide onto a 5-carbon RuBP to produce two molecules of 3-carbon glycerate 3-phosphate. GP is reduced to triose phosphate using ATP and NADPH.",
-      "refs": [
-        "K16",
-        "K17",
-        "K18",
-        "K19",
-        "K20"
-      ]
-    },
-    {
-      "keyword": "Products & Factors",
-      "text": "Some triose phosphate makes glucose for respiration, starch, cellulose, sucrose, or amino acids. Limiting factors include light, CO2, and temperature, with high heat denaturing enzymes.",
-      "refs": [
-        "K21",
-        "K22",
-        "K23",
-        "K24",
-        "K25",
-        "K26",
-        "K27",
-        "K28",
-        "K29",
-        "K30",
-        "K31"
+        "K15"
       ]
     }
   ],
-  "arena": {
-    "title": "Photosynthesis Sorting",
-    "instructions": "Sort each item into Light-Dependent or Light-Independent / Calvin Cycle processes.",
-    "categoryA": {
-      "name": "Light-Dependent",
-      "hint": "Occurs in thylakoids using light"
-    },
-    "categoryB": {
-      "name": "Calvin Cycle",
-      "hint": "Occurs in stroma, light-independent"
-    },
-    "items": [
+  "sequence": {
+    "title": "Photosynthesis Flow",
+    "instructions": "Jump through the correct stages in order!",
+    "steps": [
       {
-        "label": "Photolysis of water",
-        "category": "A",
-        "refs": [
-          "K9",
-          "K10"
-        ]
-      },
-      {
-        "label": "Thylakoid membranes",
-        "category": "A",
-        "refs": [
-          "K4",
-          "K7"
-        ]
-      },
-      {
-        "label": "Excites electrons",
-        "category": "A",
-        "refs": [
-          "K8"
-        ]
-      },
-      {
-        "label": "Photophosphorylation ATP",
-        "category": "A",
-        "refs": [
-          "K12"
-        ]
-      },
-      {
-        "label": "NADP reduced to NADPH",
-        "category": "A",
-        "refs": [
-          "K13"
-        ]
-      },
-      {
-        "label": "Stroma fluid",
-        "category": "B",
-        "refs": [
-          "K6",
-          "K15"
-        ]
-      },
-      {
-        "label": "RuBisCO enzyme",
-        "category": "B",
-        "refs": [
-          "K16"
-        ]
-      },
-      {
-        "label": "RuBP 5C molecule",
-        "category": "B",
-        "refs": [
-          "K17"
-        ]
-      },
-      {
-        "label": "Produces GP 3C",
-        "category": "B",
-        "refs": [
-          "K18",
-          "K19"
-        ]
-      },
-      {
-        "label": "Regenerates RuBP",
-        "category": "B",
-        "refs": [
-          "K22"
-        ]
-      }
-    ]
-  },
-  "inspect": {
-    "title": "Chloroplast Inspection",
-    "room": "Chloroplast Lab",
-    "choiceA": "True Fact",
-    "choiceB": "False Statement",
-    "clues": [
-      {
-        "icon": "🌱",
-        "label": "Overall Equation",
-        "claim": "6CO2 + 6H2O yields C6H12O6 + 6O2",
-        "answer": "A",
-        "why": "This is the correct overall chemical equation for photosynthesis.",
-        "refs": [
-          "K1"
-        ]
-      },
-      {
+        "label": "Light hits chlorophyll",
         "icon": "☀️",
-        "label": "Oxygen Source",
-        "claim": "Released oxygen originates from splitting carbon dioxide",
-        "answer": "B",
-        "why": "Oxygen released originates from the splitting of water during photolysis, not carbon dioxide.",
-        "refs": [
-          "K32"
-        ]
-      },
-      {
-        "icon": "🥞",
-        "label": "Grana Structure",
-        "claim": "Grana are stacks of thylakoid membranes",
-        "answer": "A",
-        "why": "Grana are indeed stacks of thylakoid membranes inside the chloroplast.",
+        "detail": "Light excites electrons in chlorophyll within photosystems II and I on thylakoid membranes.",
         "refs": [
           "K5"
         ]
       },
       {
-        "icon": "🌡️",
-        "label": "Temperature Effect",
-        "claim": "Excessively high temperatures denature photosynthetic enzymes",
-        "answer": "A",
-        "why": "Very high temperatures denature enzymes, reducing the photosynthetic rate.",
+        "label": "Water photolysis",
+        "icon": "💧",
+        "detail": "Photolysis splits water into H+ ions, electrons, and oxygen, releasing oxygen as a by-product.",
         "refs": [
-          "K24"
+          "K6"
+        ]
+      },
+      {
+        "label": "Electron transport chain",
+        "icon": "⚡",
+        "detail": "The electron transport chain pumps H+ and drives ATP synthase to make ATP via photophosphorylation.",
+        "refs": [
+          "K7"
+        ]
+      },
+      {
+        "label": "NADP reduction",
+        "icon": "🔋",
+        "detail": "NADP is reduced to NADPH during the light-dependent reaction.",
+        "refs": [
+          "K8"
+        ]
+      },
+      {
+        "label": "Carbon fixation",
+        "icon": "🌱",
+        "detail": "In the stroma, enzyme RuBisCO fixes CO2 onto RuBP making two GP.",
+        "refs": [
+          "K9"
+        ]
+      },
+      {
+        "label": "GP reduction",
+        "icon": "🔄",
+        "detail": "GP is reduced to triose phosphate using ATP and NADPH in the Calvin cycle.",
+        "refs": [
+          "K10"
+        ]
+      },
+      {
+        "label": "RuBP regeneration",
+        "icon": "🔁",
+        "detail": "Some triose phosphate makes glucose while most regenerates RuBP using ATP.",
+        "refs": [
+          "K11"
+        ]
+      }
+    ]
+  },
+  "arena": {
+    "title": "Reaction Sorter",
+    "instructions": "Sort items into Light-Dependent or Calvin Cycle!",
+    "categoryA": {
+      "name": "Light-Dependent",
+      "hint": "Happens in thylakoids with light"
+    },
+    "categoryB": {
+      "name": "Calvin Cycle",
+      "hint": "Happens in stroma"
+    },
+    "items": [
+      {
+        "label": "Thylakoid membranes",
+        "category": "A",
+        "icon": "🍃",
+        "refs": [
+          "K3",
+          "K5"
+        ]
+      },
+      {
+        "label": "Photolysis of water",
+        "category": "A",
+        "icon": "💧",
+        "refs": [
+          "K6"
+        ]
+      },
+      {
+        "label": "ATP synthase action",
+        "category": "A",
+        "icon": "⚡",
+        "refs": [
+          "K7"
+        ]
+      },
+      {
+        "label": "NADP reduction",
+        "category": "A",
+        "icon": "🔋",
+        "refs": [
+          "K8"
+        ]
+      },
+      {
+        "label": "Stroma fluid",
+        "category": "B",
+        "icon": "🌊",
+        "refs": [
+          "K4",
+          "K9"
+        ]
+      },
+      {
+        "label": "Enzyme RuBisCO",
+        "category": "B",
+        "icon": "🧬",
+        "refs": [
+          "K9"
+        ]
+      },
+      {
+        "label": "Fixing CO2 onto RuBP",
+        "category": "B",
+        "icon": "📥",
+        "refs": [
+          "K9"
+        ]
+      },
+      {
+        "label": "GP reduced to TP",
+        "category": "B",
+        "icon": "🔄",
+        "refs": [
+          "K10"
+        ]
+      },
+      {
+        "label": "Regenerating RuBP",
+        "category": "B",
+        "icon": "🔁",
+        "refs": [
+          "K11"
+        ]
+      },
+      {
+        "label": "Oxygen release",
+        "category": "A",
+        "icon": "💨",
+        "refs": [
+          "K6"
+        ]
+      }
+    ]
+  },
+  "inspect": {
+    "title": "Plant Lab Inspection",
+    "room": "Greenhouse",
+    "choiceA": "True",
+    "choiceB": "Myth",
+    "clues": [
+      {
+        "icon": "🌡️",
+        "label": "Enzyme Heat",
+        "claim": "High temperatures denature enzymes in photosynthesis.",
+        "answer": "A",
+        "why": "Temperature affects enzymes, and temperatures that are too high denature them.",
+        "refs": [
+          "K13"
         ]
       },
       {
         "icon": "🌙",
-        "label": "Plant Respiration",
-        "claim": "Plants only respire during the night",
+        "label": "Night Respiration",
+        "claim": "Plants only respire when it is dark.",
         "answer": "B",
-        "why": "Plants respire continuously, both day and night.",
+        "why": "Plants also respire all the time as a common fact.",
         "refs": [
-          "K31"
+          "K16"
         ]
       },
       {
-        "icon": "🧬",
-        "label": "Glucose Uses",
-        "claim": "Glucose can convert to starch, cellulose, and sucrose",
-        "answer": "A",
-        "why": "Glucose is converted into insoluble starch for storage, cellulose for walls, and sucrose for transport.",
+        "icon": "💧",
+        "label": "Oxygen Source",
+        "claim": "Oxygen comes from splitting carbon dioxide.",
+        "answer": "B",
+        "why": "Oxygen comes from water during photolysis, not CO2.",
         "refs": [
-          "K27",
-          "K28",
-          "K29"
+          "K17"
+        ]
+      },
+      {
+        "icon": "☀️",
+        "label": "Calvin Light Need",
+        "claim": "The Calvin cycle needs direct light to function.",
+        "answer": "B",
+        "why": "The Calvin cycle does not need light directly, but needs products of the light-dependent reaction.",
+        "refs": [
+          "K18"
+        ]
+      },
+      {
+        "icon": "📉",
+        "label": "Limiting Shortage",
+        "claim": "The factor in shortest supply sets the rate.",
+        "answer": "A",
+        "why": "The factor in shortest supply limits the rate of photosynthesis.",
+        "refs": [
+          "K14"
         ]
       }
     ]

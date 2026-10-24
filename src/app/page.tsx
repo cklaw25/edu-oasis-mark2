@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import GameCanvas, { type SceneKey } from "@/components/GameCanvas";
 import CreateWorldModal from "@/components/CreateWorldModal";
 import BoboFlow, { type BoboPhase } from "@/components/BoboFlow";
-import WorldFlow, { labClues, type WorldPhase } from "@/components/WorldFlow";
+import WorldFlow, { phaseGame, sceneFor, type WorldPhase } from "@/components/WorldFlow";
+import { gamesOf } from "@/lib/worldSpec";
 import PipPanel from "@/components/PipPanel";
 import MarketPanel from "@/components/MarketPanel";
 import { getWallet, mintBadge } from "@/lib/solana";
@@ -22,7 +23,7 @@ type Active = { kind: "bobo" } | { kind: "gen"; id: string; spec: WorldSpec } | 
 type Phase = BoboPhase | WorldPhase;
 
 // phases where the player reads a card instead of playing
-const CARD_PHASES: Phase[] = ["intro", "howArena", "results", "summary", "arenaDone"];
+const isCardPhase = (p: string) => ["intro", "results", "summary"].includes(p) || /^(how|done):/.test(p);
 
 export default function Home() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -54,7 +55,12 @@ export default function Home() {
         setNonce((n) => n + 1);
       }
     }
-    if (p === "arena") bus.emit("arena:begin");
+    // generated worlds: a fresh, waiting scene for each how-to; start it when play begins
+    if (p.startsWith("how:")) {
+      setAutoStart(false);
+      setNonce((n) => n + 1);
+    }
+    if (p.startsWith("play:")) ["runner", "shooter", "arena"].forEach((k) => bus.emit(`${k}:begin`));
     phaseRef.current = p;
     setPhaseState(p);
   }, []);
@@ -101,13 +107,13 @@ export default function Home() {
   let sceneData: Record<string, unknown> = { autoStart };
   if (active?.kind === "bobo") scene = phase === "review" || phase === "summary" ? "lab" : "experiment";
   if (active?.kind === "gen") {
-    const inLab = phase === "inspect" || phase === "summary";
-    scene = inLab ? "lab" : "arena";
-    sceneData = inLab
-      ? { clues: labClues(active.spec), title: active.spec.inspect.room }
-      : { arena: active.spec.arena, autoStart };
+    const games = gamesOf(active.spec);
+    const i = phaseGame(phase) ?? (phase === "summary" ? games.length - 1 : 0);
+    const s = sceneFor(active.spec, games[i], autoStart);
+    scene = s.key;
+    sceneData = s.data;
   }
-  const paused = pipOpen || panel !== null || (active !== null && (CARD_PHASES.includes(phase) || reviewOpen));
+  const paused = pipOpen || panel !== null || (active !== null && (isCardPhase(phase) || reviewOpen));
 
   const exitWorld = (id: string, accuracy: number) => {
     const t = now();

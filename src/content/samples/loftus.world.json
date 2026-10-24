@@ -1,474 +1,468 @@
 {
   "title": "Loftus and Palmer (1974) Knowledge Base",
   "topic": "IB Psychology - Loftus and Palmer 1974",
-  "summary": "A comprehensive, atomic breakdown of Loftus and Palmer's (1974) study on reconstructive memory and leading questions, covering aims, samples, both experiment designs and procedures, exact statistical findings, conclusions, and evaluation points.",
+  "summary": "Atomic knowledge extraction covering Loftus and Palmer's (1974) study on reconstructive memory, including aims, design, procedures, results, conclusions, strengths, limitations, and counter-evidence.",
   "knowledge": [
     {
       "id": "K1",
       "kind": "study",
-      "text": "Loftus and Palmer (1974) investigated the reconstructive nature of memory in their study titled 'Reconstruction of automobile destruction'.",
+      "text": "Study: Loftus and Palmer (1974) - 'Reconstruction of automobile destruction'.",
       "source": "loftus.txt"
     },
     {
       "id": "K2",
       "kind": "fact",
-      "text": "The aim of Loftus and Palmer (1974) was to investigate whether leading questions affect estimates of speed and memory of an event in relation to reconstructive memory and schema theory.",
+      "text": "Aim: To investigate whether leading questions affect estimates of speed and memory of an event (reconstructive memory / schema theory).",
       "source": "loftus.txt"
     },
     {
       "id": "K3",
-      "kind": "term",
-      "text": "Reconstructive memory refers to the concept that memory is not a passive recording of events, but is dynamically rebuilt and altered using post-event information.",
+      "kind": "number",
+      "text": "Experiment 1 sample: 45 American students.",
       "source": "loftus.txt"
     },
     {
       "id": "K4",
-      "kind": "study",
-      "text": "The sample of Experiment 1 consisted of 45 American students.",
+      "kind": "fact",
+      "text": "Experiment 1 design: Independent measures design.",
       "source": "loftus.txt"
     },
     {
       "id": "K5",
-      "kind": "fact",
-      "text": "Experiment 1 used an independent measures design.",
+      "kind": "number",
+      "text": "Experiment 1 procedure: Participants watched 7 film clips of traffic accidents.",
       "source": "loftus.txt"
     },
     {
       "id": "K6",
-      "kind": "process",
-      "text": "In Experiment 1, participants watched 7 film clips of traffic accidents.",
+      "kind": "quote",
+      "text": "Experiment 1 critical question: 'About how fast were the cars going when they ___ each other?'",
       "source": "loftus.txt"
     },
     {
       "id": "K7",
-      "kind": "process",
-      "text": "In Experiment 1, after viewing the clips, participants answered the question: 'About how fast were the cars going when they ___ each other?'",
+      "kind": "fact",
+      "text": "Experiment 1 Independent Variable (IV): The critical verb used in the question ('smashed', 'collided', 'bumped', 'hit', 'contacted').",
       "source": "loftus.txt"
     },
     {
       "id": "K8",
       "kind": "fact",
-      "text": "In Experiment 1, the independent variable was the verb used in the critical question, which had five conditions: smashed, collided, bumped, hit, and contacted.",
+      "text": "Experiment 1 Dependent Variable (DV): Speed estimate in miles per hour (mph).",
       "source": "loftus.txt"
     },
     {
       "id": "K9",
-      "kind": "fact",
-      "text": "In Experiment 1, the dependent variable was the participant's speed estimate in miles per hour (mph).",
+      "kind": "number",
+      "text": "Experiment 1 result: The mean speed estimate for 'smashed' was 40.8 mph.",
       "source": "loftus.txt"
     },
     {
       "id": "K10",
       "kind": "number",
-      "text": "In Experiment 1, the verb 'smashed' yielded a mean speed estimate of 40.8 mph.",
+      "text": "Experiment 1 result: The mean speed estimate for 'collided' was 39.3 mph.",
       "source": "loftus.txt"
     },
     {
       "id": "K11",
       "kind": "number",
-      "text": "In Experiment 1, the verb 'collided' yielded a mean speed estimate of 39.3 mph.",
+      "text": "Experiment 1 result: The mean speed estimate for 'bumped' was 38.1 mph.",
       "source": "loftus.txt"
     },
     {
       "id": "K12",
       "kind": "number",
-      "text": "In Experiment 1, the verb 'bumped' yielded a mean speed estimate of 38.1 mph.",
+      "text": "Experiment 1 result: The mean speed estimate for 'hit' was 34.0 mph.",
       "source": "loftus.txt"
     },
     {
       "id": "K13",
       "kind": "number",
-      "text": "In Experiment 1, the verb 'hit' yielded a mean speed estimate of 34.0 mph.",
+      "text": "Experiment 1 result: The mean speed estimate for 'contacted' was 31.8 mph.",
       "source": "loftus.txt"
     },
     {
       "id": "K14",
       "kind": "number",
-      "text": "In Experiment 1, the verb 'contacted' yielded a mean speed estimate of 31.8 mph.",
+      "text": "Experiment 2 sample: 150 students.",
       "source": "loftus.txt"
     },
     {
       "id": "K15",
-      "kind": "study",
-      "text": "The sample of Experiment 2 consisted of 150 students.",
+      "kind": "process",
+      "text": "Experiment 2 procedure: Participants watched a 1-minute film of a multiple car crash.",
       "source": "loftus.txt"
     },
     {
       "id": "K16",
-      "kind": "process",
-      "text": "In Experiment 2, participants watched a 1-minute film depicting a multiple car crash.",
+      "kind": "fact",
+      "text": "Experiment 2 groups: 50 participants were asked a speed question with 'smashed', 50 with 'hit', and 50 served as a control receiving no speed question.",
       "source": "loftus.txt"
     },
     {
       "id": "K17",
       "kind": "process",
-      "text": "In Experiment 2, 50 participants were asked speed with the verb 'smashed', 50 with the verb 'hit', and 50 were in a control group that received no speed question.",
+      "text": "Experiment 2 procedure: One week later, participants were asked 'Did you see any broken glass?'.",
       "source": "loftus.txt"
     },
     {
       "id": "K18",
-      "kind": "process",
-      "text": "One week after watching the film in Experiment 2, participants were asked the critical question: 'Did you see any broken glass?'",
+      "kind": "fact",
+      "text": "Experiment 2 fact: There was no broken glass in the accident film clip.",
       "source": "loftus.txt"
     },
     {
       "id": "K19",
-      "kind": "fact",
-      "text": "In Experiment 2, there was no broken glass present in the film clip shown to participants.",
+      "kind": "number",
+      "text": "Experiment 2 result: 16 participants (32%) in the 'smashed' condition reported seeing broken glass.",
       "source": "loftus.txt"
     },
     {
       "id": "K20",
       "kind": "number",
-      "text": "In Experiment 2, 16 participants (32%) in the 'smashed' condition falsely recalled seeing broken glass.",
+      "text": "Experiment 2 result: 7 participants (14%) in the 'hit' condition reported seeing broken glass.",
       "source": "loftus.txt"
     },
     {
       "id": "K21",
       "kind": "number",
-      "text": "In Experiment 2, 7 participants (14%) in the 'hit' condition falsely recalled seeing broken glass.",
+      "text": "Experiment 2 result: 6 participants (12%) in the control condition reported seeing broken glass.",
       "source": "loftus.txt"
     },
     {
       "id": "K22",
-      "kind": "number",
-      "text": "In Experiment 2, 6 participants (12%) in the control condition falsely recalled seeing broken glass.",
+      "kind": "fact",
+      "text": "Conclusion: Leading questions can distort memory.",
       "source": "loftus.txt"
     },
     {
       "id": "K23",
       "kind": "fact",
-      "text": "Loftus and Palmer concluded that leading questions can distort memory of an event.",
+      "text": "Conclusion: Post-event information is integrated into the memory of the event, demonstrating that memory is reconstructive.",
       "source": "loftus.txt"
     },
     {
       "id": "K24",
-      "kind": "fact",
-      "text": "Loftus and Palmer concluded that post-event information is integrated into the memory of an event, supporting reconstructive memory.",
+      "kind": "evaluation",
+      "text": "Strength: It was a laboratory experiment with high control and a standardised procedure, allowing cause-and-effect to be established.",
       "source": "loftus.txt"
     },
     {
       "id": "K25",
       "kind": "evaluation",
-      "text": "A strength of Loftus and Palmer (1974) is that it was a laboratory experiment with high control and standardized procedures, allowing cause-and-effect relationships to be established.",
+      "text": "Strength: The study has been replicated.",
       "source": "loftus.txt"
     },
     {
       "id": "K26",
       "kind": "evaluation",
-      "text": "A strength of the study is that its findings have been replicated.",
+      "text": "Limitation: The sample of students is not representative of all age groups or drivers.",
       "source": "loftus.txt"
     },
     {
       "id": "K27",
       "kind": "evaluation",
-      "text": "A limitation of the study is that the student sample is not representative of all age groups or driving experience levels.",
+      "text": "Limitation: Watching film clips lacks the emotional arousal of real accidents, resulting in low ecological validity.",
       "source": "loftus.txt"
     },
     {
       "id": "K28",
       "kind": "evaluation",
-      "text": "A limitation is low ecological validity because watching brief film clips lacks the emotional arousal and stress associated with witnessing real-life car accidents.",
+      "text": "Limitation: Demand characteristics were possible.",
       "source": "loftus.txt"
     },
     {
       "id": "K29",
-      "kind": "evaluation",
-      "text": "A limitation is the risk of demand characteristics, where participants might have guessed the study's aim and altered their answers accordingly.",
-      "source": "loftus.txt"
-    },
-    {
-      "id": "K30",
-      "kind": "evaluation",
-      "text": "Yuille and Cutshall (1986) challenged Loftus and Palmer's findings by demonstrating that real-life eyewitnesses to a shooting remained accurate in their recall despite being asked misleading questions.",
+      "kind": "study",
+      "text": "Counter-evidence: Yuille and Cutshall (1986) found real witnesses of a shooting were accurate despite misleading questions.",
       "source": "loftus.txt"
     }
+  ],
+  "theme": "lab",
+  "games": [
+    "runner",
+    "shooter",
+    "inspect"
   ],
   "intro": [
     {
       "keyword": "Aim",
-      "text": "Loftus and Palmer (1974) investigated reconstructive memory and leading questions. They tested if changing verbs in a question alters how people remember car accidents.",
+      "text": "You are investigating whether leading questions alter speed estimates and reconstruct memories.",
       "refs": [
         "K1",
         "K2"
       ]
     },
     {
-      "keyword": "Reconstructive Memory",
-      "text": "Memory is not a passive recording! We dynamically rebuild and alter past events using post-event information and schema theory.",
+      "keyword": "Experiment 1",
+      "text": "45 students in an independent measures design watch seven traffic accident film clips.",
       "refs": [
-        "K3"
+        "K3",
+        "K4",
+        "K5"
       ]
     },
     {
-      "keyword": "Experiment 1",
-      "text": "45 American students watched 7 traffic accident clips. Using an independent measures design, they estimated speed after being asked about cars that smashed, collided, bumped, hit, or contacted.",
+      "keyword": "Variables",
+      "text": "You test critical verbs like smashed or hit and measure speed estimates in mph.",
       "refs": [
-        "K4",
-        "K5",
         "K6",
         "K7",
-        "K8",
-        "K9"
-      ]
-    },
-    {
-      "keyword": "Speed Results",
-      "text": "Stronger verbs made higher speed estimates! Smashed averaged 40.8 mph, while contacted averaged only 31.8 mph.",
-      "refs": [
-        "K10",
-        "K11",
-        "K12",
-        "K13",
-        "K14"
+        "K8"
       ]
     },
     {
       "keyword": "Experiment 2",
-      "text": "150 students watched a 1-minute multiple car crash film. Groups were asked speed with smashed, hit, or no question. One week later, they were asked if they saw broken glass, even though there was none!",
+      "text": "150 students watch a crash film. One week later, you ask about broken glass.",
       "refs": [
+        "K14",
         "K15",
-        "K16",
-        "K17",
-        "K18",
-        "K19"
+        "K17"
       ]
     },
     {
-      "keyword": "Glass Results",
-      "text": "32% of the smashed group falsely recalled broken glass compared to only 14% of the hit group and 12% of controls.",
+      "keyword": "Conclusion",
+      "text": "Post-event information integrates into memories, proving human memory is reconstructive.",
       "refs": [
-        "K20",
-        "K21",
-        "K22"
-      ]
-    },
-    {
-      "keyword": "Conclusions & Evaluation",
-      "text": "Leading questions distort memory by integrating post-event info. While high lab control is a strength, low ecological validity and student samples are limitations.",
-      "refs": [
-        "K23",
-        "K24",
-        "K25",
-        "K26",
-        "K27",
-        "K28",
-        "K29",
-        "K30"
+        "K22",
+        "K23"
       ]
     }
   ],
-  "arena": {
-    "title": "Method & Results Sort",
-    "instructions": "Sort each item into Experiment 1 details or Experiment 2 details!",
-    "categoryA": {
-      "name": "Experiment 1",
-      "hint": "Clips, speed estimates, and verbs"
-    },
-    "categoryB": {
-      "name": "Experiment 2",
-      "hint": "Broken glass, one-week delay, 150 students"
-    },
-    "items": [
+  "sequence": {
+    "title": "Loftus and Palmer Procedure",
+    "instructions": "Follow the experimental steps in correct chronological order.",
+    "steps": [
       {
-        "label": "45 American students",
-        "category": "A",
-        "refs": [
-          "K4"
-        ]
-      },
-      {
-        "label": "Independent measures design",
-        "category": "A",
+        "label": "Watch film clips",
+        "icon": "🎥",
+        "detail": "Participants watch seven film clips of traffic accidents.",
         "refs": [
           "K5"
         ]
       },
       {
-        "label": "7 traffic accident clips",
-        "category": "A",
+        "label": "Answer speed question",
+        "icon": "📝",
+        "detail": "Participants estimate speed using a critical verb.",
         "refs": [
-          "K6"
-        ]
-      },
-      {
-        "label": "Critical question about speed",
-        "category": "A",
-        "refs": [
-          "K7"
-        ]
-      },
-      {
-        "label": "Five verb conditions",
-        "category": "A",
-        "refs": [
+          "K6",
+          "K7",
           "K8"
         ]
       },
       {
-        "label": "Speed estimate in mph",
-        "category": "A",
+        "label": "Record speed estimates",
+        "icon": "📊",
+        "detail": "Mean speed estimates are calculated for each verb condition.",
         "refs": [
-          "K9"
-        ]
-      },
-      {
-        "label": "Smashed mean 40.8 mph",
-        "category": "A",
-        "refs": [
-          "K10"
-        ]
-      },
-      {
-        "label": "Collided mean 39.3 mph",
-        "category": "A",
-        "refs": [
-          "K11"
-        ]
-      },
-      {
-        "label": "Bumped mean 38.1 mph",
-        "category": "A",
-        "refs": [
-          "K12"
-        ]
-      },
-      {
-        "label": "Hit mean 34.0 mph",
-        "category": "A",
-        "refs": [
+          "K9",
+          "K10",
+          "K11",
+          "K12",
           "K13"
         ]
       },
       {
-        "label": "Contacted mean 31.8 mph",
-        "category": "A",
-        "refs": [
-          "K14"
-        ]
-      },
-      {
-        "label": "150 total students",
-        "category": "B",
+        "label": "Watch crash film",
+        "icon": "🚗",
+        "detail": "Experiment 2 participants watch a 1-minute multiple car crash film.",
         "refs": [
           "K15"
         ]
       },
       {
-        "label": "1-minute multi-car crash film",
-        "category": "B",
+        "label": "Assign test groups",
+        "icon": "👥",
+        "detail": "Participants receive smashed, hit, or no question control groups.",
         "refs": [
           "K16"
         ]
       },
       {
-        "label": "Control group with no question",
-        "category": "B",
+        "label": "Delayed questioning",
+        "icon": "⏳",
+        "detail": "One week later, participants are asked if they saw any broken glass.",
         "refs": [
           "K17"
         ]
-      },
+      }
+    ]
+  },
+  "arena": {
+    "title": "Verbs and Results Classifier",
+    "instructions": "Shoot the high impact items, let low impact pass.",
+    "categoryA": {
+      "name": "Smashed Condition",
+      "hint": "High speed or false glass"
+    },
+    "categoryB": {
+      "name": "Hit or Control Condition",
+      "hint": "Lower speed or baseline"
+    },
+    "items": [
       {
-        "label": "One week later recall check",
-        "category": "B",
+        "label": "Mean 40.8 mph",
+        "category": "A",
+        "icon": "💥",
         "refs": [
-          "K18"
+          "K9"
         ]
       },
       {
-        "label": "No broken glass in film",
+        "label": "Mean 39.3 mph",
+        "category": "A",
+        "icon": "💥",
+        "refs": [
+          "K10"
+        ]
+      },
+      {
+        "label": "Mean 38.1 mph",
         "category": "B",
+        "icon": "🚗",
+        "refs": [
+          "K11"
+        ]
+      },
+      {
+        "label": "Mean 34.0 mph",
+        "category": "B",
+        "icon": "🚗",
+        "refs": [
+          "K12"
+        ]
+      },
+      {
+        "label": "Mean 31.8 mph",
+        "category": "B",
+        "icon": "🚗",
+        "refs": [
+          "K13"
+        ]
+      },
+      {
+        "label": "50 smashed participants",
+        "category": "A",
+        "icon": "👥",
+        "refs": [
+          "K16"
+        ]
+      },
+      {
+        "label": "50 hit participants",
+        "category": "B",
+        "icon": "👥",
+        "refs": [
+          "K16"
+        ]
+      },
+      {
+        "label": "50 control participants",
+        "category": "B",
+        "icon": "👥",
+        "refs": [
+          "K16"
+        ]
+      },
+      {
+        "label": "32% saw glass",
+        "category": "A",
+        "icon": "🔍",
         "refs": [
           "K19"
         ]
       },
       {
-        "label": "16 in smashed saw glass",
+        "label": "14% saw glass",
         "category": "B",
+        "icon": "🔍",
         "refs": [
           "K20"
         ]
       },
       {
-        "label": "7 in hit saw glass",
+        "label": "12% saw glass",
         "category": "B",
+        "icon": "🔍",
         "refs": [
           "K21"
         ]
       },
       {
-        "label": "6 in control saw glass",
+        "label": "No broken glass present",
         "category": "B",
+        "icon": "🛑",
         "refs": [
-          "K22"
+          "K18"
         ]
       }
     ]
   },
   "inspect": {
-    "title": "Loftus Lab Investigation",
-    "room": "Reconstruction Room",
+    "title": "Evaluation Laboratory",
+    "room": "Analysis Room",
     "choiceA": "Strength",
     "choiceB": "Limitation",
     "clues": [
       {
-        "icon": "🔬",
-        "label": "Lab Controls",
-        "claim": "High control and standardized procedures allowed cause-and-effect relationships to be established.",
+        "icon": "🧪",
+        "label": "Lab setup",
+        "claim": "High control and standardised procedure establish cause-and-effect.",
         "answer": "A",
-        "why": "High lab control is a key strength that lets researchers establish cause and effect.",
+        "why": "It was a laboratory experiment with high control.",
+        "refs": [
+          "K24"
+        ]
+      },
+      {
+        "icon": "🔁",
+        "label": "Replication",
+        "claim": "The study has been successfully replicated.",
+        "answer": "A",
+        "why": "Replication confirms reliability.",
         "refs": [
           "K25"
         ]
       },
       {
-        "icon": "🔄",
-        "label": "Replication Log",
-        "claim": "The findings of the study have been successfully replicated by other researchers.",
-        "answer": "A",
-        "why": "Replication of findings is a recognized strength of the study.",
+        "icon": "🎓",
+        "label": "Student sample",
+        "claim": "Student samples represent all drivers.",
+        "answer": "B",
+        "why": "Students are not representative of all age groups or drivers.",
         "refs": [
           "K26"
         ]
       },
       {
-        "icon": "🎓",
-        "label": "Student Sample",
-        "claim": "The student sample is not representative of all age groups or driving experience levels.",
+        "icon": "🎬",
+        "label": "Film clips",
+        "claim": "Watching film clips creates real emotional arousal.",
         "answer": "B",
-        "why": "Using only students limits generalizability, making it a limitation.",
+        "why": "Watching clips lacks emotional arousal of real accidents.",
         "refs": [
           "K27"
         ]
       },
       {
-        "icon": "🚗",
-        "label": "Film Clips",
-        "claim": "Watching brief film clips lacks the emotional arousal and stress of real-life accidents.",
+        "icon": "⚠️",
+        "label": "Demand cues",
+        "claim": "Demand characteristics were entirely absent.",
         "answer": "B",
-        "why": "Low ecological validity is a limitation due to lack of real emotional stress.",
+        "why": "Demand characteristics were possible.",
         "refs": [
           "K28"
         ]
       },
       {
-        "icon": "🕵️",
-        "label": "Participant Guesswork",
-        "claim": "Participants might have guessed the study's aim and altered their answers accordingly.",
-        "answer": "B",
-        "why": "Demand characteristics are a limitation where participants guess the aim.",
+        "icon": "👁️",
+        "label": "Real witnesses",
+        "claim": "Yuille and Cutshall proved real witnesses can be immune to misleading questions.",
+        "answer": "A",
+        "why": "Counter-evidence shows real witnesses were accurate.",
         "refs": [
           "K29"
-        ]
-      },
-      {
-        "icon": "💥",
-        "label": "Real Shooting Evidence",
-        "claim": "Yuille and Cutshall (1986) found real-life witnesses to a shooting stayed accurate despite misleading questions.",
-        "answer": "B",
-        "why": "Contrasting real-life findings challenge Loftus and Palmer, acting as an evaluation limitation.",
-        "refs": [
-          "K30"
         ]
       }
     ]

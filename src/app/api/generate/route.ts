@@ -1,6 +1,7 @@
 import { GoogleGenAI, type Part } from "@google/genai";
 import {
   coverage,
+  orderByYear,
   DESIGN_SCHEMA,
   KNOWLEDGE_SCHEMA,
   PATCH_SCHEMA,
@@ -32,16 +33,35 @@ Read ALL of the learner's resources and extract EVERY piece of examinable knowle
 Rules: do NOT summarise or merge items; one idea per item; keep numbers and names exact; never invent content.
 Give ids K1, K2, K3… in order. "source" = file name plus page/slide/section where it appears.`;
 
-const DESIGN_PROMPT = `Design a learning game world from this knowledge base, for neurodivergent / ADHD learners:
-short punchy text (max ~45 words per slide or claim), concrete, vivid, no walls of text.
+const DESIGN_PROMPT = `Design a learning GAME world from this knowledge base for neurodivergent / ADHD learners.
+Players hate walls of text: be visual and punchy. Labels max 5 words. Slides max 30 words. Claims max 25 words.
+Every arena item and sequence step gets ONE fitting emoji icon (never flag emojis — they don't render on Windows).
 
-The world has three parts:
-1. intro: 4-7 story slides that teach the core ideas in a logical order, each with a keyword chip.
-2. arena: a fast sorting game. Pick two categories that matter for this topic (e.g. "Supports the theory" vs "Challenges it", "Cause" vs "Effect", "Term" vs "Example", "Before 1945" vs "After 1945"). 14-24 short item labels (max 6 words each) that belong to A or B.
-3. inspect: an explorable room themed on the topic ("room" = short name, e.g. "Bandura's Lab"). 6-10 objects (never more than 12), each with ONE emoji icon, a label, a claim, and a binary judgement choiceA/choiceB (e.g. Strength/Weakness, True/False, Supports/Contradicts). "why" explains the right answer.
+Pick a visual "theme": war (wars, conflict, revolutions), lab (experiments, psychology, chemistry), nature (biology,
+ecology), space (physics, astronomy), ancient (ancient history, classics), ocean (geography, marine), city (anything else).
+
+Build these parts:
+1. intro: 3-6 story slides teaching the core ideas in order, each with a keyword chip. Vivid, second person, tiny.
+2. sequence: the knowledge that has an ORDER (chronology, cause→event chains, stages of a process, steps of a
+   procedure), 4-9 steps in the correct order. Each step: label, icon, and a one-sentence "detail".
+   For anything historical, steps MUST be in strict chronological order and each "detail" MUST include the year
+   (e.g. "In 1906, …"). One event per step: never merge events from different years into one step.
+   Double-check the order before answering.
+   If the topic truly has no order, use the most logical teaching order of its key stages.
+3. arena: two categories that matter for this topic (e.g. "Long-term cause" vs "Trigger", "Supports" vs "Challenges",
+   "Light-dependent" vs "Calvin cycle"). 12-20 items (max 5 words + icon) that belong to A or B.
+4. inspect: a themed room ("room" = short name), 6-10 objects (never more than 12), each with ONE emoji icon,
+   a label, a claim, and a binary judgement choiceA/choiceB (e.g. Strength/Limitation, True/Myth). "why" explains.
+
+Then choose "games": 2-3 game ids, in play order, using these rules (EduOasis game type library):
+- "runner" (platformer: jump onto the NEXT step) when the content has an order: chronology, processes, procedures.
+- "shooter" (shoot category A, let B pass) for fast classification; ALWAYS include it for war/conflict topics.
+- "arena" (calm top-down sorting) for classification when an action shooter doesn't fit the topic.
+- "inspect" (explore a room, judge claims) when there is evaluation: strengths/limitations, reliability, interpretations.
+Order them learn → test → judge (e.g. ["runner","shooter","inspect"]).
 
 HARD RULES:
-- Every knowledge id must appear in at least one element's refs. Coverage is checked by code.
+- Every knowledge id must appear in at least one element's refs (intro, sequence, arena or inspect). Coverage is checked by code.
 - Only state what the knowledge base says. Do not invent facts or numbers.`;
 
 const PATCH_PROMPT = `These knowledge items are not yet taught anywhere in the game. Create extra intro slides, arena items
@@ -103,12 +123,13 @@ export async function POST(req: Request) {
 
     // pass 2: game design citing knowledge ids
     const kb = JSON.stringify(base.knowledge);
-    const design = await json<{ intro: IntroSlide[]; arena: Arena; inspect: WorldSpec["inspect"] }>(
+    const design = await json<Pick<WorldSpec, "intro" | "arena" | "inspect" | "theme" | "sequence" | "games">>(
       ai,
       [{ text: DESIGN_PROMPT }, { text: learner }, { text: `Knowledge base:\n${kb}` }],
       DESIGN_SCHEMA,
     );
     const spec: WorldSpec = { ...base, ...design };
+    if (spec.sequence) spec.sequence = orderByYear(spec.sequence);
 
     // pass 3: patch anything the design dropped
     let cov = coverage(spec);

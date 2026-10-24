@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Profile } from "@/lib/types";
 
-export type SceneKey = "hub" | "experiment" | "lab" | "arena";
+export type SceneKey = "hub" | "experiment" | "lab" | "arena" | "shooter" | "runner";
 
 // Mounts Phaser on the client only (Phaser touches window at import time).
 export default function GameCanvas({
@@ -45,12 +45,15 @@ export default function GameCanvas({
     let destroyed = false;
     (async () => {
       const Phaser = await import("phaser");
-      const [{ HubScene }, { ExperimentScene }, { LabScene }, { ArenaScene }] = await Promise.all([
-        import("@/game/HubScene"),
-        import("@/game/ExperimentScene"),
-        import("@/game/LabScene"),
-        import("@/game/ArenaScene"),
-      ]);
+      const [{ HubScene }, { ExperimentScene }, { LabScene }, { ArenaScene }, { ShooterScene }, { RunnerScene }] =
+        await Promise.all([
+          import("@/game/HubScene"),
+          import("@/game/ExperimentScene"),
+          import("@/game/LabScene"),
+          import("@/game/ArenaScene"),
+          import("@/game/ShooterScene"),
+          import("@/game/RunnerScene"),
+        ]);
       if (destroyed || !host.current) return;
       game.current = new Phaser.Game({
         type: Phaser.AUTO,
@@ -58,6 +61,7 @@ export default function GameCanvas({
         backgroundColor: "#2a6f97",
         scale: { mode: Phaser.Scale.RESIZE, width: "100%", height: "100%" },
         scene: [],
+        physics: { default: "arcade", arcade: { gravity: { x: 0, y: 0 } } }, // only the runner uses it
       });
       // dev-only handle for automated play-testing
       if (process.env.NODE_ENV !== "production") (window as unknown as { __game: unknown }).__game = game.current;
@@ -65,6 +69,8 @@ export default function GameCanvas({
       game.current.scene.add("experiment", ExperimentScene, false);
       game.current.scene.add("lab", LabScene, false);
       game.current.scene.add("arena", ArenaScene, false);
+      game.current.scene.add("shooter", ShooterScene, false);
+      game.current.scene.add("runner", RunnerScene, false);
       startScene();
     })();
     return () => {
