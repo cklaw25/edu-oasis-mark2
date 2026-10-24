@@ -56,11 +56,14 @@ export default function GameCanvas({
           import("@/game/BoardScene"),
           import("@/game/ShowdownScene"),
         ]);
+      // hub labels are drawn once in Space Grotesk, so make sure it has loaded before the first scene starts
+      const font = getComputedStyle(document.body).getPropertyValue("--font-space-grotesk").trim();
+      if (font) await document.fonts.load(`700 20px ${font}`).catch(() => undefined);
       if (destroyed || !host.current) return;
       game.current = new Phaser.Game({
         type: Phaser.AUTO,
         parent: host.current,
-        backgroundColor: "#2a6f97",
+        backgroundColor: "#1e8da1", // hub ocean, so the area past the map edge matches
         scale: { mode: Phaser.Scale.RESIZE, width: "100%", height: "100%" },
         scene: [],
         physics: { default: "arcade", arcade: { gravity: { x: 0, y: 0 } } }, // only the runner uses it

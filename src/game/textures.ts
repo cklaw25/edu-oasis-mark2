@@ -1,5 +1,24 @@
 import type * as Phaser from "phaser";
 
+// Neobrutalist player and Pip for the island hub: white body, black outlines, flat colours.
+export function makeHubTextures(scene: Phaser.Scene) {
+  if (scene.textures.exists("player-nb")) return;
+  const g = scene.make.graphics({}, false);
+
+  g.fillStyle(0x000000, 0.3).fillRect(8, 40, 24, 6); // hard ground shadow
+  g.fillStyle(0xffffff).fillRect(8, 20, 22, 22).lineStyle(3, 0x000000).strokeRect(8, 20, 22, 22);
+  g.fillStyle(0xf8d1b1).fillCircle(19, 13, 10).lineStyle(3, 0x000000).strokeCircle(19, 13, 10);
+  g.fillStyle(0x000000).fillRect(9, 2, 20, 7).fillCircle(23, 14, 1.8);
+  g.generateTexture("player-nb", 38, 48);
+  g.clear();
+
+  g.fillStyle(0x000000, 0.3).fillCircle(18, 18, 14);
+  g.fillStyle(0xffffff).fillCircle(15, 15, 14).lineStyle(3, 0x000000).strokeCircle(15, 15, 14);
+  g.fillStyle(0x0288d1).fillCircle(15, 15, 8).lineStyle(3, 0x000000).strokeCircle(15, 15, 8);
+  g.generateTexture("pet-nb", 34, 34);
+  g.destroy();
+}
+
 // All art is drawn in code, so worlds cost nothing to "generate" visually.
 export function makeTextures(scene: Phaser.Scene) {
   if (scene.textures.exists("player")) return;

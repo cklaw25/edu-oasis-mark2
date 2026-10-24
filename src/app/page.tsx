@@ -101,7 +101,7 @@ export default function Home() {
     };
   }, [enter]);
 
-  if (!profile || !view) return <main className="h-screen bg-[#2a6f97]" />;
+  if (!profile || !view) return <main className="h-screen bg-[#1e8da1]" />;
 
   let scene: SceneKey = "hub";
   let sceneData: Record<string, unknown> = { autoStart };
@@ -179,7 +179,7 @@ export default function Home() {
       {!pipOpen && (
         <button
           onClick={() => setPipOpen(true)}
-          className="absolute bottom-6 right-6 z-[25] flex items-center gap-2 rounded-full bg-[#bff4ff] px-4 py-3 font-bold text-[#0b2a3d] shadow-lg hover:bg-white"
+          className="nb-btn absolute bottom-8 right-8 z-[25] flex items-center gap-3 bg-[#0288d1] px-6 py-4 font-grotesk text-xl font-black uppercase text-white hover:bg-[#0277bd]"
         >
           ✦ Pip
         </button>
@@ -196,13 +196,15 @@ export default function Home() {
       {/* profile card */}
       <div
         hidden={active !== null}
-        className="absolute left-4 top-4 z-10 rounded-xl bg-[#0b2a3d]/80 px-4 py-3 text-white backdrop-blur"
+        className="nb-card absolute left-6 top-6 z-10 bg-[#fafafa] p-4 font-grotesk text-black"
       >
-        <div className="text-lg font-bold">EduOasis</div>
-        <div className="text-xs opacity-80">{profile.name}</div>
-        <div className="mt-1 text-xs">🌱 {profile.generationsLeft} free generations</div>
+        <div className="text-2xl font-black uppercase tracking-tight">EduOasis</div>
+        <div className="text-sm font-bold uppercase opacity-80">{profile.name}</div>
+        <div className="nb-card mt-2 bg-white px-2 py-1 text-xs font-bold uppercase">
+          🌱 {profile.generationsLeft} free generations
+        </div>
         <button
-          className="mt-2 text-[10px] underline opacity-50"
+          className="mt-3 block text-[10px] font-bold uppercase underline hover:no-underline"
           onClick={() => {
             const p = defaultProfile();
             saveProfile(p);
@@ -215,13 +217,13 @@ export default function Home() {
 
       <div
         hidden={active !== null}
-        className="absolute right-4 top-4 z-10 rounded-xl bg-[#0b2a3d]/80 px-3 py-2 text-xs text-white"
+        className="nb-card absolute right-6 top-6 z-10 bg-white p-3 font-grotesk text-sm font-bold uppercase text-black"
       >
         WASD / arrows to move · E to interact
       </div>
 
       {prompt && !panel && !active && (
-        <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-5 py-2 text-sm font-bold text-[#0b2a3d] shadow-lg">
+        <div className="nb-card absolute bottom-8 left-1/2 z-10 -translate-x-1/2 bg-[#f5e0a0] px-8 py-3 font-grotesk text-lg font-black uppercase text-black">
           {prompt}
         </div>
       )}
