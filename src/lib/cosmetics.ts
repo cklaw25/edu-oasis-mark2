@@ -2,7 +2,7 @@
 // because it shows predicted recall.
 import type { FlagColor, IslandCosmetics, Profile, TreeStyle } from "./types";
 
-export const DEFAULT_COSMETICS: IslandCosmetics = { trees: "palm", flag: "none" };
+export const DEFAULT_COSMETICS: IslandCosmetics = { trees: "palm", flag: "none", objects: [] };
 
 export const TREE_STYLES: { id: TreeStyle; label: string; icon: string }[] = [
   { id: "palm", label: "Palm", icon: "🌴" },

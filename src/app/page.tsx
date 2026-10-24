@@ -8,6 +8,8 @@ import WorldFlow, { labClues, type WorldPhase } from "@/components/WorldFlow";
 import PipPanel from "@/components/PipPanel";
 import MoeCoin from "@/components/MoeCoin";
 import MarketPanel from "@/components/MarketPanel";
+import RapidMarketPanel from "@/components/RapidMarketPanel";
+import { ownsItem, type ShopItem } from "@/lib/shop";
 import CosmeticsPanel from "@/components/CosmeticsPanel";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
@@ -24,6 +26,7 @@ import type { PortalInfo, Profile, WorldSummary } from "@/lib/types";
 type Panel =
   | { kind: "create"; slot: number }
   | { kind: "market" }
+  | { kind: "rapid" }
   | { kind: "world"; info: PortalInfo }
   | { kind: "cosmetics"; slot: number }
   | null;
@@ -97,6 +100,7 @@ export default function Home() {
       const info = p as PortalInfo;
       if (info.kind === "empty") setPanel({ kind: "create", slot: info.slot! });
       else if (info.kind === "market") setPanel({ kind: "market" });
+      else if (info.kind === "rapid") setPanel({ kind: "rapid" });
       else if (info.world?.id === "demo-bobo") enter({ kind: "bobo" });
       else {
         const spec = info.world && loadSpec(info.world.id);
@@ -170,6 +174,19 @@ export default function Home() {
     save({ ...profile, ...extra, worlds, moe: profile.moe - price });
   };
 
+  const rapid = {
+    buy: (item: ShopItem) => {
+      if (ownsItem(profile, item.id) || profile.moe < item.price) return;
+      save({ ...profile, moe: profile.moe - item.price, ownedItems: [...profile.ownedItems, item.id] });
+    },
+    equip: (item: ShopItem) => {
+      if (!ownsItem(profile, item.id)) return;
+      if (item.slot) save({ ...profile, avatar: { ...profile.avatar, [item.slot]: item.id } });
+      else if (item.category === "world") save({ ...profile, theme: item.id });
+      else if (item.category === "font") save({ ...profile, font: item.id });
+    },
+  };
+
   const market = {
     buyMembership: () => {
       if (profile.moe < MEMBERSHIP_PRICE_MOE) return;
@@ -209,7 +226,9 @@ export default function Home() {
       ? "E — grow a new world here"
       : near?.kind === "market"
         ? "E — enter the World Market"
-        : near?.world
+        : near?.kind === "rapid"
+          ? "E — enter the Rapid Fire Market"
+          : near?.world
           ? `E — enter ${near.world.title}`
           : null;
 
@@ -350,6 +369,12 @@ export default function Home() {
             setPanel(null);
           }}
         />
+      )}
+
+      {panel?.kind === "rapid" && (
+        <Overlay title="⚡ Rapid Fire Market" onClose={() => setPanel(null)}>
+          <RapidMarketPanel profile={profile} actions={rapid} />
+        </Overlay>
       )}
 
       {panel?.kind === "market" && (

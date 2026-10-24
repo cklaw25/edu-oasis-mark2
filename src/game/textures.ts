@@ -1,5 +1,31 @@
 import type * as Phaser from "phaser";
 
+/** Player drawn with a Rapid Fire Market shirt colour and hat; returns the texture key. */
+export function makeAvatar(scene: Phaser.Scene, shirt: number, hat: string) {
+  const key = `avatar-${shirt.toString(16)}-${hat}`;
+  if (scene.textures.exists(key)) return key;
+  const g = scene.make.graphics({}, false);
+  const top = 14; // headroom for hats, so the body sits lower than the plain "player" texture
+  g.fillStyle(0x000000, 0.25).fillEllipse(16, 42 + top, 26, 8);
+  g.fillStyle(shirt).fillRoundedRect(6, 18 + top, 20, 22, 6);
+  g.fillStyle(0xffd7b5).fillCircle(16, 12 + top, 10);
+  g.fillStyle(0x3b2a20).fillRect(6, 2 + top, 20, 7);
+  g.fillStyle(0x111111).fillCircle(20, 13 + top, 1.8);
+  if (hat === "hat-cap") {
+    g.fillStyle(0xe63946).fillRoundedRect(5, top - 2, 22, 9, 4).fillRect(18, top + 4, 12, 3);
+  } else if (hat === "hat-wizard") {
+    g.fillStyle(0x5a189a).fillTriangle(4, top + 6, 28, top + 6, 16, 0);
+    g.fillStyle(0xffd166).fillCircle(16, top - 2, 2);
+  } else if (hat === "hat-crown") {
+    g.fillStyle(0xf4b400).fillRect(6, top - 2, 20, 8);
+    g.fillTriangle(6, top - 2, 11, top - 2, 8, top - 10).fillTriangle(13, top - 2, 19, top - 2, 16, top - 11);
+    g.fillTriangle(21, top - 2, 26, top - 2, 24, top - 10);
+  }
+  g.generateTexture(key, 32, 46 + top);
+  g.destroy();
+  return key;
+}
+
 // All art is drawn in code, so worlds cost nothing to "generate" visually.
 export function makeTextures(scene: Phaser.Scene) {
   if (scene.textures.exists("player")) return;

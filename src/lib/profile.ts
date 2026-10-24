@@ -39,8 +39,17 @@ export function defaultProfile(): Profile {
     listings: [],
     boughtListings: [],
     cosmetics: {},
+    ...STARTER_LOOK,
   };
 }
+
+/** Free Rapid Fire Market items everyone starts with. */
+const STARTER_LOOK = {
+  ownedItems: [] as string[],
+  avatar: { shirt: "shirt-blue", hat: "hat-none" },
+  theme: "theme-classic",
+  font: "font-mono",
+};
 
 const DEMO_BOBO_NFT = "EO-BOBO01";
 
@@ -55,6 +64,7 @@ export function loadProfile(): Profile {
         w?.id === DEMO_WORLD.id && !w.nftId ? { ...w, bought: true, nftId: DEMO_BOBO_NFT } : w,
       );
       return {
+        ...STARTER_LOOK,
         ...p,
         worlds,
         moe: p.moe ?? STARTING_MOE,
