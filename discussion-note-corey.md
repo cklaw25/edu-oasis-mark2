@@ -130,3 +130,36 @@ The faucet limit is a rolling window of about 24 hours, not a reset at midnight.
 ### 🔒 Reminders
 - `treasury.json` stays git-ignored. When the app needs the treasury, load it from `.env.local` (e.g. `TREASURY_SECRET_KEY`), which is also git-ignored.
 - Devnet only. No real money anywhere.
+
+---
+
+## UPDATE — Sat 24 Oct (from Corey + Claude): ✅ MOE is live on devnet
+
+`node create-moe.js` ran successfully. Name, symbol, decimals and supply were read back from the chain and confirmed.
+
+| | |
+|---|---|
+| **Token** | Moe Done (MOE) |
+| **Mint address** | `4BDLBADE7SE8wGc7d3X7BJL9TsNo5SQJ27GKHEbbCxGk` |
+| **Program** | Token-2022 (`TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`), metadata pointer + on-chain metadata |
+| **Decimals** | 9 |
+| **Supply** | 1,000,000 MOE (`1000000000000000` base units), all in the treasury |
+| **Treasury wallet** (mint + metadata update authority) | `CNp9YiTDhKRomr9xAtPLQEK9GgpQ8riDgFDbRrTJVZUq` |
+| **Treasury MOE token account** | `D6hULP76XXURyiGS8HvGLkVmivKUWaXYrqDLSPK3ZPk2` |
+| **Network** | devnet |
+
+**Explorer link for judges:** https://explorer.solana.com/address/4BDLBADE7SE8wGc7d3X7BJL9TsNo5SQJ27GKHEbbCxGk?cluster=devnet
+
+Transactions:
+- Mint created: https://explorer.solana.com/tx/TXAcbNh5mRJ7xf8MYzCBKXQHvoNyG4h2GYcYyiQVSVwKXEngJo3DykW5ySChfGkwAGdmi2YjmuwVsVYgD726Z7T?cluster=devnet
+- 1,000,000 MOE minted: https://explorer.solana.com/tx/3X8ayWEMQRGo9zAHtBHF2kwGaTh3A21iBw4kwnfFHcN7aaxy9Lfdp2Q8ScBsN8xxVhEN4yjxEcwYh6gPUuUvqc9Y?cluster=devnet
+
+Rent for the mint plus metadata was 0.00232 SOL, so most of Memphis's 1 SOL is still available.
+
+### Notes for whoever uses MOE in the app
+- Always pass the **Token-2022 program ID** (`TOKEN_2022_PROGRAM_ID` from `@solana/spl-token`) to `getMint`, `getOrCreateAssociatedTokenAccount`, `transfer`, `mintTo` and similar. The default is classic SPL Token, which won't find MOE.
+- Amounts are in base units: 1 MOE = `1_000_000_000` (9 decimals).
+- The **mint authority is still the treasury**, so more MOE can be minted later, for example for `rewardMoe()`. Only the holder of the treasury key can do that.
+- There is no logo yet: the metadata `uri` is empty. Adding one needs a metadata-update transaction signed by the treasury.
+
+**Next step from Memphis's list: step 2**, reading `DISCUSSION_NOTES.md` section 6.
