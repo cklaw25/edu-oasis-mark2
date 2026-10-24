@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
 import { bus } from "./bus";
 import { makeTextures } from "./textures";
+import { WORLD_UNLOCK_MOE, formatMoe } from "@/lib/moe";
 import type { PortalInfo, Profile } from "@/lib/types";
 
 // Hub layout ("Inside Out" style): main island in the middle, 3 world islands branching out,
@@ -15,7 +16,6 @@ const SLOTS = [
 ];
 const MARKET = { x: 1200, y: 1960, r: 210 };
 const BRIDGE_HALF = 34;
-const WORLD_UNLOCK_MOE = 10_000;
 
 // where the player was when the hub last ran, so restarts (new world, back from a world) don't teleport home
 let lastPos: { x: number; y: number } | null = null;
@@ -68,14 +68,15 @@ export class HubScene extends Phaser.Scene {
     this.drawIsland(MAIN, 0x5cbf68, "Home Island");
     SLOTS.forEach((c, i) => {
       const world = this.profile.worlds[i];
+      const locked = !this.profile.unlockedSlots.includes(i);
       if (world) {
         this.drawIsland(c, lerpColor(world.recall), world.title, world.recall);
-        this.addPortal(c, { kind: "world", slot: i, world }, 0x7fe0ff);
+        this.addPortal(c, { kind: "world", slot: i, world, locked }, 0x7fe0ff);
       } else {
         this.drawIsland(c, 0xd8c79a, "Empty island", 0, true);
-        this.addPortal(c, { kind: "empty", slot: i, world: null }, 0xffffff);
+        this.addPortal(c, { kind: "empty", slot: i, world: null, locked }, 0xffffff);
       }
-      this.addLock(c);
+      if (locked) this.addLock(c);
     });
     this.drawIsland(MARKET, 0x9d7be0, "World Market");
     this.drawStalls(MARKET);
@@ -91,7 +92,10 @@ export class HubScene extends Phaser.Scene {
       string,
       Phaser.Input.Keyboard.Key
     >;
-    const enter = () => this.nearPortal && bus.emit("portal:enter", this.nearPortal);
+    const enter = () => {
+      if (!this.nearPortal) return;
+      bus.emit(this.nearPortal.locked ? "portal:locked" : "portal:enter", this.nearPortal);
+    };
     this.keys.E.on("down", enter);
     this.keys.SPACE.on("down", enter);
     bus.emit("portal:near", null); // clear any prompt left over from before a scene switch
@@ -245,7 +249,7 @@ export class HubScene extends Phaser.Scene {
     this.tweens.add({ targets: key, y: key.y - 8, yoyo: true, repeat: -1, duration: 1100, ease: "Sine.easeInOut" });
 
     const label = this.add
-      .text(0, 0, `🔒 ${WORLD_UNLOCK_MOE.toLocaleString("en-US")} MOE to unlock`, {
+      .text(0, 0, `🔒 ${formatMoe(WORLD_UNLOCK_MOE)} MOE to unlock`, {
         fontFamily: "monospace",
         fontSize: "18px",
         color: "#ffd166",

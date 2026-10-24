@@ -1,3 +1,4 @@
+import { STARTING_MOE } from "./moe";
 import type { Profile, WorldSummary } from "./types";
 
 const KEY = "eo2.profile";
@@ -15,13 +16,14 @@ const DEMO_WORLD: WorldSummary = {
 };
 
 export function defaultProfile(): Profile {
-  return { name: "Learner", generationsLeft: 2, worlds: [DEMO_WORLD, null, null] };
+  return { name: "Learner", generationsLeft: 2, worlds: [DEMO_WORLD, null, null], moe: STARTING_MOE, unlockedSlots: [] };
 }
 
 export function loadProfile(): Profile {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw) as Profile;
+    // profiles saved before MOE existed get the starting balance and no unlocks
+    if (raw) return { moe: STARTING_MOE, unlockedSlots: [], ...JSON.parse(raw) } as Profile;
   } catch {}
   return defaultProfile();
 }
