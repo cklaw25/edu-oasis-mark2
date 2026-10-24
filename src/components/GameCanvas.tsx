@@ -3,16 +3,50 @@
 import { useEffect, useRef } from "react";
 import type { Profile } from "@/lib/types";
 
+export type SceneKey = "hub" | "experiment" | "lab";
+
 // Mounts Phaser on the client only (Phaser touches window at import time).
-export default function GameCanvas({ profile, paused }: { profile: Profile; paused: boolean }) {
+export default function GameCanvas({
+  scene,
+  sceneData,
+  nonce = 0,
+  profile,
+  paused,
+}: {
+  scene: SceneKey;
+  /** extra init data for the scene */
+  sceneData?: Record<string, unknown>;
+  /** bump to restart the current scene */
+  nonce?: number;
+  profile: Profile;
+  paused: boolean;
+}) {
   const host = useRef<HTMLDivElement>(null);
   const game = useRef<import("phaser").Game | null>(null);
+  const latest = useRef({ scene, profile, paused, sceneData });
+  latest.current = { scene, profile, paused, sceneData };
+
+  const startScene = () => {
+    const g = game.current;
+    if (!g) return;
+    const { scene: key, profile: p, sceneData: extra } = latest.current;
+    g.scene.getScenes(true).forEach((s) => s.scene.key !== key && s.scene.stop());
+    g.scene.start(key, { profile: p, ...extra });
+    // start is queued, so apply a pending pause once the scene exists
+    g.scene.getScene(key)?.events.once("create", (sc: import("phaser").Scene) => {
+      if (latest.current.paused) sc.scene.pause();
+    });
+  };
 
   useEffect(() => {
     let destroyed = false;
     (async () => {
       const Phaser = await import("phaser");
-      const { HubScene } = await import("@/game/HubScene");
+      const [{ HubScene }, { ExperimentScene }, { LabScene }] = await Promise.all([
+        import("@/game/HubScene"),
+        import("@/game/ExperimentScene"),
+        import("@/game/LabScene"),
+      ]);
       if (destroyed || !host.current) return;
       game.current = new Phaser.Game({
         type: Phaser.AUTO,
@@ -21,26 +55,37 @@ export default function GameCanvas({ profile, paused }: { profile: Profile; paus
         scale: { mode: Phaser.Scale.RESIZE, width: "100%", height: "100%" },
         scene: [],
       });
-      game.current.scene.add("hub", HubScene, true, { profile });
+      // dev-only handle for automated play-testing
+      if (process.env.NODE_ENV !== "production") (window as unknown as { __game: unknown }).__game = game.current;
+      game.current.scene.add("hub", HubScene, false);
+      game.current.scene.add("experiment", ExperimentScene, false);
+      game.current.scene.add("lab", LabScene, false);
+      startScene();
     })();
     return () => {
       destroyed = true;
       game.current?.destroy(true);
       game.current = null;
     };
-    // the game is created once; profile changes restart the scene below
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // the game is created once; scene/profile changes are handled below
+     
   }, []);
 
+  // switching scene, or new profile data for the hub, restarts the scene
   useEffect(() => {
-    game.current?.scene.getScene("hub")?.scene.restart({ profile });
-  }, [profile]);
+    startScene();
+     
+  }, [scene, profile, nonce]);
 
   useEffect(() => {
-    const kb = game.current?.input.keyboard;
-    if (!kb) return;
+    const g = game.current;
+    if (!g) return;
     // a disabled manager ignores key events entirely, so modal inputs can receive W/A/S/D/E/space
-    kb.enabled = !paused;
+    g.input.keyboard!.enabled = !paused;
+    g.scene.getScenes(false).forEach((s) => {
+      if (paused && s.scene.isActive()) s.scene.pause();
+      else if (!paused && s.scene.isPaused()) s.scene.resume();
+    });
   }, [paused]);
 
   return <div ref={host} className="absolute inset-0" />;

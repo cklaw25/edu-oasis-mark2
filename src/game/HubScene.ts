@@ -1,5 +1,6 @@
 import * as Phaser from "phaser";
 import { bus } from "./bus";
+import { makeTextures } from "./textures";
 import type { PortalInfo, Profile } from "@/lib/types";
 
 // Hub layout ("Inside Out" style): main island in the middle, 3 world islands branching out,
@@ -56,7 +57,7 @@ export class HubScene extends Phaser.Scene {
   }
 
   create() {
-    this.makeTextures();
+    makeTextures(this);
     this.drawOcean();
     this.bridges.forEach((b) => this.drawBridge(b));
 
@@ -79,7 +80,7 @@ export class HubScene extends Phaser.Scene {
     this.pet = this.add.sprite(MAIN.x - 40, MAIN.y + 90, "pet").setDepth(9);
     this.tweens.add({ targets: this.pet, scale: 1.15, yoyo: true, repeat: -1, duration: 600 });
 
-    this.cameras.main.setBounds(0, 0, W, H).startFollow(this.player, true, 0.1, 0.1).setZoom(1);
+    this.cameras.main.setBounds(0, 0, W, H).startFollow(this.player, true, 0.1, 0.1).setZoom(0.75);
     this.keys = this.input.keyboard!.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE") as Record<
       string,
       Phaser.Input.Keyboard.Key
@@ -123,25 +124,6 @@ export class HubScene extends Phaser.Scene {
       this.land.some((c) => Phaser.Math.Distance.Between(x, y, c.x, c.y) < c.r - 22 - m) ||
       this.bridges.some((b) => distToSeg(x, y, b) < BRIDGE_HALF - m / 2)
     );
-  }
-
-  private makeTextures() {
-    if (this.textures.exists("player")) return;
-    const g = this.make.graphics({}, false);
-    // player: little explorer
-    g.fillStyle(0x000000, 0.25).fillEllipse(16, 42, 26, 8);
-    g.fillStyle(0x3d5afe).fillRoundedRect(6, 18, 20, 22, 6);
-    g.fillStyle(0xffd7b5).fillCircle(16, 12, 10);
-    g.fillStyle(0x3b2a20).fillRect(6, 2, 20, 7);
-    g.fillStyle(0x111111).fillCircle(20, 13, 1.8);
-    g.generateTexture("player", 32, 46);
-    g.clear();
-    // pet: glowing spirit
-    g.fillStyle(0x7fe0ff, 0.35).fillCircle(14, 14, 14);
-    g.fillStyle(0xbff4ff).fillCircle(14, 14, 9);
-    g.fillStyle(0x10324a).fillCircle(11, 12, 1.8).fillCircle(17, 12, 1.8);
-    g.generateTexture("pet", 28, 28);
-    g.destroy();
   }
 
   private drawOcean() {
