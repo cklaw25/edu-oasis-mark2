@@ -249,6 +249,27 @@ export default function Home() {
         />
       )}
 
+      {/* map zoom (also mouse wheel and +/- keys) */}
+      {!active && !panel && (
+        <div className="absolute bottom-24 right-6 z-[25] flex flex-col overflow-hidden rounded-xl bg-[#0b2a3d]/80 text-white shadow-lg">
+          {[
+            ["in", "＋", "Zoom in"],
+            ["out", "－", "Zoom out"],
+            ["reset", "⟲", "Reset zoom"],
+          ].map(([dir, icon, label]) => (
+            <button
+              key={dir}
+              aria-label={label}
+              title={label}
+              onClick={() => bus.emit("map:zoom", dir)}
+              className="h-10 w-10 border-b border-white/15 text-lg font-bold last:border-b-0 hover:bg-white/15"
+            >
+              {icon}
+            </button>
+          ))}
+        </div>
+      )}
+
       {!pipOpen && (
         <button
           onClick={() => setPipOpen(true)}

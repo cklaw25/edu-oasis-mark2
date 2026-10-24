@@ -24,6 +24,13 @@ const BRIDGE_HALF = 34;
 // where the player was when the hub last ran, so restarts (new world, back from a world) don't teleport home
 let lastPos: { x: number; y: number } | null = null;
 
+// map zoom: mouse wheel, +/- keys or the HUD buttons; kept across hub restarts like lastPos
+const ZOOM_DEFAULT = 0.75;
+const ZOOM_MIN = 0.3; // whole map in view
+const ZOOM_MAX = 1.5;
+const ZOOM_STEP = 1.2;
+let lastZoom = ZOOM_DEFAULT;
+
 type Circle = { x: number; y: number; r: number };
 type Seg = { ax: number; ay: number; bx: number; by: number };
 
@@ -103,14 +110,23 @@ export class HubScene extends Phaser.Scene {
     this.pet = this.add.sprite(spawn.x - 40, spawn.y + 30, "pet").setDepth(9);
     this.tweens.add({ targets: this.pet, scale: 1.15, yoyo: true, repeat: -1, duration: 600 });
 
-    this.cameras.main.setBounds(0, 0, W, H).startFollow(this.player, true, 0.1, 0.1).setZoom(0.75);
-    this.keys = this.input.keyboard!.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE") as Record<
-      string,
-      Phaser.Input.Keyboard.Key
-    >;
+    this.cameras.main.setBounds(0, 0, W, H).startFollow(this.player, true, 0.1, 0.1).setZoom(lastZoom);
+    this.keys = this.input.keyboard!.addKeys(
+      "W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,PLUS,MINUS,NUMPAD_ADD,NUMPAD_SUBTRACT",
+    ) as Record<string, Phaser.Input.Keyboard.Key>;
     const enter = () => this.nearPortal && bus.emit("portal:enter", this.nearPortal);
     this.keys.E.on("down", enter);
     this.keys.SPACE.on("down", enter);
+
+    this.keys.PLUS.on("down", () => this.zoomBy(ZOOM_STEP));
+    this.keys.NUMPAD_ADD.on("down", () => this.zoomBy(ZOOM_STEP));
+    this.keys.MINUS.on("down", () => this.zoomBy(1 / ZOOM_STEP));
+    this.keys.NUMPAD_SUBTRACT.on("down", () => this.zoomBy(1 / ZOOM_STEP));
+    this.input.on("wheel", (_p: unknown, _o: unknown, _dx: number, dy: number) => this.zoomBy(dy > 0 ? 1 / 1.1 : 1.1));
+    const offZoom = bus.on("map:zoom", (dir) =>
+      dir === "reset" ? this.zoomTo(ZOOM_DEFAULT) : this.zoomBy(dir === "in" ? ZOOM_STEP : 1 / ZOOM_STEP),
+    );
+    this.events.once("shutdown", offZoom);
     bus.emit("portal:near", null); // clear any prompt left over from before a scene switch
 
     // right-click an outer island (not Home or the Market) to open its cosmetics page
@@ -149,6 +165,16 @@ export class HubScene extends Phaser.Scene {
       this.nearPortal = info;
       bus.emit("portal:near", info);
     }
+  }
+
+  private zoomBy(factor: number) {
+    this.zoomTo(lastZoom * factor);
+  }
+
+  private zoomTo(z: number) {
+    lastZoom = Phaser.Math.Clamp(z, ZOOM_MIN, ZOOM_MAX);
+    // force: restart from the current zoom, so quick clicks or wheel ticks aren't dropped mid-animation
+    this.cameras.main.zoomTo(lastZoom, 140, "Sine.easeOut", true);
   }
 
   private walkable(x: number, y: number) {
