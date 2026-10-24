@@ -1,11 +1,39 @@
-// Learn-to-earn: finishing a world session pays MOE.
-//   base     200   for showing up and playing
-//   skill  0-800   scaled by accuracy (how much you got right)
-//   review 0-1000  accuracy × how much you had forgotten, so reviewing a fading island pays most
-// Total 200-2000 MOE per session, rounded to the nearest 10.
-export function sessionReward(accuracy: number, recallBefore: number) {
+// Learn-to-earn: finishing a game on an island pays MOE, scaled by how well you did.
+//   below 55%   nothing (pass mark not reached)
+//   55%         the lowest reward: 20% of the island's maximum
+//   100%        the island's maximum, which depends on the island's difficulty
+// Each island pays out for its first 10 games; after that it can still be played, for no MOE.
+// Difficulty isn't set on worlds yet, so every island counts as "medium" until it is
+// (see docs/REWARD_SYSTEM.md for the theory).
+import type { Difficulty, Profile, WorldSummary } from "./types";
+
+export const PASS_MARK = 0.55;
+export const MIN_SHARE = 0.2;
+export const MAX_REWARDED_PLAYS = 10;
+export const DEFAULT_DIFFICULTY: Difficulty = "medium";
+
+export const DIFFICULTY_MAX_MOE: Record<Difficulty, number> = {
+  easy: 1_000,
+  medium: 2_000,
+  hard: 3_500,
+  expert: 5_000,
+};
+
+export function difficultyOf(w: WorldSummary): Difficulty {
+  return w.difficulty ?? DEFAULT_DIFFICULTY;
+}
+
+/** MOE for one game at this accuracy (0..1) on an island of this difficulty, before membership bonus. */
+export function sessionReward(accuracy: number, difficulty: Difficulty = DEFAULT_DIFFICULTY) {
   const a = Math.min(1, Math.max(0, accuracy));
-  const forgotten = 1 - Math.min(1, Math.max(0, recallBefore));
-  const total = 200 + 800 * a + 1000 * a * forgotten;
-  return Math.round(total / 10) * 10;
+  if (a < PASS_MARK) return 0;
+  const max = DIFFICULTY_MAX_MOE[difficulty];
+  const min = max * MIN_SHARE;
+  const t = (a - PASS_MARK) / (1 - PASS_MARK);
+  return Math.round((min + (max - min) * t) / 10) * 10;
+}
+
+/** How many more games on this island can still earn MOE. */
+export function rewardedPlaysLeft(p: Profile, worldId: string) {
+  return Math.max(0, MAX_REWARDED_PLAYS - (p.rewardedPlays[worldId] ?? 0));
 }

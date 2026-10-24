@@ -1,5 +1,7 @@
 // Shared types. The GameSpec is the contract between the generator, the game engine and the Solana side.
 
+export type Difficulty = "easy" | "medium" | "hard" | "expert";
+
 export type GameType = "rpg-experiment" | "explore-collect" | "sort-match" | "boss-quiz";
 
 export interface WorldSummary {
@@ -16,6 +18,8 @@ export interface WorldSummary {
   /** accuracy of each completed session, oldest first */
   sessions?: { t: number; accuracy: number }[];
   gameType: GameType;
+  /** sets the most MOE a game here can pay; unset = "medium" until difficulty is added */
+  difficulty?: Difficulty;
   /** how many extracted knowledge items the world teaches */
   coverage?: { covered: number; total: number };
   /** bought on the World Market (its island portal shows blue) */
@@ -41,6 +45,8 @@ export interface Profile {
   cosmetics: Record<string, IslandCosmetics>;
   /** app-clock time (ms) the membership runs until; unset = never a member */
   membershipUntil?: number;
+  /** games that have paid MOE so far, per world id (each island pays for 10) */
+  rewardedPlays: Record<string, number>;
   /** Rapid Fire Market items bought (free starter items aren't listed) */
   ownedItems: string[];
   /** equipped shop item ids */

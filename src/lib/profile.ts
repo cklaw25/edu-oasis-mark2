@@ -39,6 +39,7 @@ export function defaultProfile(): Profile {
     listings: [],
     boughtListings: [],
     cosmetics: {},
+    rewardedPlays: {},
     ...STARTER_LOOK,
   };
 }
@@ -73,6 +74,7 @@ export function loadProfile(): Profile {
         listings: p.listings ?? [],
         boughtListings: p.boughtListings ?? [],
         cosmetics: p.cosmetics ?? {},
+        rewardedPlays: p.rewardedPlays ?? {},
       };
     }
   } catch {}

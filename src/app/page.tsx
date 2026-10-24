@@ -15,7 +15,7 @@ import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
 import { newNftId, topicForWorld, type MarketTopic, type PlayerListing } from "@/lib/market";
 import { MEMBERSHIP_PRICE_MOE, WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
-import { sessionReward } from "@/lib/rewards";
+import { MAX_REWARDED_PLAYS, PASS_MARK, difficultyOf, rewardedPlaysLeft, sessionReward } from "@/lib/rewards";
 import { extendMembership, isMember, memberBonus, memberDaysLeft } from "@/lib/membership";
 import { nextHalfLife, recallAt } from "@/lib/recall";
 import { defaultProfile, isClaimed, loadProfile, nextIslandSlot, saveProfile } from "@/lib/profile";
@@ -48,7 +48,14 @@ export default function Home() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [pipOpen, setPipOpen] = useState(false);
   const [clockTick, setClockTick] = useState(0);
-  const [earned, setEarned] = useState<{ amount: number; bonus: number; accuracy: number } | null>(null);
+  const [earned, setEarned] = useState<{
+    amount: number;
+    bonus: number;
+    accuracy: number;
+    playsLeft: number;
+    /** why nothing was paid: under the pass mark, or the island's earning plays are used up */
+    why: "below" | "capped" | null;
+  } | null>(null);
 
   // the reward toast fades after a few seconds
   useEffect(() => {
@@ -139,9 +146,12 @@ export default function Home() {
   const exitWorld = (id: string, accuracy: number) => {
     const t = now();
     const played = profile.worlds.find((w) => w?.id === id);
-    const base = played ? sessionReward(accuracy, recallAt(played, t)) : 0;
+    const left = rewardedPlaysLeft(profile, id);
+    const base = played && left > 0 ? sessionReward(accuracy, difficultyOf(played)) : 0;
     const bonus = memberBonus(profile, base, t);
     const reward = base + bonus;
+    // only games that pay use up one of the island's 10 earning plays
+    const rewardedPlays = base > 0 ? { ...profile.rewardedPlays, [id]: (profile.rewardedPlays[id] ?? 0) + 1 } : profile.rewardedPlays;
     const worlds = profile.worlds.map((w) =>
       w?.id === id
         ? {
@@ -153,9 +163,12 @@ export default function Home() {
           }
         : w,
     );
-    save({ ...profile, worlds, moe: profile.moe + reward });
+    save({ ...profile, worlds, moe: profile.moe + reward, rewardedPlays });
     setActive(null);
-    if (reward) setEarned({ amount: reward, bonus, accuracy });
+    if (played) {
+      const why = left === 0 ? "capped" : base === 0 ? "below" : null;
+      setEarned({ amount: reward, bonus, accuracy, playsLeft: base > 0 ? left - 1 : left, why });
+    }
   };
 
   // a bought world claims the next unclaimed island as a fresh island NFT
@@ -230,8 +243,12 @@ export default function Home() {
         : near?.kind === "rapid"
           ? "E — enter the Rapid Fire Market"
           : near?.world
-          ? `E — enter ${near.world.title}`
-          : null;
+            ? `E — enter ${near.world.title} · ${
+                rewardedPlaysLeft(profile, near.world.id) > 0
+                  ? `${rewardedPlaysLeft(profile, near.world.id)}/${MAX_REWARDED_PLAYS} MOE plays left`
+                  : "no MOE left to earn"
+              }`
+            : null;
 
   return (
     <main className="relative h-screen w-screen overflow-hidden font-mono">
@@ -336,14 +353,23 @@ export default function Home() {
         <div className="absolute left-1/2 top-36 z-30 flex -translate-x-1/2 items-center gap-3 rounded-2xl bg-[#0b2a3d]/90 px-5 py-3 text-white shadow-xl">
           <MoeCoin size={32} />
           <div>
-            <div className="text-lg font-bold text-[#ffd166]">+{formatMoe(earned.amount)} MOE earned!</div>
+            {earned.why === null ? (
+              <div className="text-lg font-bold text-[#ffd166]">+{formatMoe(earned.amount)} MOE earned!</div>
+            ) : (
+              <div className="text-lg font-bold">No MOE this time</div>
+            )}
             {earned.bonus > 0 && (
               <div className="text-xs font-bold text-[#ffd166]">
                 ★ includes +{formatMoe(earned.bonus)} member bonus
               </div>
             )}
             <div className="text-xs opacity-80">
-              {Math.round(earned.accuracy * 100)}% correct. The more you learn, the more you earn.
+              {Math.round(earned.accuracy * 100)}% correct.{" "}
+              {earned.why === "capped"
+                ? `You've already earned from this island ${MAX_REWARDED_PLAYS} times. Keep playing for practice!`
+                : earned.why === "below"
+                  ? `Score ${Math.round(PASS_MARK * 100)}% or more to earn MOE.`
+                  : `${earned.playsLeft} of ${MAX_REWARDED_PLAYS} earning plays left on this island.`}
             </div>
           </div>
         </div>

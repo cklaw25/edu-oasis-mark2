@@ -70,8 +70,8 @@ function Membership({ profile, actions }: { profile: Profile; actions: MarketAct
         top of your normal learn-to-earn reward. The better you learn, the bigger the bonus.
       </p>
       <ul className="mt-2 list-disc pl-5 text-sm opacity-80">
-        <li>A 1,000 MOE game pays 1,500 MOE</li>
-        <li>A 1,900 MOE review pays 2,850 MOE</li>
+        <li>A perfect game on a medium island pays 3,000 MOE instead of 2,000</li>
+        <li>A 55% pass pays 600 MOE instead of 400</li>
         <li>Buying again while active adds another {MEMBERSHIP_DAYS} days</li>
       </ul>
       <div className="mt-4 flex items-center justify-between gap-3">
