@@ -3,7 +3,8 @@
 import { useState } from "react";
 import MoeCoin from "@/components/MoeCoin";
 import { PLAYER_LISTINGS, SUBJECTS, type MarketTopic, type PlayerListing } from "@/lib/market";
-import { WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
+import { MEMBERSHIP_BONUS, MEMBERSHIP_DAYS, MEMBERSHIP_PRICE_MOE, WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
+import { isMember, memberDaysLeft } from "@/lib/membership";
 import { nextIslandSlot } from "@/lib/profile";
 import type { Profile } from "@/lib/types";
 
@@ -13,9 +14,10 @@ export interface MarketActions {
   list: (worldId: string, price: number) => void;
   unlist: (worldId: string) => void;
   sell: (worldId: string) => void;
+  buyMembership: () => void;
 }
 
-type Tab = "shop" | "listings" | "mine";
+type Tab = "shop" | "listings" | "mine" | "membership";
 
 // World Market: buy EduOasis worlds by subject, buy island NFTs other players listed, and list your own.
 export default function MarketPanel({ profile, actions }: { profile: Profile; actions: MarketActions }) {
@@ -24,6 +26,7 @@ export default function MarketPanel({ profile, actions }: { profile: Profile; ac
     ["shop", "Shop"],
     ["listings", "Player listings"],
     ["mine", "My islands"],
+    ["membership", "★ Membership"],
   ];
   return (
     <>
@@ -42,8 +45,47 @@ export default function MarketPanel({ profile, actions }: { profile: Profile; ac
         {tab === "shop" && <Shop profile={profile} actions={actions} />}
         {tab === "listings" && <Listings profile={profile} actions={actions} />}
         {tab === "mine" && <MyIslands profile={profile} actions={actions} />}
+        {tab === "membership" && <Membership profile={profile} actions={actions} />}
       </div>
     </>
+  );
+}
+
+function Membership({ profile, actions }: { profile: Profile; actions: MarketActions }) {
+  const active = isMember(profile);
+  const days = memberDaysLeft(profile);
+  const short = profile.moe < MEMBERSHIP_PRICE_MOE;
+  return (
+    <Card>
+      <div className="flex items-start justify-between gap-2">
+        <div className="text-lg font-bold">★ EduOasis Membership</div>
+        {active && (
+          <span className="rounded bg-[#06d6a0]/20 px-2 py-0.5 text-xs font-bold text-[#05785a]">
+            Active · {days} {days === 1 ? "day" : "days"} left
+          </span>
+        )}
+      </div>
+      <p className="mt-2 text-sm opacity-80">
+        For {MEMBERSHIP_DAYS} days, every game you finish pays <b>+{Math.round(MEMBERSHIP_BONUS * 100)}% extra MOE</b> on
+        top of your normal learn-to-earn reward. The better you learn, the bigger the bonus.
+      </p>
+      <ul className="mt-2 list-disc pl-5 text-sm opacity-80">
+        <li>A 1,000 MOE game pays 1,500 MOE</li>
+        <li>A 1,900 MOE review pays 2,850 MOE</li>
+        <li>Buying again while active adds another {MEMBERSHIP_DAYS} days</li>
+      </ul>
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <Price amount={MEMBERSHIP_PRICE_MOE} />
+        <button onClick={actions.buyMembership} disabled={short} className={buyBtn}>
+          {active ? `Extend ${MEMBERSHIP_DAYS} days` : `Join for ${MEMBERSHIP_DAYS} days`}
+        </button>
+      </div>
+      {short && (
+        <p className="mt-2 text-xs font-bold text-[#9b2226]">
+          You need {formatMoe(MEMBERSHIP_PRICE_MOE - profile.moe)} more MOE. Play games to earn it.
+        </p>
+      )}
+    </Card>
   );
 }
 

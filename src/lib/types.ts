@@ -39,6 +39,8 @@ export interface Profile {
   boughtListings: string[];
   /** look of each outer island, keyed by slot */
   cosmetics: Record<string, IslandCosmetics>;
+  /** app-clock time (ms) the membership runs until; unset = never a member */
+  membershipUntil?: number;
 }
 
 export type TreeStyle = "palm" | "pine" | "blossom";

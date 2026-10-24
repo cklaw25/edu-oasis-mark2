@@ -12,8 +12,9 @@ import CosmeticsPanel from "@/components/CosmeticsPanel";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
 import { newNftId, topicForWorld, type MarketTopic, type PlayerListing } from "@/lib/market";
-import { WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
+import { MEMBERSHIP_PRICE_MOE, WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
 import { sessionReward } from "@/lib/rewards";
+import { extendMembership, isMember, memberBonus, memberDaysLeft } from "@/lib/membership";
 import { nextHalfLife, recallAt } from "@/lib/recall";
 import { defaultProfile, isClaimed, loadProfile, nextIslandSlot, saveProfile } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
@@ -44,7 +45,7 @@ export default function Home() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [pipOpen, setPipOpen] = useState(false);
   const [clockTick, setClockTick] = useState(0);
-  const [earned, setEarned] = useState<{ amount: number; accuracy: number } | null>(null);
+  const [earned, setEarned] = useState<{ amount: number; bonus: number; accuracy: number } | null>(null);
 
   // the reward toast fades after a few seconds
   useEffect(() => {
@@ -134,7 +135,9 @@ export default function Home() {
   const exitWorld = (id: string, accuracy: number) => {
     const t = now();
     const played = profile.worlds.find((w) => w?.id === id);
-    const reward = played ? sessionReward(accuracy, recallAt(played, t)) : 0;
+    const base = played ? sessionReward(accuracy, recallAt(played, t)) : 0;
+    const bonus = memberBonus(profile, base, t);
+    const reward = base + bonus;
     const worlds = profile.worlds.map((w) =>
       w?.id === id
         ? {
@@ -148,7 +151,7 @@ export default function Home() {
     );
     save({ ...profile, worlds, moe: profile.moe + reward });
     setActive(null);
-    if (reward) setEarned({ amount: reward, accuracy });
+    if (reward) setEarned({ amount: reward, bonus, accuracy });
   };
 
   // a bought world claims the next unclaimed island as a fresh island NFT
@@ -168,6 +171,10 @@ export default function Home() {
   };
 
   const market = {
+    buyMembership: () => {
+      if (profile.moe < MEMBERSHIP_PRICE_MOE) return;
+      save({ ...profile, moe: profile.moe - MEMBERSHIP_PRICE_MOE, membershipUntil: extendMembership(profile) });
+    },
     buyTopic: (topic: MarketTopic) => {
       if (profile.owned.includes(topic.id)) return;
       place(topic.world, WORLD_PRICE_MOE, { owned: [...profile.owned, topic.id] });
@@ -270,6 +277,14 @@ export default function Home() {
             <span className="text-base font-bold text-[#ffd166]">{formatMoe(profile.moe)}</span>
             <span className="text-xs opacity-70">MOE</span>
           </div>
+          {isMember(profile) && (
+            <div
+              className="rounded-full bg-[#ffd166] px-3 py-1 text-xs font-bold text-[#2b2118]"
+              title="Members earn +50% MOE from every game"
+            >
+              ★ Member · +50% MOE · {memberDaysLeft(profile)}d left
+            </div>
+          )}
           <div className="rounded-xl bg-[#0b2a3d]/80 px-3 py-2 text-xs text-white">
             WASD / arrows to move · E to interact
           </div>
@@ -281,6 +296,11 @@ export default function Home() {
           <MoeCoin size={32} />
           <div>
             <div className="text-lg font-bold text-[#ffd166]">+{formatMoe(earned.amount)} MOE earned!</div>
+            {earned.bonus > 0 && (
+              <div className="text-xs font-bold text-[#ffd166]">
+                ★ includes +{formatMoe(earned.bonus)} member bonus
+              </div>
+            )}
             <div className="text-xs opacity-80">
               {Math.round(earned.accuracy * 100)}% correct. The more you learn, the more you earn.
             </div>
