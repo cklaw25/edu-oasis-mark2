@@ -12,7 +12,7 @@ import RapidMarketPanel from "@/components/RapidMarketPanel";
 import CosmeticsPanel from "@/components/CosmeticsPanel";
 import MoeCoin from "@/components/MoeCoin";
 import { ownsItem, shopItem, type ShopItem } from "@/lib/shop";
-import { MAX_REWARDED_PLAYS, PASS_MARK, difficultyOf, rewardedPlaysLeft, sessionReward } from "@/lib/rewards";
+import { MAX_REWARDED_PLAYS, rewardOutcome, rewardedPlaysLeft } from "@/lib/rewards";
 import { mintBadge, mintBountyBadge, recordMoe, resetChain } from "@/lib/solana";
 import { ATTEMPT_FEE, PASS_SCORE, recordRun, resetBounties } from "@/lib/bounty";
 import { bus } from "@/game/bus";
@@ -57,20 +57,6 @@ export default function Home() {
   }, [bountyMsg]);
   const [clockTick, setClockTick] = useState(0);
   const [libraryOpen, setLibraryOpen] = useState(false);
-  const [earned, setEarned] = useState<{
-    amount: number;
-    accuracy: number;
-    playsLeft: number;
-    /** why nothing was paid: under the pass mark, or the island's earning plays are used up */
-    why: "below" | "capped" | null;
-  } | null>(null);
-
-  // the reward toast fades after a few seconds
-  useEffect(() => {
-    if (!earned) return;
-    const id = setTimeout(() => setEarned(null), 5000);
-    return () => clearTimeout(id);
-  }, [earned]);
 
   // recall is derived from the forgetting curve at the current (possibly time-travelled) clock
   const view = useMemo(
@@ -161,9 +147,8 @@ export default function Home() {
     const t = now();
     const played = allWorlds(profile).find((w) => w.id === id);
     const title = played?.title ?? id;
-    // learn-to-earn: MOE by score, for an island's first 10 paying games (see src/lib/rewards.ts)
-    const left = rewardedPlaysLeft(profile, id);
-    const reward = played && left > 0 ? sessionReward(accuracy, difficultyOf(played)) : 0;
+    // learn-to-earn: the same outcome the summary card showed (see src/lib/rewards.ts)
+    const reward = rewardOutcome(profile, played, accuracy).amount;
     const rewardedPlays = reward > 0 ? { ...profile.rewardedPlays, [id]: (profile.rewardedPlays[id] ?? 0) + 1 } : profile.rewardedPlays;
     if (reward > 0) recordMoe("reward", `Learned "${title}" · ${Math.round(accuracy * 100)}% correct`, reward);
     // bounty pool on this island? the run counts as an attempt; a 60%+ run passes it, and a higher score wins a bigger prize
@@ -201,10 +186,6 @@ export default function Home() {
       rewardedPlays,
     });
     setActive(null);
-    if (played) {
-      const why = left === 0 ? "capped" : reward === 0 ? "below" : null;
-      setEarned({ amount: reward, accuracy, playsLeft: reward > 0 ? left - 1 : left, why });
-    }
     // proof-of-learning badge in the learner's wallet
     void mintBadge(id, title, accuracy);
   };
@@ -244,7 +225,12 @@ export default function Home() {
       <GameCanvas scene={scene} sceneData={sceneData} nonce={nonce} profile={view} paused={paused} />
 
       {active?.kind === "bobo" && (
-        <BoboFlow phase={phase as BoboPhase} setPhase={setPhase} onExit={(acc) => exitWorld("demo-bobo", acc)} />
+        <BoboFlow
+          phase={phase as BoboPhase}
+          setPhase={setPhase}
+          onExit={(acc) => exitWorld("demo-bobo", acc)}
+          reward={(acc) => rewardOutcome(profile, allWorlds(profile).find((w) => w.id === "demo-bobo"), acc)}
+        />
       )}
       {active?.kind === "gen" && (
         <WorldFlow
@@ -253,6 +239,7 @@ export default function Home() {
           phase={phase as WorldPhase}
           setPhase={setPhase}
           onExit={(acc) => exitWorld(active.id, acc)}
+          reward={(acc) => rewardOutcome(profile, allWorlds(profile).find((w) => w.id === active.id), acc)}
         />
       )}
 
@@ -345,27 +332,6 @@ export default function Home() {
           <div className="rounded-xl bg-[#0b2a3d]/80 px-3 py-2 text-xs text-white">WASD / arrows to move · E to interact</div>
         </div>
       </div>
-
-      {earned && !active && (
-        <div className="absolute left-1/2 top-36 z-30 flex -translate-x-1/2 items-center gap-3 rounded-2xl bg-[#0b2a3d]/90 px-5 py-3 text-white shadow-xl">
-          <MoeCoin size={32} />
-          <div>
-            {earned.why === null ? (
-              <div className="text-lg font-bold text-[#ffd166]">+{formatMoe(earned.amount)} MOE earned!</div>
-            ) : (
-              <div className="text-lg font-bold">No MOE this time</div>
-            )}
-            <div className="text-xs opacity-80">
-              {Math.round(earned.accuracy * 100)}% correct.{" "}
-              {earned.why === "capped"
-                ? `You've already earned from this island ${MAX_REWARDED_PLAYS} times. Keep playing for practice!`
-                : earned.why === "below"
-                  ? `Score ${Math.round(PASS_MARK * 100)}% or more to earn MOE.`
-                  : `${earned.playsLeft} of ${MAX_REWARDED_PLAYS} earning plays left on this island.`}
-            </div>
-          </div>
-        </div>
-      )}
 
       {prompt && !panel && !active && (
         <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-5 py-2 text-sm font-bold text-[#0b2a3d] shadow-lg">

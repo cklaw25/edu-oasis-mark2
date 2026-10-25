@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import MoeCoin from "@/components/MoeCoin";
+import TradingPanel from "@/components/TradingPanel";
 import { boboKnowledge } from "@/content/boboKnowledge";
 import { CATALOG, PLAYER_LISTINGS, SUBJECTS, type CatalogEntry, type PlayerListing } from "@/content/catalog";
 import { sha256Json } from "@/lib/hash";
@@ -18,13 +19,14 @@ import BountiesTab from "@/components/BountiesTab";
 
 // World Market: buy worlds by subject, buy worlds other players are reselling, sell your own, all in MOE.
 // Every generated world is an NFT holding the SHA-256 fingerprint of its world file, re-checked on purchase.
-type Tab = "shop" | "listings" | "bounties" | "mine" | "membership" | "wallet";
+type Tab = "shop" | "listings" | "bounties" | "trading" | "mine" | "membership" | "wallet";
 type Run = (label: string, fn: () => Promise<string | void>) => void;
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "shop", label: "Shop" },
   { id: "listings", label: "Player listings" },
   { id: "bounties", label: "Bounties" },
+  { id: "trading", label: "🐫 Trading" },
   { id: "mine", label: "My worlds" },
   { id: "membership", label: "Membership" },
   { id: "wallet", label: "Wallet & history" },
@@ -190,6 +192,7 @@ export default function MarketPanel({
             />
           )}
           {tab === "bounties" && <BountiesTab profile={profile} onProfile={onProfile} busy={busy} run={run} />}
+          {tab === "trading" && <TradingPanel profile={profile} />}
           {tab === "mine" && <Mine profile={profile} onProfile={onProfile} busy={busy} run={run} />}
           {tab === "membership" && <Membership profile={profile} onProfile={onProfile} busy={busy} run={run} />}
           {tab === "wallet" && <Wallet profile={profile} />}

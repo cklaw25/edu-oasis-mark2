@@ -74,6 +74,28 @@ export function makePip(scene: Phaser.Scene, style: string) {
   return key;
 }
 
+/** The World Market's trading camel, facing left towards the trading stall; returns the texture key. */
+export function makeCamel(scene: Phaser.Scene) {
+  if (scene.textures.exists("camel")) return "camel";
+  const g = scene.make.graphics({}, false);
+  const fur = 0xc8a165;
+  const dark = 0xa27b44;
+  g.fillStyle(0x000000, 0.2).fillEllipse(36, 62, 52, 8); // shadow
+  g.fillStyle(dark).fillRect(20, 40, 5, 22).fillRect(30, 40, 5, 22).fillRect(44, 40, 5, 22).fillRect(54, 40, 5, 22); // legs
+  g.fillStyle(fur).fillEllipse(40, 36, 46, 22); // body
+  g.fillStyle(fur).fillEllipse(32, 24, 16, 16).fillEllipse(48, 24, 16, 16); // two humps
+  g.fillStyle(0xe63946).fillRect(30, 28, 22, 6); // saddle blanket
+  g.fillStyle(0xffd166).fillRect(30, 34, 22, 2);
+  g.fillStyle(fur).fillTriangle(14, 18, 22, 18, 24, 34).fillTriangle(14, 18, 18, 34, 24, 34); // neck
+  g.fillStyle(fur).fillEllipse(10, 16, 18, 10); // head
+  g.fillStyle(dark).fillEllipse(3, 17, 5, 4).fillTriangle(14, 9, 18, 9, 16, 4); // nose and ear
+  g.fillStyle(0x111111).fillCircle(9, 14, 1.6); // eye
+  g.fillStyle(dark).fillRect(66, 30, 3, 14); // tail
+  g.generateTexture("camel", 72, 66);
+  g.destroy();
+  return "camel";
+}
+
 // All art is drawn in code, so worlds cost nothing to "generate" visually.
 export function makeTextures(scene: Phaser.Scene) {
   if (scene.textures.exists("player")) return;

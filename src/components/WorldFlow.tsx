@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { btn, Card, Stat } from "./BoboFlow";
 import { HowToArena, HowToBoard, HowToInspect, HowToRunner, HowToShooter, HowToShowdown } from "./HowToPlay";
 import SlideScene from "./SlideScene";
+import RewardCelebration from "./RewardCelebration";
+import type { RewardOutcome } from "@/lib/rewards";
 import { bus } from "@/game/bus";
 import { layoutObjects } from "@/game/layout";
 import { track } from "@/lib/telemetry";
@@ -57,12 +59,15 @@ export default function WorldFlow({
   phase,
   setPhase,
   onExit,
+  reward,
 }: {
   worldId: string;
   spec: WorldSpec;
   phase: WorldPhase;
   setPhase: (p: WorldPhase) => void;
   onExit: (accuracy: number) => void;
+  /** what finishing at this accuracy pays, shown with the score */
+  reward: (accuracy: number) => RewardOutcome;
 }) {
   const games = gamesOf(spec);
   const [slide, setSlide] = useState(0);
@@ -229,6 +234,7 @@ export default function WorldFlow({
           })}
           {games.includes("inspect") && <Stat label="Hearts" value={"❤️".repeat(hearts) || "0"} />}
         </div>
+        <RewardCelebration accuracy={accuracy} outcome={reward(accuracy)} />
         <p className="mt-3 text-sm opacity-80">Your oasis has been watered — this island&apos;s lifespan is restored.</p>
         <button
           className={btn}

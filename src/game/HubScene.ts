@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 import { bus } from "./bus";
-import { makeAvatar, makePip, makeTextures } from "./textures";
+import { makeAvatar, makeCamel, makePip, makeTextures } from "./textures";
 import { FLAG_COLORS, cosmeticsFor } from "@/lib/cosmetics";
 import { LABEL_FONTS, OBJECT_SPOTS, SHIRT_COLORS, WORLD_THEMES, type WorldTheme } from "@/lib/shop";
 import type { IslandCosmetics, PlacedObject, PortalInfo, Profile, TreeStyle } from "@/lib/types";
@@ -96,6 +96,7 @@ export class HubScene extends Phaser.Scene {
     });
     this.drawIsland(MARKET, 0x9d7be0, "World Market");
     this.drawStalls(MARKET);
+    this.drawTradingStall(MARKET);
     this.addPortal(MARKET, { kind: "market" }, 0xffd166);
     this.drawIsland(RAPID, 0xf4a261, "Rapid Fire Market");
     this.drawRapidStand(RAPID);
@@ -345,6 +346,25 @@ export class HubScene extends Phaser.Scene {
       g.fillStyle(0x6b4423).fillRect(x - 28, y - 10, 56, 30);
       g.fillStyle(col).fillTriangle(x - 34, y - 10, x + 34, y - 10, x, y - 40);
     });
+  }
+
+  // World Market trading post (the market's Trading tab): a tent stall with a TRADE sign and a camel beside it
+  private drawTradingStall(c: Circle) {
+    const x = c.x + 60;
+    const y = c.y - 70;
+    const g = this.add.graphics().setDepth(4);
+    g.fillStyle(0x000000, 0.2).fillEllipse(x + 4, y + 22, 76, 12);
+    g.fillStyle(0x6b4423).fillRect(x - 32, y - 4, 64, 26); // counter
+    g.fillStyle(0x8338ec).fillTriangle(x - 40, y - 4, x + 40, y - 4, x, y - 48); // tent roof
+    g.fillStyle(0xffd166).fillTriangle(x - 12, y - 4, x + 12, y - 4, x, y - 30);
+    g.fillStyle(0xfff8e7).fillRect(x - 24, y + 2, 48, 12); // sign board
+    this.add
+      .text(x, y + 8, "⇄ TRADE", { fontFamily: "monospace", fontSize: "11px", fontStyle: "bold", color: "#3d2a73" })
+      .setOrigin(0.5)
+      .setDepth(5);
+    const camel = this.add.image(x + 74, y + 2, makeCamel(this)).setDepth(6); // in front of the palm trees
+    // the camel breathes and shifts its weight now and then
+    this.tweens.add({ targets: camel, scaleY: 1.04, yoyo: true, repeat: -1, duration: 1400, ease: "Sine.easeInOut" });
   }
 
   // Rapid Fire Market: a striped awning stand with a lightning sign
