@@ -45,30 +45,32 @@ The scripts keep three things apart so judges don't mix them up:
 ## Part 1: Pitch script (2:00)
 
 ### Opening (0:00 – 0:20)
-> "Hi, I'm Memphis from Team Oasis, and we built **EduOasis**: you upload your notes, and they become a **game world on your own Kata**, an island you practise on. And like real memories, **your Katas dry up over time when you forget**, so you come back and play to keep them alive. We built it for neurodivergent learners like us: students with ADHD, autism or dyslexia, so the study tool adapts to our brains instead of our brains adapting to the tool."
+> "Hi, I'm Memphis, and with Team Oasis we built **EduOasis**: an AI-powered learning game that turns your lecture slides into playable worlds. Every topic becomes a **Kata**, an island you practise on until it lives in your memory. We built it for neurodivergent learners like us, students with ADHD, autism or dyslexia, so the study tool adapts to our brains instead of our brains adapting to the tool."
 
 ### Who & Problem (0:20 – 0:40)
-> "Most of our team is neurodivergent. Textbooks and slides are walls of text, and videos don't answer you when you're confused. So we either zone out, or we cram and forget it all a week later. The problem isn't just *learning*, it's **time**: nobody tells you *what* you're forgetting or *when* to review it. And the people who struggle most with traditional systems get punished for it instead of supported."
+> "Most of our team is neurodivergent. Walls of text and videos that can't answer your confusion make it hard to keep going. We wanted to learn like Neo in *The Matrix*, with a mentor who answers instantly, or like Tony Stark in *Iron Man 3*, solving a mystery inside an interactive world. And there's a second problem: **time**. We cram, then forget it all a week later, and nobody tells us *what* we're forgetting or *when* to review it. Students who struggle with traditional systems get punished for it instead of supported."
 
 ### Concept & Inspiration (0:40 – 1:00)
-> "We were inspired by **Inside Out**: Riley's memories live on islands, and when she stops caring about them they crumble. EduOasis is that, for studying. Every topic is a Kata. Green means you remember it; as our forgetting-curve model predicts your memory fading, the Kata dries up. And inside each Kata, you don't *read* your notes, you *play* them. Learning who invented what? You dodge Tesla's lightning in a survival shooter. Learning a study? You run the experiment yourself. **This isn't a quiz with a skin on it. The game type is chosen to fit the content.**"
+> "We were inspired by Bruno Simon, who turned his portfolio into a game you drive around, and by **Inside Out**, where Riley's memories live on islands that crumble when she stops caring about them. So in EduOasis, your Katas stay green while you remember them and **dry up as you forget**. Inside, you don't read your notes, you *play* them. Learning who invented what? You dodge Tesla's lightning in a showdown. Learning dates in order? You run and jump through a timeline, like Mario. **The game type is chosen to fit the content. This isn't a quiz with a skin on it.**"
 
 ### How It Works & User Journey (1:00 – 1:40)
 > "Here's how simple it is:
-> **One**: walk to an empty Kata and upload your notes or slides.
-> **Two**: Gemini reads every page, pulls out every fact, and builds a world: picture slides, then the games that fit.
-> **Three**: play it. You earn MOE for what you actually learned, and your Kata turns green again.
+> **One**, walk up to an empty Kata and upload your slides.
+> **Two**, Gemini reads every page, numbers every fact and builds a world in about 15 seconds. Code checks that every fact gets taught.
+> **Three**, play it. You earn MOE for what you actually learned, and your Kata turns green again.
 >
 > Three things make it work:
-> - **Nothing gets lost:** every fact is numbered and code checks that a game teaches it.
-> - **It predicts your forgetting:** a half-life memory model tells you which Kata is drying up and when to review. That's our TIME theme and our data track.
-> - **It runs on Solana:** MOE is our token, live on Solana devnet, and it really moves between wallets: I can send MOE from my laptop to my teammate's and you can see it on Solana Explorer. You earn MOE by learning, spend it on other students' worlds in the World Market, and put it into bounties on hard topics.
+> - **It predicts your forgetting.** A memory model shows which Kata is drying up and when to review it. Pip, your AI companion, answers any question from your own notes.
+> - **It learns how *you* learn.** Every answer streams into **Tiger Data**. SQL predicts where your scores are heading, and a bandit algorithm picks the game type that teaches you best, then tells Gemini to use it in your next world.
+> - **It runs on Solana.** MOE is our token on Solana devnet. It really moves wallet to wallet, and you can see it on Solana Explorer. Spend it on other students' worlds in the World Market, or put it into bounties on hard topics.
 >
-> Pip, your AI companion, sits on top of all of it: ask it anything, it answers from your own notes."
+> The wow factor? **No two students get the same game, because no two brains learn the same way.**"
 
 ### Impact & Closing (1:40 – 2:00)
-> "We built this because we needed it ourselves. Today it turns one set of notes into a playable world in under a minute. **Next**, we want world purchases and badges fully on-chain, real player-to-player trading, and a game picker that learns which game type works best for *your* brain.
-> Learning shouldn't be a wall of text you forget in a week. It should be a world you keep alive. That's EduOasis."
+> "We built this because we needed it ourselves. Today, one set of slides becomes a playable world in seconds. **Next**, we're taking it into full 3D, with our first 3D Kata already in testing, and adding Pip with a voice for dyslexic learners. We're rebuilding studying for the 20% of students who never fit the mould.
+> Learning shouldn't be a wall of text you forget in a week. It should be a world you keep alive. **If they won't change the game, we will.** That's EduOasis."
+
+**Careful with judges:** today's games are 2D. Only say "first 3D Kata in testing" if the `test-3d` branch works. Not built (don't claim): web-scraper agent, focus-sensing rooms, returning you to a 3D location.
 
 ---
 
