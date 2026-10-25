@@ -1573,3 +1573,329 @@ save convo, remind me of all the tracks up there
 Saving this conversation in the same format as last session's, with secrets redacted:
 
 Some messages you sent while I was working didn't come through in the export. Checking how they're stored:
+
+The conversation is saved and pushed (`e4922f5`) to `docs/convo/claude-session-2026-10-25.md`.
+
+**What's in it:**
+- All 76 back-and-forth turns from today, including the messages you sent while I was working.
+- The text of the messages only, in the same format as yesterday's file.
+- Secrets redacted, and I checked: no Gemini key, treasury key or Tiger password made it into the file.
+
+## Your tracks
+
+| Track | Prize / judge | How EduOasis fits it | What to show |
+|---|---|---|---|
+| **🕰 Main theme: TIME** | First Place, Runner Up, Best Hand Made (OxHack committee) | Katas dry up along your forgetting curve. The half-life memory model predicts *when* you'll forget, and the +1 day clock shows it | Pip → Data → **⏩ +1 day**, Katas dry up |
+| **◎ Solana** | Solana sponsor | MOE Token-2022 on devnet: learn-to-earn, browser wallets, **real peer-to-peer transfers**, World Market, bounties | Send MOE → balance updates → **Solana Explorer** |
+| **📈 HRT: data for prediction & decision making** | HRT sponsor | Telemetry → per-Kata trend prediction → bandit picks your best game type → fed into Gemini | Pip → Data → 🐯 panel decision box |
+| **🐯 Tiger Data** | Tiger Data sponsor | TimescaleDB hypertable + continuous aggregate, SQL predictions (`regr_slope`, UCB1) | The 🐯 panel; mention the hypertable and continuous aggregate |
+| **✦ Gemini** | Gemini sponsor | 3-pass generation from your slides + Pip answering from your notes | Generate a world live; ask Pip a question |
+
+**Considered but not entered:**
+- **ElevenLabs** (voice for Pip): mentioned in "What's next".
+- **Presage** (camera focus sensing): dropped.
+
+**For judges:** use the same 4–5 min demo for everyone, and lead with the part that matches their track. Solana judge → transfer + Explorer. HRT or Tiger judge → the 🐯 panel. Gemini judge → generation + Pip. Main judges → the drying Katas.
+
+**Still on you:**
+1. Paste the new description and "Built with" into Devpost before **13:00**.
+2. Play 2–3 Katas on the live site so the 🐯 panel has data.
+3. **Ask judges for feedback in person** (your earlier reminder).
+
+### Memphis
+
+i need u to give me a script that not only include content of the script we had before, but also a new paragraph explaining how we maximise the different tracks like tiger and solana, explain technical aspect in case they ask like the differnt tech stacks we used and how implemented
+
+### Claude
+
+Here's the full script: the pitch you already have, a new spoken section on how we make the most of each track, and a technical section for when judges dig in. I'll also save it in the doc.
+
+---
+
+# EduOasis: full judge script
+
+## Part A: Pitch (2:00)
+
+**Opening (0:00 – 0:20)**
+"Hi, I'm Memphis, and with Team Oasis we built **EduOasis**: an AI-powered learning game that turns your lecture slides into playable worlds. Every topic becomes a **Kata**, an island you practise on until it lives in your memory. We built it for neurodivergent learners like us, students with ADHD, autism or dyslexia, so the study tool adapts to our brains instead of our brains adapting to the tool."
+
+**Who & Problem (0:20 – 0:40)**
+"Most of our team is neurodivergent. Walls of text and videos that can't answer your confusion make it hard to keep going. We wanted to learn like Neo in *The Matrix*, with a mentor who answers instantly, or like Tony Stark in *Iron Man 3*, solving a mystery inside an interactive world. And there's a second problem: **time**. We cram, then forget it all a week later, and nobody tells us *what* we're forgetting or *when* to review it."
+
+**Concept & Inspiration (0:40 – 1:00)**
+"Our main inspiration is **Inside Out**: Riley's memories live on islands that crumble when she stops caring about them. So in EduOasis, your Katas stay green while you remember them and **dry up as you forget**. Inside, you don't read your notes, you *play* them. Learning who invented what? You dodge Tesla's lightning in a showdown. Learning dates in order? You run and jump through a timeline, like Mario. **The game type is chosen to fit the content. This isn't a quiz with a skin on it.**"
+
+**How It Works (1:00 – 1:40)**
+"**One**, walk up to an empty Kata and upload your slides. **Two**, Gemini reads every page, numbers every fact and builds a world in about 15 seconds, and code checks that every fact gets taught. **Three**, play it. You earn MOE for what you actually learned, and your Kata turns green again.
+Three things make it work: it **predicts your forgetting**, it **learns how *you* learn** through Tiger Data, and it **runs on Solana**, with MOE really moving wallet to wallet. **No two students get the same game, because no two brains learn the same way.**"
+
+**Closing (1:40 – 2:00)**
+"We built this because we needed it ourselves. **Next**, we're taking it into full 3D, and our first 3D Kata is already in testing. We're rebuilding studying for the 20% of students who never fit the mould. Learning shouldn't be a wall of text you forget in a week. It should be a world you keep alive. **If they won't change the game, we will.**"
+
+---
+
+## Part B: How we make the most of each track (~60 s, spoken)
+
+> "We didn't just plug in sponsor tools. Each one does a job the game can't do without it.
+>
+> **TIME** is the core mechanic, not a label. Every Kata has a half-life memory model, so it visibly dries up on your own forgetting curve, and it tells you *when* to come back.
+>
+> **Solana** gives students something a card payment can't. MOE is our own Token-2022 token. You earn it by *proving* learning: nothing below 60%, and only the first 10 plays of each Kata pay. You hold it in your own wallet, and you can send it to a friend for a fraction of a cent, verifiable on Solana Explorer. Then you spend it on worlds other students made. Tiny payments between students only work because Solana's fees are almost zero.
+>
+> **Tiger Data** is our learning memory. Every answer streams into a TimescaleDB hypertable, because learning is a time series. That covers the **HRT** brief end to end: **data processing**, a continuous aggregate rolls results up every day; **prediction**, SQL fits your score trend per Kata; and **decision making**, a bandit algorithm picks the game type that teaches *you* best and tells Gemini to use it in your next world.
+>
+> And **Gemini** is the engine. It turns any slides into a whole world in three checked passes, and powers Pip, who answers only from your own notes.
+>
+> Each track feeds the next one. Gemini builds the world, you play it, Tiger Data learns from you, Solana rewards you, and TIME brings you back."
+
+---
+
+## Part C: Technical answers (if they ask)
+
+**"What's your stack?"**
+"Next.js 15 and React 19 in TypeScript, Phaser 3 for the hub and every game, and Tailwind for the UI. Google Gemini for generation and Pip. Tiger Data, which is TimescaleDB on Postgres, for analytics. Solana devnet with web3.js and spl-token. It's deployed on Vercel. All the art is drawn in code, with no AI images. The 3D test Kata uses three.js with React Three Fiber."
+
+**"How does generation work?"**
+"Three Gemini passes with JSON schemas. **Pass 1** pulls out every examinable fact and numbers it K1 to Kn. **Pass 2** designs the world: the theme, intro slides, and which games to use, with every game element citing the fact IDs it teaches. **Pass 3**: our code checks which facts aren't covered yet, and a patch pass fills the gaps. The output is a JSON world file that our fixed game engine renders, so it can't produce broken games. It takes about 15 seconds on a lighter model, down from 1–6 minutes."
+
+**"How does the forgetting prediction work?"**
+"A simplified half-life regression, like Duolingo's: recall = 2 to the power of minus (time since review ÷ half-life). Each session updates the half-life from your accuracy. Do well and it grows, do badly and it shrinks. The Kata's colour shows predicted recall."
+
+**"How exactly is Tiger Data used?"**
+"Every gameplay event is batched from the browser to `/api/telemetry` and inserted into a `learning_events` **hypertable**, which is split up by time. A **continuous aggregate**, `game_daily`, rolls up correct and wrong answers per game type per day. It refreshes every 15 minutes, and also counts brand-new rows that haven't been rolled up yet. `/api/insights` runs the predictions in SQL: `regr_slope` and `regr_intercept` fit your score trend per Kata, and `time_bucket` gives your average answer speed per day as a focus signal. Then a **UCB1 bandit** ranks the game types: accuracy plus a bonus for less-tried types. Its pick is sent with your next generation request, and Pip shows it all live. The schema creates itself on first use."
+
+**"Why a time-series database rather than plain Postgres?"**
+"Learning data is timestamped events. Hypertables keep time-range queries fast as the data grows, and continuous aggregates keep summaries up to date without batch jobs. And it's still Postgres, so it's plain SQL."
+
+**"What exactly is on-chain?"**
+"The MOE token is a real **SPL Token-2022 mint** on devnet. Our treasury wallet is the mint authority, and its key only lives in server environment variables.
+- Every player's browser **generates its own keypair**. The private key never leaves the device.
+- A new player claims a starter pack: the treasury sends MOE plus a bit of SOL for fees.
+- To send MOE, our server builds the transaction: create the receiver's token account if needed, then `transferChecked`, then a memo. The **browser signs it**, and the server submits it and waits for confirmation.
+- The in-game balance then syncs with the chain.
+- If a wallet only ever received MOE and has no SOL, the treasury tops up a tiny amount, so it can still send."
+
+**"And what's simulated?"**
+"World NFTs, purchases, royalties, badges and bounty pools run through the same interface the real calls will use, but they're simulated in this build. Next is Metaplex Core NFTs holding each world's SHA-256 fingerprint, on-chain royalties, soulbound completion badges, and escrowed trading."
+
+**"Why Solana for this?"**
+"Students paying each other pennies only works with fees of a fraction of a cent and confirmation in seconds. Ownership and integrity matter too: a world's fingerprint proves it hasn't been tampered with, and creators can earn royalties automatically."
+
+**"How do you stop people farming MOE?"**
+"There's a 60% pass mark, rewards scale with your score, and each Kata only pays for its first 10 completions."
+
+**"Privacy?"**
+"Learners are anonymous IDs or devnet wallet addresses. We store how you played, not names or notes. Keys stay in the browser."
+
+**"What about 3D?"**
+"Our first 3D Kata is in testing on its own branch, built with React Three Fiber. It's loaded only when opened, and falls back safely if a laptop can't run WebGL. It uses the same scoring, MOE and Tiger Data as every other Kata."
+
+---
+
+I've saved Part B (the tracks) and Part C (the technical answers) into `docs/PITCH_AND_DEMO_SCRIPT.md` as **Part 1b** and **Part 1c**, and pushed them (`3a0f1af`). The pitch above is already in the doc as Part 1.
+
+**How to use it at the judge table (4–5 min):**
+1. Part A pitch, shortened to about 1 min: Opening + Concept + one line of How It Works.
+2. A live demo focused on that judge's track.
+3. One sentence from Part B for their track.
+4. Pull answers from Part C when they ask.
+
+### Memphis
+
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+<tools-used-before-summary>Agent, AskUserQuestion, Bash, Edit, PowerShell, Read, Write</tools-used-before-summary>
+Summary:
+1. Primary Request and Intent:
+   - The user (Memphis, KCL student, Team Oasis) is building **EduOasis Mark 2** for OxHack 2026 (Oxford, 24–25 Oct 2026). Repo: github.com/cklaw25/edu-oasis-mark2, local `C:\edu-oasis-mark2`. Live site: **https://edu-oasis-mark2.vercel.app** (Vercel, auto-deploys on push to `main`).
+   - Devpost was already submitted at 12:00. **Edits are allowed until 13:00, 25 Oct.**
+   - Main requests this session, all done:
+     - Show the saved "2 separate computers?" answer verbatim.
+     - Make a deadline plan.
+     - Merge Corey's branches into main without corrupting `merge1`. The user's choices:
+       - next-feature-2: merged.
+       - Bounty pools: merged.
+       - next-feature-3: merged (celebration card + trading preview).
+       - SKIPPED: hub restyle, notes branches, next-feature-5 (MOE ÷1000).
+     - Rename islands to **"Kata"** in on-screen text only. The world map stays EduOasis.
+     - Deploy to Vercel. The user said: **"no matter wut u nede to keep the vercel edu oasis mark 2 one running cause the judges r gonna look at it"**.
+     - Fix the end-of-world back button and the Bounties tab crash.
+     - Sync the in-game MOE balance with the devnet balance.
+     - Fix the failed transaction (no SOL for fees).
+     - Tiger Data integration (data processing → prediction → decision).
+     - 3D test Kata on a separate branch. It works. The user decided **not to merge it** and will demo it from the preview/localhost.
+     - Git cleanup. The user said: **"no need to get any of the notes out of repo"**.
+     - Devpost texts: elevator pitch, the 2 features, the full description (Inside Out as main inspiration; Iron Man, Bruno Simon and Matrix as side inspirations; much more Solana detail), and the Built-with list.
+     - Pitch script in the user's format; README; save the conversation; remind the user of the tracks.
+     - Final request: a full script including the earlier pitch, plus a new paragraph on how we make the most of each track (Tiger, Solana, etc.), plus technical answers on the stack and how it was implemented.
+   - Team name: "Team Oasis" (the user said "dont call us team ni hao… team oasis is fine").
+
+2. Key Technical Concepts:
+   - Next.js 15.5.28 (upgraded from 15.5.4 for CVE-2025-66478, which Vercel blocked), React 19.1.10, TypeScript, Phaser 3, Tailwind 4.
+   - Gemini 3-pass generation (extract K-ids → design → coverage patch); `/api/generate` maxDuration=300 (Vercel Hobby limit).
+   - Solana devnet: MOE SPL Token-2022 mint `4BDLBADE7SE8wGc7d3X7BJL9TsNo5SQJ27GKHEbbCxGk`, treasury `CNp9YiTDhKRomr9xAtPLQEK9GgpQ8riDgFDbRrTJVZUq` (~0.81 SOL).
+     - Browser demo wallets.
+     - The server builds the tx (createAssociatedTokenAccountIdempotent + transferChecked + memo); the browser signs; the server submits.
+   - Tiger Data (TimescaleDB): `learning_events` hypertable, `game_daily` continuous aggregate (materialized_only=false, 15-min policy), regr_slope/regr_intercept trend, time_bucket answer speed, UCB1 bandit fed into Gemini via form field `tigerPick`.
+   - Half-life recall model: recall = 2^(−t/half-life).
+   - Learn-to-earn (`rewards.ts`): PASS_MARK 0.6, 20% min share, MAX_REWARDED_PLAYS 10, medium max 2000 MOE.
+   - React error boundaries (BountyGuard), next/dynamic ssr:false for 3D (three 0.180.0, @react-three/fiber 9.8.2, @react-three/drei 10.7.9).
+
+3. Files and Code Sections:
+   - `src/app/page.tsx`
+     - Merge resolutions.
+     - exitWorld combines rewardOutcome + bounty recordRun (wrapped in try/catch) + `moe: profile.moe + reward + (run?.delta ?? 0)`.
+     - Fetches `/api/insights` before generation and sets `form.set("tigerPick", …)`.
+     - Imports `learnerId, track` from telemetry.
+   - `src/components/MarketPanel.tsx`
+     - Tabs: shop, listings, bounties, 🐫 trading, mine, membership, wallet.
+     - BountiesTab is wrapped in `<BountyGuard>`.
+     - Wallet/DevnetWallet take profile + onProfile. refresh() calls `demo.chainDelta(b)` and applies the delta to profile.moe plus `chain.recordMoe("wallet", …)`.
+   - `src/components/BountiesTab.tsx`: added the `BountyGuard` class ("The saved bounty data in this browser is out of date" + Reset bounties).
+   - `src/lib/solana/demoWallet.ts`
+     - `SYNC="eo2.demoWallet.synced"`, `STARTER=30_000`.
+     - `chainDelta(balance)`: the baseline is the starter amount if the wallet claimed, else 0.
+     - claimStarter bumps SYNC by r.amount.
+   - `src/lib/solana/devnet.ts`: `ensureFeeSol(owner)` tops up 0.01 SOL if the balance is under 0.005.
+   - `src/app/api/solana/transfer/route.ts`: build action calls `await ensureFeeSol(from)`.
+   - `src/lib/tiger.ts` (new)
+     - pg Pool; the sslmode param is stripped from the URL, with `ssl:{rejectUnauthorized:false}`.
+     - ensureSchema (table, hypertable, index, cagg + policy in try/catch).
+     - insertEvents (game derived from `*_done` type), insights() (arms via the cagg with a raw-table fallback, myArms, trends, responseMs, recommendation).
+   - `src/app/api/telemetry/route.ts` (POST) and `src/app/api/insights/route.ts` (GET ?learner=): new; both return `{configured:false}` if there's no env var.
+   - `src/lib/telemetry.ts`: track() also queues events and flushes to /api/telemetry after 2 s and on pagehide; `learnerId()` = demo wallet pub or an anon id.
+   - `src/components/PipPanel.tsx`: `TigerInsights` panel "🐯 Live from Tiger Data" at the top of the Data tab (the decision text replaces the world id with its title).
+   - `src/app/api/generate/route.ts`: GAME_IDS import; learner prompt adds the Tiger bandit line if `tigerPick` is valid.
+   - KATA rename: 38 UI strings across 14 files (Home Kata, Empty Kata, Back to Katas, Put on Kata N, shop label "Katas", Pip text, insights strings).
+   - `docs/PITCH_AND_DEMO_SCRIPT.md`: rewritten repeatedly.
+     - Part 0: checklist.
+     - Part 1: new pitch in the user's format.
+     - Part 1b: track usage.
+     - Part 1c: technical answers.
+     - Part 2: demo video (≈2:50, incl. 🐯 shot).
+     - Part 2b: Tiger explained.
+     - Part 3: judge Q&A.
+     - Built vs simulated.
+   - `README.md`: full README (kept Shaun's YouTube demo video link avPG4q7rlFs).
+   - `.env.example`: added empty TREASURY_SECRET_KEY= and TIGER_DATABASE_URL=.
+   - `docs/convo/claude-session-2026-10-25.md`: conversation export via scratchpad `export.py` (includes queued_command mid-turn messages, redacts secrets).
+   - `package.json`: next/eslint-config-next 15.5.28, react/react-dom 19.1.10, pg 8.13.1, @types/pg 8.11.10.
+   - `.env.local` (gitignored): GEMINI_API_KEY, TREASURY_SECRET_KEY, TIGER_DATABASE_URL. Fixed a missing `TIGER_DATABASE_URL=` prefix.
+
+4. Errors and fixes:
+   - Vercel blocked the deploy because of vulnerable Next 15.5.4 → upgraded to 15.5.28.
+   - maxDuration 800 > Hobby limit → set to 300.
+   - Back button not responding / Bounties tab crashing ("Application error"):
+     - Couldn't reproduce in a clean browser.
+     - Made exit bounty-safe with try/catch, and added BountyGuard.
+     - Tested with corrupted localStorage.
+   - The user's deployment-specific URL is login-protected (302). Told the user to share the public URL instead.
+   - Simulated balance didn't match the chain → chainDelta sync. Tested on real devnet: A 29,500 = chain; B 30,500 game / 500 chain.
+   - "Attempt to debit an account but found no record of a prior credit" → a wallet that only received MOE can't claim (409) so has no SOL → ensureFeeSol. Tested: B sent 100 back.
+   - pg "self-signed certificate in certificate chain" → strip sslmode from the URL.
+   - **My mistakes:**
+     - A sed command printed the Tiger DB password into the chat. I told the user to reset the Tiger password after the hackathon.
+     - `git worktree remove --force` followed a node_modules junction and deleted the real `C:\edu-oasis-mark2\node_modules`. Reinstalled with `npm ci`; no code was lost. Lesson: never junction node_modules.
+   - A push was rejected because Shaun Taylor edited the README → pull --rebase, then push.
+   - Export initially missed mid-turn messages (stored as `attachment.type == "queued_command"`) → fixed.
+
+5. Problem Solving:
+   - All branches are verified via tsc, next build and puppeteer-core smoke tests (scratchpad `pt/` with smoke.js, back.js, play.js, sync.js, sync2.js; Chrome headless).
+   - Tiger was verified end to end on real Tiger Cloud (5 events stored, insights correct); test rows deleted.
+   - The live `/api/insights` returns configured:true, so the Vercel env var is set.
+   - Production health check returned 200 on /, /api/solana/moe and /api/insights.
+   - Remote branches left: main, corey/discussion-note, corey/from-cklaw25-main, corey/moe-token-live, corey/neobrutalist-hub, corey/next-feature-5, test-3d (3ab37ce).
+   - The 3D worktree is at scratchpad `edu3d` (run `npm run dev -- -p 3130`). It merges cleanly with main but is intentionally NOT merged.
+
+6. All user messages:
+   - "open convo for eduoasis mark 2"
+   - "ok we have 4 hours until submission, whats our plan (i was thinking of : doing test transaction --> public domain --> write the script for visual demo and presentation potentially --> video make (but we have a friend to help us with video generation) --> short checklist for visual demo core features to show --> idk extra add ons, what do u think our plan should be cause we dont have much time left"
+   - "how do i test the transaction after he gets local host running"
+   - "i can see in solana explorer but not on the localhost idk, i think it might be cause he merged it with his branch, i think we can merge but there are like a trillion branches, check all of them and explain to me how we can merge them together or we dont have to, or maybe we can just use merge 1 as main, ask for permission before u make the change"
+   - "skip the hub restyle, skip the discussion note branch he had i want the merging to add new features to merge 1 not replace or remove shit, bounty pool pause for now, … u can add the learn to ean rewards … the core stuff from merge1 must still work which is the priority, can u also clean up the git a lil bit"
+   - "how does the learn to earn reward feature work … also from now on the islands lets give it an actual name, called KATA … can u also add the bounty pool merge to the main, but mix sure there are no errors … then branch clean up and push, make sure the right branch is the main, and then we can work on deploy after"
+   - "KATA is the name for island yes, world map is still the same or eduoasis, what is his next feature 3 … dont merge that part yet, can we try make the current main public first, can we change it after ?"
+   - (Vercel log paste: security block) and (a second Vercel log paste)
+   - "its ready, so check" / "its ready so check, i ran it i walked around it looks alright, buts whats next"
+   - "rename, what else we havent merged yet, check and i wanna choose wut to add to main, ask first before doing anything"
+   - "dont merge the 30 MOE part, but theres a lil celebrationg thing in one of the branches add that,so the first one skip, the secon one add, skip hub restyle, skip notes files, rename kata then push to public vercel and ill check again, he has stopped pushing, then we can move on to doing next thing on plan"
+   - "i tested it worked well, but the button was kinda buggy can u check it and fix it, teamnihao"
+   - Answer to my question: "the button back to home screen after get reward in gameplay not doing anything or responding, also dont call us team ni hao, can we figure out team name after, actually team oasis is fine"
+   - "Application error: a client-side exception has occurred while loading edu-oasis-mark2-666xg9zjr-cklaw25s-projects.vercel.app … when opening bounty, also how come correy cant open vercel website from his computer…"
+   - "wait one last thing, can u make the simulated wallet align with the devnet wallet amount cause when we were testing the transaction one was 30000 but the other was 29500 after, then push again"
+   - "ok lets do demo checklist and script, what do i need ?"
+   - "failed transaction : Simulation failed. Message: Transaction simulation failed: Attempt to debit an account but found no record of a prior credit…"
+   - "i need a * Elevator pitch … to do submission"
+   - "2 features : an AI‑powered immersive learning platform … what should i say for second feature to outline trading solana part ?"
+   - "2 features : … turn this into 200 characters or less"
+   - (Devpost template headings paste)
+   - "built with, what tech stacks, give me the list"
+   - "remind me wut were we last working on, the plan ?"
+   - "the most important fucking thing im missing is i want to do the tiger data … no need to wait for permission explain after and implement it anyway NOW, then i want to try to make a 3D game … git clean up sure, no nede to get any of the notes out of repo, i already submitted on devpost but we need to edit the submission before 1 pm so ye lets GO"
+   - "can u talk about the main purpose of tiger data and how we can use data processing, prediction and decision making to make shit better script explaanationw ise, remind me to make a new script"
+   - "also i put it in env.local already do u see it ? git nice work ? 3D test can we make a test, but how can we make sure it doesnt corrupt anything, and can we make it faster to make a 3d test it can be simple, explain first before coding"
+   - "ye make the seperate branch, do u need any 3d models or u can handle it uself … start building fuckgin NOWWWW"
+   - "go"
+   - "write me the script in this format and formula and all our new content and context : (old OasisEdu 3D script paste)"
+   - "yea save it"
+   - "can u give me with new built with tag list, and also (Devpost description paste), add the new content and also use format i was discussing previously for script"
+   - "can u talk more about solana in this, and our main inspo can be inside out example u used which is good, iron man and bruno simmons r side inspos"
+   - "how do i test the 3d"
+   - "no matter wut u nede to keep the vercel edu oasis mark 2 one running cause the judges r gonna look at it"
+   - "the test works, fucking nice, no need to, i will show it during visual demo"
+   - "can u gen me a readme for git and push it"
+   - "save convo, remind me of all the tracks up there"
+   - "i need u to give me a script that not only include content of the script we had before, but also a new paragraph explaining how we maximise the different tracks like tiger and solana, explain technical aspect in case they ask like the differnt tech stacks we used and how implemented"
+
+   Security/constraint notes to preserve:
+   - Never echo secrets. If the user pastes keys, write them to file and tell them to rotate (memory: Secrets Hygiene).
+   - `.env.local` is gitignored, never commit it.
+   - Git identity must be set locally/inline only, never --global.
+   - Keep the public Vercel site (main) running for judges: "no matter wut u nede to keep the vercel edu oasis mark 2 one running cause the judges r gonna look at it". Main is frozen for judging; test before any push and use Vercel Instant Rollback if needed.
+   - Don't merge test-3d or next-feature-5.
+   - Notes stay in the repo.
+   - The user must reset the Tiger DB password after the event (leaked in chat), and also rotate the treasury key (pasted earlier).
+
+7. Pending Tasks:
+   - The user pastes the updated Devpost description + Built-with (tigerdata, timescaledb, postgresql; 3D tags only if merged, which it isn't) before 13:00.
+   - The user plays 2–3 Katas on the live site so the 🐯 Tiger panel has data.
+   - Ask judges for feedback in person.
+   - Post-event: reset the Tiger password and rotate the treasury key.
+
+8. Current Work:
+   I had just delivered the full judge script in chat and saved it:
+   - **Part A:** the pitch.
+   - **Part B:** "How we make the most of each track" (TIME, Solana, Tiger Data/HRT, Gemini, each track feeding the next).
+   - **Part C:** technical answers (stack, generation, forgetting model, Tiger Data details, why time-series, on-chain details, simulated parts, why Solana, anti-farming, privacy, 3D).
+
+   Saved as Part 1b/1c in `docs/PITCH_AND_DEMO_SCRIPT.md`, committed and pushed as `3a0f1af` ("Script: how each track is used + technical answers for judges"). It was a docs-only push to main, so the redeploy is identical.
+
+9. Optional Next Step:
+   No further step is required; the last request ("i need u to give me a script that … explaining how we maximise the different tracks … explain technical aspect …") was completed and pushed. Next is to confirm to the user that it's saved in docs/PITCH_AND_DEMO_SCRIPT.md (commit 3a0f1af), and remind them to paste the Devpost edits before 13:00 and keep main frozen. No new code changes without the user asking.
+
+If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: C:\Users\lawch\.claude\projects\C--Users-lawch\85b7c41f-e95c-4197-aa4a-72641d935b8a.jsonl
+Continue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with "I'll continue" or similar. Pick up the last task as if the break never happened.
+
+The messages after this summary are the most recent messages from before compaction, kept verbatim. The summary was written without seeing them, so something it says has not happened yet may already have happened in them.
+
+save convo
+
+'
+parts = []
+def add(who, text):
+    text = clean(text)
+    if not text: return
+    if parts and parts[-1][0] == who: parts[-1][1].append(text)
+    else: parts.append((who, [text]))
+for line in open(src, encoding='utf-8'):
+    try: e = json.loads(line)
+    except: continue
+    if e.get('isMeta') or e.get('isSidechain'): continue
+    att = e.get('attachment') or {}
+    if att.get('type') == 'queued_command' and isinstance(att.get('prompt'), str):
+        add('Memphis', att['prompt']); continue
+    m = e.get('message') or {}
+    c = m.get('content')
+    if e.get('type') == 'user':
+        texts = []
+Shell cwd was reset to C:\Users\lawch
