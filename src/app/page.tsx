@@ -19,7 +19,7 @@ import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
 import { track } from "@/lib/telemetry";
 import { lifespanAt, nextHalfLife, nextStreak, recallAt } from "@/lib/recall";
-import { GENERATE_PRICE_MOE, formatMoe } from "@/lib/moe";
+import { GENERATE_PRICE_MOE, formatMoe, roundMoe } from "@/lib/moe";
 import { addWorld, allWorlds, defaultProfile, loadProfile, saveProfile, showOnIsland, storeWorld, updateWorld } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
 import type { WorldSpec } from "@/lib/worldSpec";
@@ -153,6 +153,7 @@ export default function Home() {
   const paused = pipOpen || panel !== null || (active !== null && (isCardPhase(phase) || reviewOpen));
 
   const save = (next: Profile) => {
+    next = { ...next, moe: roundMoe(next.moe) }; // MOE has decimals now: keep the balance clean
     saveProfile(next);
     setProfile(next);
   };
@@ -183,7 +184,7 @@ export default function Home() {
         recordMoe("bounty-attempt", `Bounty attempt on "${b.title}" (${pctScore}%)`, -ATTEMPT_FEE);
         setBountyMsg(
           `Bounty attempt on "${b.title}": ${pctScore}%. You need ${Math.round(PASS_SCORE * 100)}% to pass. ` +
-            `${ATTEMPT_FEE - run.burned} MOE of your fee grew the pool and ${run.burned} was burned.`,
+            `${formatMoe(roundMoe(ATTEMPT_FEE - run.burned))} MOE of your fee grew the pool and ${formatMoe(run.burned)} was burned.`,
         );
       }
     }

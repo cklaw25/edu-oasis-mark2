@@ -11,8 +11,8 @@ How players could trade **island NFTs** and **MOE DONE** with each other, buildi
 | Piece | How it works now |
 |---|---|
 | **MOE DONE** | Token-2022 on devnet (`4BDLBADE7SE8wGc7d3X7BJL9TsNo5SQJ27GKHEbbCxGk`). In-game balance is still a browser demo. |
-| **Earning** | Each finished world session pays 200–2,000 MOE: base + accuracy + a bonus for reviewing an island you were forgetting. |
-| **Shop** | EduOasis sells subject worlds at a fixed 10,000 MOE. This is the *primary market*. |
+| **Earning** | Each finished world session pays 0.2–2 MOE: base + accuracy + a bonus for reviewing an island you were forgetting. |
+| **Shop** | EduOasis sells subject worlds at a fixed 10 MOE. This is the *primary market*. |
 | **Player listings** | Owners list an island NFT at any price; anyone can buy it outright. This is the *secondary market*. |
 | **Islands** | 1 free island + islands claimed by buying worlds (3 slots today). |
 
@@ -38,7 +38,7 @@ Owner sets a **starting price** and an **end time**. Highest bid wins when time 
 - Why: fair price discovery for rare or popular worlds.
 
 ### 2.4 Island-for-island swaps
-Two players trade islands directly, optionally with MOE added to balance it ("my Asch + 2,000 MOE for your Milgram").
+Two players trade islands directly, optionally with MOE added to balance it ("my Asch + 2 MOE for your Milgram").
 - Both players must approve; the swap happens in one step so nobody can back out halfway.
 - Why: students can trade topics they've finished for ones they still need to revise.
 
@@ -59,7 +59,7 @@ Every secondary sale (listing, offer, auction, swap with MOE) splits the price:
 | **3%** | **Learning pool** | Paid back out as learn-to-earn rewards |
 | **2%** | EduOasis treasury | Runs the platform |
 
-Example: an island sells for 10,000 MOE → seller 9,000, creator 500, learning pool 300, treasury 200.
+Example: an island sells for 10 MOE → seller 9, creator 0.5, learning pool 0.3, treasury 0.2.
 
 The **learning pool** is the key loop: trading activity funds rewards for people who actually study. Speculation pays for learning.
 
@@ -73,7 +73,7 @@ Ideas to make value come from learning, not hype:
 2. **"Learned by" badge.** Islands record how many learners improved on them. A proven world is worth more.
 3. **Earned MOE vs. bought MOE.** Track MOE earned from studying separately. Some perks (e.g. creator status, voting on new subjects) only count earned MOE.
 4. **Holding cooldown.** A bought island can't be resold for 24 hours, which slows down flipping.
-5. **Price bands for new players.** Accounts under a week old can't list above, say, 50,000 MOE, which protects younger students from being exploited.
+5. **Price bands for new players.** Accounts under a week old can't list above, say, 50 MOE, which protects younger students from being exploited.
 
 ---
 

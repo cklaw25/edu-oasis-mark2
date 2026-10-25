@@ -158,11 +158,11 @@ function BountyCard({
             </span>
           ) : (
             <>
-              <button disabled={!!busy || profile.moe < 1_000} onClick={() => join(1_000)} className={btn}>
-                Stake 1,000
+              <button disabled={!!busy || profile.moe < 1} onClick={() => join(1)} className={btn}>
+                Stake 1
               </button>
-              <button disabled={!!busy || profile.moe < 5_000} onClick={() => join(5_000)} className={btn}>
-                Stake 5,000
+              <button disabled={!!busy || profile.moe < 5} onClick={() => join(5)} className={btn}>
+                Stake 5
               </button>
             </>
           )}
@@ -267,7 +267,7 @@ export default function BountiesTab({
   const openIds = new Set(list.filter((b) => b.status === "open").map((b) => b.worldId));
   const mineToOpen = allWorlds(profile).filter((w) => !openIds.has(w.id));
   const [pick, setPick] = useState("");
-  const [stake, setStake] = useState(5_000);
+  const [stake, setStake] = useState(5);
 
   const open = () =>
     run("open-bounty", async () => {
@@ -329,7 +329,7 @@ export default function BountiesTab({
               ))}
             </select>
             <select value={stake} onChange={(e) => setStake(Number(e.target.value))} className="rounded-lg border px-2 py-1.5 text-sm">
-              {[1_000, 2_000, 5_000, 10_000].map((n) => (
+              {[1, 2, 5, 10].map((n) => (
                 <option key={n} value={n}>
                   {formatMoe(n)} MOE
                 </option>

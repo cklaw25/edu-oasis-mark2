@@ -10,7 +10,7 @@ import {
 import { MOE_MINT, connection } from "./moe";
 
 export const MOE_DECIMALS = 9;
-export const STARTER_MOE = 30_000;
+export const STARTER_MOE = 30;
 const STARTER_SOL = 0.02; // pays the player's network fees for many transfers
 const MEMO_PROGRAM = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
 
@@ -24,7 +24,7 @@ export function treasury(): Keypair | null {
   }
 }
 
-const units = (moe: number) => BigInt(Math.round(moe * 100)) * BigInt(10) ** BigInt(MOE_DECIMALS - 2);
+const units = (moe: number) => BigInt(Math.round(moe * 1000)) * BigInt(10) ** BigInt(MOE_DECIMALS - 3);
 const ata = (owner: PublicKey) => getAssociatedTokenAddressSync(MOE_MINT, owner, true, TOKEN_2022_PROGRAM_ID);
 
 /** Instructions to move `amount` MOE from one wallet to another (creates the receiver's MOE account if needed). */
@@ -37,7 +37,7 @@ function moeTransfer(from: PublicKey, to: PublicKey, amount: number, payer: Publ
   return ix;
 }
 
-/** Starter pack for a new demo wallet: 30,000 MOE + a little SOL for fees, paid by the treasury. */
+/** Starter pack for a new demo wallet: 30 MOE + a little SOL for fees, paid by the treasury. */
 export async function fundStarter(owner: PublicKey): Promise<string> {
   const t = treasury();
   if (!t) throw new Error("TREASURY_SECRET_KEY is not set on this server");

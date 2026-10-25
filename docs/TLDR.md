@@ -20,9 +20,9 @@ Upload your notes and they become a **game world on your own island**; like memo
 - **Picture slides:** every intro card has an animated emoji scene.
 - **Pip:** AI companion grounded in your notes (cites sources), study notes, personal notes, learning-data dashboard, "+1 day" time travel for the demo.
 - **Economy (merged with Corey's work):**
-  - Start with **3 empty islands, 30,000 MOE, 2 free generations**; after that a new world costs **10,000 MOE**.
-  - **Shop** by subject: Bobo, Loftus & Palmer, Milgram, Inventors, WW1, Photosynthesis at **30,000 MOE** each (so you can buy one to try).
-  - **Player listings** (resales, 10% royalty to the creator), **My worlds** (mint & list your own, sell copies, resell bought ones), **Membership** (90,000 MOE), **Wallet & history** with the **live MOE token** read from devnet.
+  - Start with **3 empty islands, 30 MOE, 2 free generations**; after that a new world costs **10 MOE**.
+  - **Shop** by subject: Bobo, Loftus & Palmer, Milgram, Inventors, WW1, Photosynthesis at **30 MOE** each (so you can buy one to try).
+  - **Player listings** (resales, 10% royalty to the creator), **My worlds** (mint & list your own, sell copies, resell bought ones), **Membership** (90 MOE), **Wallet & history** with the **live MOE token** read from devnet.
   - Every purchase re-checks the world file against its fingerprint.
   - **My worlds library:** own any number of worlds, choose which 3 sit on the islands.
 

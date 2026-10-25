@@ -141,6 +141,6 @@ export interface PlayerListing {
 }
 
 export const PLAYER_LISTINGS: PlayerListing[] = [
-  { id: "ava-milgram", assetId: "MiLgRaMob3d1enc3Wor1dAsset9xQ7r2Lk5vT8nB4mCs", seller: "Ava", price: 22_000 },
-  { id: "sam-photosynthesis", assetId: "PhoT0synTh3s1sWor1dAsset4bN8cVd5LhJ4sYg6EuA1", seller: "Sam", price: 18_000 },
+  { id: "ava-milgram", assetId: "MiLgRaMob3d1enc3Wor1dAsset9xQ7r2Lk5vT8nB4mCs", seller: "Ava", price: 22 },
+  { id: "sam-photosynthesis", assetId: "PhoT0synTh3s1sWor1dAsset4bN8cVd5LhJ4sYg6EuA1", seller: "Sam", price: 18 },
 ];

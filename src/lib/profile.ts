@@ -1,7 +1,10 @@
-import { STARTING_MOE } from "./moe";
+import { resetBounties } from "./bounty";
+import { STARTING_MOE, roundMoe } from "./moe";
 import type { Profile, WorldSummary } from "./types";
 
 const KEY = "eo2.profile";
+/** bump when MOE amounts change scale (see rescaleMoe) */
+const MOE_VERSION = 2;
 
 // The hand-built Bobo world (BoboFlow). Sold in the World Market like the generated sample worlds.
 export const DEMO_WORLD: WorldSummary = {
@@ -15,7 +18,7 @@ export const DEMO_WORLD: WorldSummary = {
   gameType: "rpg-experiment",
 };
 
-/** A brand-new learner: 3 empty islands, 2 free generations and 30,000 MOE to buy a world. */
+/** A brand-new learner: 3 empty islands, 2 free generations and 30 MOE to buy a world. */
 export function defaultProfile(): Profile {
   return {
     name: "Learner",
@@ -23,6 +26,7 @@ export function defaultProfile(): Profile {
     worlds: [null, null, null],
     library: [],
     moe: STARTING_MOE,
+    moeVersion: MOE_VERSION,
     listings: [],
     cosmetics: {},
     rewardedPlays: {},
@@ -41,10 +45,26 @@ export function loadProfile(): Profile {
     if (raw) {
       // profiles saved before the MOE market: give them a balance and an empty library
       const p = JSON.parse(raw) as Partial<Profile>;
+      if (p.moe !== undefined && p.moeVersion !== MOE_VERSION) return rescaleMoe(p);
       return { ...defaultProfile(), ...p, library: p.library ?? [], moe: p.moe ?? STARTING_MOE, listings: p.listings ?? [] };
     }
   } catch {}
   return defaultProfile();
+}
+
+/** Saves from before MOE was cut 1,000× (30,000 → 30 to start): scale the balance and listings down to match. */
+function rescaleMoe(p: Partial<Profile>): Profile {
+  resetBounties(); // their stakes and pools were on the old scale too; the demo pools reseed
+  const next: Profile = {
+    ...defaultProfile(),
+    ...p,
+    library: p.library ?? [],
+    moe: roundMoe((p.moe ?? 0) / 1000),
+    listings: (p.listings ?? []).map((l) => ({ ...l, price: roundMoe(l.price / 1000) })),
+    moeVersion: MOE_VERSION,
+  };
+  saveProfile(next);
+  return next;
 }
 
 export function saveProfile(p: Profile) {

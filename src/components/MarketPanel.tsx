@@ -6,7 +6,7 @@ import { boboKnowledge } from "@/content/boboKnowledge";
 import { CATALOG, PLAYER_LISTINGS, SUBJECTS, type CatalogEntry, type PlayerListing } from "@/content/catalog";
 import { sha256Json } from "@/lib/hash";
 import { now } from "@/lib/clock";
-import { MARKET_PRICE_MOE, MEMBERSHIP_PRICE_MOE, formatMoe } from "@/lib/moe";
+import { MARKET_PRICE_MOE, MEMBERSHIP_PRICE_MOE, formatMoe, roundMoe } from "@/lib/moe";
 import { addWorld, allWorlds, ownsWorld, removeWorld, updateWorld } from "@/lib/profile";
 import * as chain from "@/lib/solana";
 import * as demo from "@/lib/solana/demoWallet";
@@ -363,7 +363,7 @@ function Mine({ profile, onProfile, busy, run }: { profile: Profile; onProfile: 
         const listing = profile.listings.find((l) => l.worldId === w.id);
         const slot = profile.worlds.findIndex((x) => x?.id === w.id);
         const typed = prices[w.id] ?? "";
-        const price = Math.floor(Number(typed.replace(/,/g, "")));
+        const price = roundMoe(Number(typed.replace(/,/g, "")));
         const valid = Number.isFinite(price) && price > 0;
         return (
           <div key={w.id} className="rounded-xl bg-white p-4">
@@ -398,10 +398,10 @@ function Mine({ profile, onProfile, busy, run }: { profile: Profile; onProfile: 
                           onProfile({ ...profile, moe: profile.moe + listing.price });
                           return `+${formatMoe(listing.price)} MOE. A learner bought a copy of "${w.title}" (you keep yours).`;
                         }
-                        const cut = Math.round((listing.price * chain.ROYALTY_BPS) / 10_000);
-                        chain.recordMoe("sell-world", `Resold "${w.title}" · ${formatMoe(cut)} MOE royalty to ${w.creator}`, listing.price - cut);
+                        const cut = roundMoe((listing.price * chain.ROYALTY_BPS) / 10_000);
+                        chain.recordMoe("sell-world", `Resold "${w.title}" · ${formatMoe(cut)} MOE royalty to ${w.creator}`, roundMoe(listing.price - cut));
                         onProfile({ ...removeWorld(profile, w.id), moe: profile.moe + listing.price - cut });
-                        return `+${formatMoe(listing.price - cut)} MOE. "${w.title}" went to its new owner (${formatMoe(cut)} MOE royalty to ${w.creator}).`;
+                        return `+${formatMoe(roundMoe(listing.price - cut))} MOE. "${w.title}" went to its new owner (${formatMoe(cut)} MOE royalty to ${w.creator}).`;
                       })
                     }
                   >
@@ -412,7 +412,7 @@ function Mine({ profile, onProfile, busy, run }: { profile: Profile; onProfile: 
             ) : (
               <div className="mt-3 flex items-center gap-2">
                 <input
-                  inputMode="numeric"
+                  inputMode="decimal"
                   placeholder="Your price in MOE"
                   value={typed}
                   onChange={(e) => setPrices({ ...prices, [w.id]: e.target.value })}
@@ -501,7 +501,7 @@ function DevnetWallet() {
   const [balance, setBalance] = useState<number | null>(null);
   const [log, setLog] = useState<SentTx[]>([]);
   const [to, setTo] = useState("");
-  const [amount, setAmount] = useState("500");
+  const [amount, setAmount] = useState("0.5");
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string; link?: string } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -562,7 +562,7 @@ function DevnetWallet() {
       </div>
       {balance === 0 && (
         <button disabled={!!busy} onClick={() => act("fund", demo.claimStarter)} className={`mt-3 w-full ${buyBtn}`}>
-          {busy === "fund" ? "Sending from the treasury…" : "Claim starter 30,000 MOE"}
+          {busy === "fund" ? "Sending from the treasury…" : "Claim starter 30 MOE"}
         </button>
       )}
       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -573,7 +573,7 @@ function DevnetWallet() {
           className="min-w-0 flex-[3] rounded-lg border-2 border-[#0b2a3d]/20 px-3 py-2 font-mono text-xs"
         />
         <input
-          inputMode="numeric"
+          inputMode="decimal"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="w-24 rounded-lg border-2 border-[#0b2a3d]/20 px-3 py-2 text-sm"

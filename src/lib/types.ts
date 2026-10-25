@@ -40,8 +40,10 @@ export interface Profile {
   worlds: (WorldSummary | null)[];
   /** owned worlds that aren't on an island right now (swap them in from the library) */
   library: WorldSummary[];
-  /** demo MOE balance (whole tokens) */
+  /** demo MOE balance (up to 3 decimals) */
   moe: number;
+  /** 2 = amounts on the 30-MOE scale; older saves were 1,000× bigger and get scaled down on load */
+  moeVersion?: number;
   /** my worlds listed for sale on the World Market */
   listings: { worldId: string; price: number }[];
   /** look of each of the 3 islands, keyed by slot */

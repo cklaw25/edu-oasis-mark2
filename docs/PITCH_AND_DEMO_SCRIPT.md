@@ -42,18 +42,18 @@ The scripts keep three things apart so judges don't mix them up:
 
 ## Part 2: Demo video script (≈2:30)
 
-Record the screen at 1280×720 or bigger. Start from **"reset demo"** (top-left card) so the hub is fresh: 3 empty islands, 30,000 MOE. Have a world already generated in a second browser profile in case Gemini is slow; cut the waiting in editing.
+Record the screen at 1280×720 or bigger. Start from **"reset demo"** (top-left card) so the hub is fresh: 3 empty islands, 30 MOE. Have a world already generated in a second browser profile in case Gemini is slow; cut the waiting in editing.
 
 | Time | On screen | Voiceover |
 |---|---|---|
-| 0:00 – 0:12 | Hub: home island, 3 empty islands, World Market, MOE balance top right | "This is EduOasis. Each island is a topic you're learning. Right now I have three empty islands and 30,000 MOE." |
+| 0:00 – 0:12 | Hub: home island, 3 empty islands, World Market, MOE balance top right | "This is EduOasis. Each island is a topic you're learning. Right now I have three empty islands and 30 MOE." |
 | 0:12 – 0:35 | Walk to an empty island, press E. Fill in topic ("Inventors"), drop in a notes PDF, press Generate. Cut to the finished island. | "I upload my notes. Gemini reads every page, numbers every fact, and designs a world around them. My first two worlds are free." |
 | 0:35 – 0:50 | Enter the island. Click through 2 intro slides with their animated pictures. | "It starts with a short story, a picture per slide, never a wall of text." |
 | 0:50 – 1:15 | **Showdown**: the WANTED poster, dodge thrown inventions, shoot the right inventor. Show one wrong hit ("That's Tesla — AC motor"). | "Then the games. The wanted poster says 'whoever throws the light bulb'. I have to know it's Edison. Hit the wrong one and it tells you who they really are." |
 | 1:15 – 1:30 | Quick cut: **Squad Board** drag-and-drop (Loftus world) and the **Timeline Run** platformer. | "The game type comes from the content: a drag-and-drop board for groups, a platformer for anything with an order." |
 | 1:30 – 1:45 | Summary screen, back to the hub: the island is green, label shows recall. Open Pip → Data → "⏩ +1 day": islands dry. | "Every answer feeds a forgetting-curve model. Skip a day and the island dries up. Pip tells me what to review next and when." |
 | 1:45 – 2:05 | Pip chat: "Quiz me on what I'm weakest at." Answer appears with a `[K3 · source]` citation. | "Pip answers from my own notes and cites where each fact came from." |
-| 2:05 – 2:25 | World Market: Shop → Psychology → buy Loftus & Palmer for 30,000 MOE → toast "Fingerprint verified". Wallet tab: the live MOE token on devnet. | "In the World Market I can buy other students' worlds with MOE, our token on Solana devnet. Every world is an NFT holding a fingerprint of its file, so I know it hasn't been tampered with, and creators earn a royalty on every resale." |
+| 2:05 – 2:25 | World Market: Shop → Psychology → buy Loftus & Palmer for 30 MOE → toast "Fingerprint verified". Wallet tab: the live MOE token on devnet. | "In the World Market I can buy other students' worlds with MOE, our token on Solana devnet. Every world is an NFT holding a fingerprint of its file, so I know it hasn't been tampered with, and creators earn a royalty on every resale." |
 | 2:25 – 2:35 | Hub with the new island, then the logo / title card. | "Your notes, turned into worlds you keep alive. EduOasis." |
 
 **Honest labels for the video:** the market says "Solana devnet · simulated". The MOE token and its supply are real on devnet; in-app balances and purchases are simulated for now. Don't claim on-chain transfers.
@@ -84,7 +84,7 @@ Short answers to likely questions:
 - Pip: chat grounded in your notes, study notes, my notes, learning data + "time travel" demo
 - World Market in MOE: shop by subject, player resale listings with 10% creator royalty, list/sell your own worlds, membership pass, wallet & history; SHA-256 fingerprint check on every purchase
 - MOE token live on Solana devnet (read by `/api/solana/moe`)
-- My worlds library: own any number of worlds, choose which 3 sit on the islands; 2 free generations, then 10,000 MOE each
+- My worlds library: own any number of worlds, choose which 3 sit on the islands; 2 free generations, then 10 MOE each
 
 **Potential (next, not built)**
 - Real on-chain MOE transfers, world NFTs and badges (same functions, real devnet calls)

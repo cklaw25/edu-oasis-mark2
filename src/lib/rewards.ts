@@ -13,10 +13,10 @@ export const MAX_REWARDED_PLAYS = 10;
 export const DEFAULT_DIFFICULTY: Difficulty = "medium";
 
 export const DIFFICULTY_MAX_MOE: Record<Difficulty, number> = {
-  easy: 1_000,
-  medium: 2_000,
-  hard: 3_500,
-  expert: 5_000,
+  easy: 1,
+  medium: 2,
+  hard: 3.5,
+  expert: 5,
 };
 
 export function difficultyOf(w: WorldSummary): Difficulty {
@@ -30,7 +30,7 @@ export function sessionReward(accuracy: number, difficulty: Difficulty = DEFAULT
   const max = DIFFICULTY_MAX_MOE[difficulty];
   const min = max * MIN_SHARE;
   const t = (a - PASS_MARK) / (1 - PASS_MARK);
-  return Math.round((min + (max - min) * t) / 10) * 10;
+  return Math.round((min + (max - min) * t) * 100) / 100; // nearest 0.01 MOE
 }
 
 /** How many more games on this island can still earn MOE. */
