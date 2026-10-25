@@ -456,7 +456,11 @@ function TigerInsights({ profile }: { profile: Profile }) {
           </p>
           <div className="rounded-lg bg-[#0b2a3d] p-2 text-white">
             <div className="text-[10px] uppercase tracking-wide opacity-70">Decision</div>
-            <div className="text-sm">{data.recommendation.why}</div>
+            <div className="text-sm">
+              {data.recommendation.reviewWorld
+                ? data.recommendation.why.replace(data.recommendation.reviewWorld, title(data.recommendation.reviewWorld))
+                : data.recommendation.why}
+            </div>
           </div>
           {data.arms.length > 0 && (
             <div>

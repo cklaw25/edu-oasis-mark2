@@ -13,7 +13,8 @@ export function tigerConfigured() {
 function db(): Pool {
   if (!pool) {
     pool = new Pool({
-      connectionString: process.env.TIGER_DATABASE_URL,
+      // drop sslmode from the URL: pg treats "require" as full verification, which overrides the ssl option below
+      connectionString: process.env.TIGER_DATABASE_URL?.replace(/([?&])sslmode=[^&]*&?/, "$1").replace(/[?&]$/, ""),
       ssl: { rejectUnauthorized: false },
       max: 3,
       idleTimeoutMillis: 10_000,
