@@ -587,6 +587,12 @@ The button's click code looks fine, so the most likely cause is that something i
 
 Reproducing it in a test browser: buy a world, jump to the end screen, click the button.
 
+### Memphis
+
+Application error: a client-side exception has occurred while loading edu-oasis-mark2-666xg9zjr-cklaw25s-projects.vercel.app (see the browser console for more information). when opening bounty, also how come correy cant open vercel website from his computer, is it cause he doesnt have an account and u cannot open it merely with just link ?
+
+### Claude
+
 No crash in a fresh browser, even with stakes, a solved bounty and +30 days. Next I'm testing what you actually did: play a Kata that **has a bounty on it**, finish it, then open Bounties.
 
 Typecheck passes. Now I'm testing the fix by deliberately corrupting the saved bounty data.
@@ -622,6 +628,12 @@ wait one last thing, can u make the simulated wallet align with the devnet walle
 ### Claude
 
 Typecheck passes. Now a real devnet test with two separate browser wallets: claim, send 500, then check both in-game balances.
+
+### Memphis
+
+ok lets do demo checklist and script, what do i need ?
+
+### Claude
 
 Both sides work now. The sender's in-game balance shows **29,500**, the receiver's shows **30,500** (+500), and both match the chain. Building and pushing.
 
@@ -687,6 +699,13 @@ Typecheck passes. Testing exactly your failing case: wallet B receives MOE witho
 Quoting slip in my test script. Writing it properly:
 
 Fixed. Wallet B never claimed and sent 100 back successfully, and every balance lines up. Pushing to live.
+
+### Memphis
+
+i need a * Elevator pitch
+Provide a short tagline for the project. You can change this later. to do submission
+
+### Claude
 
 The failed transaction is fixed and live (commit `3ffdc52`, live in about 2 minutes).
 
@@ -1552,3 +1571,5 @@ save convo, remind me of all the tracks up there
 ### Claude
 
 Saving this conversation in the same format as last session's, with secrets redacted:
+
+Some messages you sent while I was working didn't come through in the export. Checking how they're stored:
