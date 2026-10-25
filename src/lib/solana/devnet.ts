@@ -52,6 +52,19 @@ export async function fundStarter(owner: PublicKey): Promise<string> {
   });
 }
 
+/** Wallets that only ever received MOE have no SOL for fees: top them up from the treasury (devnet play money). */
+export async function ensureFeeSol(owner: PublicKey): Promise<void> {
+  const conn = connection();
+  if ((await conn.getBalance(owner, "confirmed")) >= 0.005 * LAMPORTS_PER_SOL) return;
+  const t = treasury();
+  if (!t) throw new Error("This wallet has no SOL for fees and the server has no treasury key to top it up");
+  const tx = new Transaction().add(
+    SystemProgram.transfer({ fromPubkey: t.publicKey, toPubkey: owner, lamports: Math.round(0.01 * LAMPORTS_PER_SOL) }),
+  );
+  const sig = await conn.sendTransaction(tx, [t], { preflightCommitment: "confirmed" });
+  await conn.confirmTransaction(sig, "confirmed");
+}
+
 /** An unsigned transfer the player's browser signs (the sender pays its own fee). */
 export async function buildTransfer(from: PublicKey, to: PublicKey, amount: number, memo?: string): Promise<string> {
   const conn = connection();

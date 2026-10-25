@@ -1,6 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import { getMoeBalance } from "@/lib/solana/moe";
-import { STARTER_MOE, buildTransfer, explorerTx, fundStarter, submitSigned, treasury } from "@/lib/solana/devnet";
+import { STARTER_MOE, buildTransfer, ensureFeeSol, explorerTx, fundStarter, submitSigned, treasury } from "@/lib/solana/devnet";
 
 export const runtime = "nodejs";
 
@@ -36,6 +36,7 @@ export async function POST(req: Request) {
       if (from.equals(to)) return Response.json({ error: "That's your own address" }, { status: 400 });
       if (!(amount > 0)) return Response.json({ error: "Enter an amount above 0" }, { status: 400 });
       if (Number(await getMoeBalance(from)) < amount) return Response.json({ error: "Not enough MOE in this wallet" }, { status: 400 });
+      await ensureFeeSol(from); // e.g. a wallet that received MOE but never claimed the starter pack
       return Response.json({ tx: await buildTransfer(from, to, amount, typeof body.memo === "string" ? body.memo : undefined) });
     }
     if (body.action === "submit") {
