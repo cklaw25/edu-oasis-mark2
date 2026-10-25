@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { learnerId } from "@/lib/telemetry";
+import { allWorlds } from "@/lib/profile";
 import { computeInsights, pipContext, worldNotes } from "@/lib/insights";
 import { addTime, resetClock } from "@/lib/clock";
 import type { Profile, WorldSummary } from "@/lib/types";
@@ -280,6 +282,7 @@ function Data({ profile, onClockChange }: { profile: Profile; onClockChange: () 
 
   return (
     <div className="space-y-5 text-sm">
+      <TigerInsights profile={profile} />
       <section>
         <h3 className="mb-2 font-bold">Prediction · memory per Kata</h3>
         <p className="mb-2 text-xs opacity-70">
@@ -399,5 +402,100 @@ function Box({ label, value }: { label: string; value: string }) {
       <div className="font-bold">{value}</div>
       <div className="opacity-60">{label}</div>
     </div>
+  );
+}
+
+type TigerArm = { game: string; plays: number; accuracy: number; ucb: number };
+type TigerData =
+  | { configured: false }
+  | {
+      configured: true;
+      totalEvents: number;
+      learners: number;
+      arms: TigerArm[];
+      myArms: TigerArm[];
+      trends: { world: string; sessions: number; lastAccuracy: number; slopePerDay: number | null; predicted: number }[];
+      responseMs: { day: string; ms: number }[];
+      recommendation: { game: string | null; reviewWorld: string | null; why: string };
+    };
+
+/** Predictions + decisions computed in Tiger Data (TimescaleDB) from every learner's gameplay events. */
+function TigerInsights({ profile }: { profile: Profile }) {
+  const [data, setData] = useState<TigerData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const load = useCallback(() => {
+    setError(null);
+    fetch(`/api/insights?learner=${encodeURIComponent(learnerId())}`)
+      .then(async (r) => {
+        const j = await r.json();
+        if (!r.ok) throw new Error(j.error ?? "Tiger Data unavailable");
+        setData(j);
+      })
+      .catch((e) => setError(e.message));
+  }, []);
+  useEffect(load, [load]);
+  const title = (id: string) => allWorlds(profile).find((w) => w.id === id)?.title ?? id;
+  const pct = (x: number) => `${Math.round(x * 100)}%`;
+
+  return (
+    <section className="rounded-xl border-2 border-[#f5a623]/50 bg-[#fff8e7] p-3">
+      <div className="flex items-center gap-2">
+        <h3 className="font-bold">🐯 Live from Tiger Data</h3>
+        <button onClick={load} className="ml-auto text-xs underline opacity-60">
+          refresh
+        </button>
+      </div>
+      {error && <p className="mt-1 text-xs text-[#9b2226]">{error}</p>}
+      {!data && !error && <p className="mt-1 text-xs opacity-60">Querying the time-series database…</p>}
+      {data && !data.configured && <p className="mt-1 text-xs opacity-70">Not connected on this server (TIGER_DATABASE_URL not set).</p>}
+      {data && data.configured && (
+        <div className="mt-2 space-y-3">
+          <p className="text-xs opacity-70">
+            Every answer, game result and finished Kata streams into a TimescaleDB hypertable ({data.totalEvents.toLocaleString("en-US")}{" "}
+            events from {data.learners} learner{data.learners === 1 ? "" : "s"}). SQL turns it into predictions and decisions.
+          </p>
+          <div className="rounded-lg bg-[#0b2a3d] p-2 text-white">
+            <div className="text-[10px] uppercase tracking-wide opacity-70">Decision</div>
+            <div className="text-sm">{data.recommendation.why}</div>
+          </div>
+          {data.arms.length > 0 && (
+            <div>
+              <div className="mb-1 text-xs font-bold">Which game type teaches best (all learners, UCB1 bandit)</div>
+              {data.arms.map((a) => (
+                <div key={a.game} className="flex items-center gap-2 text-xs">
+                  <span className="w-20 truncate">{a.game}</span>
+                  <div className="h-2 flex-1 rounded bg-[#f0e6cf]">
+                    <div className="h-2 rounded bg-[#4fb35a]" style={{ width: pct(a.accuracy) }} />
+                  </div>
+                  <span className="w-28 text-right opacity-70">
+                    {pct(a.accuracy)} · {a.plays} answers
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+          {data.trends.length > 0 && (
+            <div>
+              <div className="mb-1 text-xs font-bold">Your trend per Kata (least-squares fit in SQL)</div>
+              {data.trends.map((t) => (
+                <div key={t.world} className="flex justify-between text-xs">
+                  <span className="truncate">{title(t.world)}</span>
+                  <span className="opacity-70">
+                    last {pct(t.lastAccuracy)} · predicted {pct(t.predicted)}
+                    {t.slopePerDay !== null && ` · ${t.slopePerDay >= 0 ? "▲" : "▼"}${Math.abs(Math.round(t.slopePerDay * 100))}%/day`}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+          {data.responseMs.length > 0 && (
+            <div className="text-xs">
+              <b>Answer speed</b> (focus signal, daily avg):{" "}
+              {data.responseMs.map((r) => `${r.day.slice(5)} ${(r.ms / 1000).toFixed(1)}s`).join(" · ")}
+            </div>
+          )}
+        </div>
+      )}
+    </section>
   );
 }

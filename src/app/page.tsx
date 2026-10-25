@@ -17,7 +17,7 @@ import { mintBadge, mintBountyBadge, recordMoe, resetChain } from "@/lib/solana"
 import { ATTEMPT_FEE, PASS_SCORE, recordRun, resetBounties } from "@/lib/bounty";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
-import { track } from "@/lib/telemetry";
+import { learnerId, track } from "@/lib/telemetry";
 import { lifespanAt, nextHalfLife, nextStreak, recallAt } from "@/lib/recall";
 import { GENERATE_PRICE_MOE, formatMoe } from "@/lib/moe";
 import { addWorld, allWorlds, defaultProfile, loadProfile, saveProfile, showOnIsland, storeWorld, updateWorld } from "@/lib/profile";
@@ -379,6 +379,11 @@ export default function Home() {
               return sp ? [gamesOf(sp)] : [];
             });
             form.set("recentGames", JSON.stringify(recent));
+            // decision from Tiger Data: the game type that has taught this learner best so far (UCB1 bandit)
+            const tiger = await fetch(`/api/insights?learner=${encodeURIComponent(learnerId())}`)
+              .then((r) => r.json())
+              .catch(() => null);
+            if (tiger?.recommendation?.game) form.set("tigerPick", tiger.recommendation.game);
             req.files.forEach((f) => form.append("files", f));
             const res = await fetch("/api/generate", { method: "POST", body: form });
             const body = await res.json();

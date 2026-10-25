@@ -6,6 +6,7 @@ import {
   orderByYear,
   pickGames,
   DESIGN_SCHEMA,
+  GAME_IDS,
   KNOWLEDGE_SCHEMA,
   PATCH_SCHEMA,
   type Board,
@@ -144,7 +145,12 @@ export async function POST(req: Request) {
     recent = JSON.parse(String(form.get("recentGames") ?? "[]"));
   } catch {}
   const files = form.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
-  const learner = `Topic: ${topic}\nWhat the learner wants to learn: ${description || "(not given)"}\nSpecial requests: ${requests || "(none)"}`;
+  const tigerPick = String(form.get("tigerPick") ?? "");
+  const learner =
+    `Topic: ${topic}\nWhat the learner wants to learn: ${description || "(not given)"}\nSpecial requests: ${requests || "(none)"}` +
+    ((GAME_IDS as string[]).includes(tigerPick)
+      ? `\nLearner data (Tiger Data bandit): the "${tigerPick}" game type has taught this learner best so far. Include it if it fits the content.`
+      : "");
 
   try {
     // pass 1: exhaustive extraction
