@@ -5,6 +5,8 @@ import { AFTER_EXPERIMENT, CLUES, FINDINGS, INTRO, RESULTS, type Slide, type Ver
 import type { ExperimentResult } from "@/game/ExperimentScene";
 import { bus } from "@/game/bus";
 import { track } from "@/lib/telemetry";
+import RewardCelebration from "@/components/RewardCelebration";
+import type { RewardOutcome } from "@/lib/rewards";
 
 export type BoboPhase = "intro" | "experiment" | "results" | "review" | "summary";
 
@@ -15,10 +17,13 @@ export default function BoboFlow({
   phase,
   setPhase,
   onExit,
+  reward,
 }: {
   phase: BoboPhase;
   setPhase: (p: BoboPhase) => void;
   onExit: (accuracy: number) => void;
+  /** what finishing at this accuracy pays, shown with the score */
+  reward: (accuracy: number) => RewardOutcome;
 }) {
   const [slide, setSlide] = useState(0);
   const [exp, setExp] = useState<ExperimentResult | null>(null);
@@ -112,6 +117,7 @@ export default function BoboFlow({
             </div>
           ))}
         </div>
+        <RewardCelebration accuracy={accuracy} outcome={reward(accuracy)} />
         <p className="mt-3 text-sm opacity-80">Your oasis has been watered — this island&apos;s recall is restored.</p>
         <button
           className={btn}

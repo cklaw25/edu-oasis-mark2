@@ -1,13 +1,13 @@
-// Learn-to-earn: finishing a game on an island pays MOE, scaled by how well you did.
-//   below 55%   nothing (pass mark not reached)
-//   55%         the lowest reward: 20% of the island's maximum
+// Learn-to-earn: finishing an island pays MOE, scaled by how well you did.
+//   below 60%   nothing (pass mark not reached)
+//   60%         the lowest reward: 20% of the island's maximum
 //   100%        the island's maximum, which depends on the island's difficulty
-// Each island pays out for its first 10 games; after that it can still be played, for no MOE.
+// Each island pays out for its first 10 completions; after that it can still be played, for no MOE.
 // Difficulty isn't set on worlds yet, so every island counts as "medium" until it is
 // (see docs/REWARD_SYSTEM.md for the theory).
 import type { Difficulty, Profile, WorldSummary } from "./types";
 
-export const PASS_MARK = 0.55;
+export const PASS_MARK = 0.6;
 export const MIN_SHARE = 0.2;
 export const MAX_REWARDED_PLAYS = 10;
 export const DEFAULT_DIFFICULTY: Difficulty = "medium";
@@ -23,7 +23,7 @@ export function difficultyOf(w: WorldSummary): Difficulty {
   return w.difficulty ?? DEFAULT_DIFFICULTY;
 }
 
-/** MOE for one game at this accuracy (0..1) on an island of this difficulty, before membership bonus. */
+/** MOE for completing an island at this accuracy (0..1) and difficulty. */
 export function sessionReward(accuracy: number, difficulty: Difficulty = DEFAULT_DIFFICULTY) {
   const a = Math.min(1, Math.max(0, accuracy));
   if (a < PASS_MARK) return 0;
@@ -33,7 +33,24 @@ export function sessionReward(accuracy: number, difficulty: Difficulty = DEFAULT
   return Math.round((min + (max - min) * t) / 10) * 10;
 }
 
-/** How many more games on this island can still earn MOE. */
+/** How many more completions of this island can still earn MOE. */
 export function rewardedPlaysLeft(p: Profile, worldId: string) {
   return Math.max(0, MAX_REWARDED_PLAYS - (p.rewardedPlays[worldId] ?? 0));
+}
+
+export interface RewardOutcome {
+  amount: number;
+  /** earning plays left on this island after this one */
+  playsLeft: number;
+  /** why nothing is paid: under the pass mark, or the island's earning plays are used up */
+  why: "below" | "capped" | null;
+}
+
+/** What finishing this island at this accuracy pays: shown on the score screen, then paid on exit. */
+export function rewardOutcome(p: Profile, world: WorldSummary | undefined, accuracy: number): RewardOutcome {
+  if (!world) return { amount: 0, playsLeft: 0, why: "capped" };
+  const left = rewardedPlaysLeft(p, world.id);
+  if (left === 0) return { amount: 0, playsLeft: 0, why: "capped" };
+  const amount = sessionReward(accuracy, difficultyOf(world));
+  return amount > 0 ? { amount, playsLeft: left - 1, why: null } : { amount: 0, playsLeft: left, why: "below" };
 }

@@ -24,3 +24,37 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* end-of-island celebration (RewardCelebration) */
+.confetti-piece {
+  position: absolute;
+  top: -12px;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  opacity: 0.9;
+  animation: confetti-fall linear infinite;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(260px) rotate(540deg);
+  }
+}
+
+.celebrate-bounce {
+  animation: celebrate-bounce 0.9s ease-in-out infinite;
+}
+
+@keyframes celebrate-bounce {
+  50% {
+    transform: translateY(-8px) scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti-piece,
+  .celebrate-bounce {
+    animation: none;
+  }
+}

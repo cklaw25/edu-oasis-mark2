@@ -2,7 +2,7 @@
 
 **Author:** Corey · **Status:** score bands and play cap built; difficulty is theory (every island counts as Medium for now)
 
-How much MOE DONE a player earns for finishing a game on an island. Code: `src/lib/rewards.ts`.
+How much MOE DONE a player earns for completing an island. Code: `src/lib/rewards.ts`.
 
 ---
 
@@ -10,14 +10,26 @@ How much MOE DONE a player earns for finishing a game on an island. Code: `src/l
 
 | Score | MOE paid |
 |---|---|
-| Below 55% | **0**: the pass mark isn't reached |
-| 55% | **The lowest reward**: 20% of the island's maximum |
-| 55–100% | Scales evenly between the lowest and the maximum |
+| Below 60% | **0**: the pass mark isn't reached |
+| 60% | **The lowest reward**: 20% of the island's maximum |
+| 60–100% | Scales evenly between the lowest and the maximum |
 | 100% | **The island's maximum**, set by its difficulty |
 
-Formula: `reward = min + (max − min) × (score − 55%) / 45%`, where `min = 20% of max`, rounded to the nearest 10 MOE.
+Formula: `reward = min + (max − min) × (score − 60%) / 40%`, where `min = 20% of max`, rounded to the nearest 10 MOE.
 
-- **10 earning plays per island.** Each island pays MOE for its first 10 *paying* games. After that the island can still be played for practice, and recall still improves, but it pays nothing. A failed game (under 55%) pays nothing and **does not** use up one of the 10.
+- **Shown on the results screen.** At the end of an island, the card that shows how many you got right also shows the MOE you earn and how many earning plays are left. It's paid when you press "Back to the islands".
+- **A mini celebration** on that card grows with the score:
+
+  | Score | Celebration |
+  |---|---|
+  | Under 60% | 💪 "Keep practising", no confetti |
+  | 60–74% | 🎉 "Passed!", a little confetti |
+  | 75–89% | 🌟 "Great job!", more confetti |
+  | 90–99% | 🏆 "Brilliant!", lots of confetti |
+  | 100% | 👑 "PERFECT!", a confetti shower and a bouncing crown |
+
+  Code: `src/components/RewardCelebration.tsx` (confetti respects the "reduce motion" setting).
+- **10 earning plays per island.** Each island pays MOE for its first 10 *paying* completions. After that the island can still be played for practice, and recall still improves, but it pays nothing. A failed attempt (under 60%) pays nothing and **does not** use up one of the 10.
 - The island prompt shows how many earning plays are left, e.g. `E — enter Bobo Doll Experiment · 7/10 MOE plays left`.
 - Paying games are logged in the wallet history as `reward`, next to the completion badge each game mints.
 - Membership (the World Market's 90,000 MOE pass) unlocks every market world; it doesn't change game rewards.
@@ -26,10 +38,12 @@ Formula: `reward = min + (max − min) × (score − 55%) / 45%`, where `min = 2
 
 | Score | MOE |
 |---|---|
-| 50% | 0 |
-| 55% | 400 |
-| 70% | 930 |
-| 85% | 1,470 |
+| 55% | 0 |
+| 60% | 400 |
+| 70% | 800 |
+| 75% | 1,000 |
+| 85% | 1,400 |
+| 90% | 1,600 |
 | 100% | 2,000 |
 
 Most a player can earn from one Medium island: 10 × 2,000 = **20,000 MOE**.
@@ -40,7 +54,7 @@ Most a player can earn from one Medium island: 10 × 2,000 = **20,000 MOE**.
 
 Harder islands should pay more, so the maximum depends on difficulty:
 
-| Difficulty | Max per game (100%) | Min per game (55%) | Max from one island (10 plays) |
+| Difficulty | Max per completion (100%) | Min per completion (60%) | Max from one island (10 plays) |
 |---|---|---|---|
 | Easy | 1,000 | 200 | 10,000 |
 | **Medium** (default) | 2,000 | 400 | 20,000 |
