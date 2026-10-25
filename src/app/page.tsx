@@ -152,7 +152,13 @@ export default function Home() {
     const rewardedPlays = reward > 0 ? { ...profile.rewardedPlays, [id]: (profile.rewardedPlays[id] ?? 0) + 1 } : profile.rewardedPlays;
     if (reward > 0) recordMoe("reward", `Learned "${title}" · ${Math.round(accuracy * 100)}% correct`, reward);
     // bounty pool on this island? the run counts as an attempt; a 60%+ run passes it, and a higher score wins a bigger prize
-    const run = recordRun(id, accuracy, profile.name);
+    // never let a bounty problem (e.g. stale saved data) block leaving the world
+    let run: ReturnType<typeof recordRun> = null;
+    try {
+      run = recordRun(id, accuracy, profile.name);
+    } catch (e) {
+      console.error("Bounty update failed", e);
+    }
     if (run) {
       const b = run.bounty;
       const pctScore = Math.round(accuracy * 100);

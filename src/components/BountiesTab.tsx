@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Component, useState, type ReactNode } from "react";
 import MoeCoin from "@/components/MoeCoin";
 import { CATALOG } from "@/content/catalog";
 import * as bounty from "@/lib/bounty";
@@ -352,4 +352,32 @@ export default function BountiesTab({
       </p>
     </>
   );
+}
+
+/** If saved bounty data from an older version breaks the tab, show a reset button instead of crashing the page. */
+export class BountyGuard extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(e: unknown) {
+    console.error("Bounties tab crashed", e);
+  }
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return (
+      <div className="rounded-xl bg-white p-4 text-sm">
+        <p>The saved bounty data in this browser is out of date.</p>
+        <button
+          className="mt-3 rounded-lg bg-[#0b2a3d] px-4 py-2 font-bold text-white"
+          onClick={() => {
+            bounty.resetBounties();
+            this.setState({ failed: false });
+          }}
+        >
+          Reset bounties
+        </button>
+      </div>
+    );
+  }
 }
