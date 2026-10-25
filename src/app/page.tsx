@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import GameCanvas, { type SceneKey } from "@/components/GameCanvas";
 import CreateWorldModal from "@/components/CreateWorldModal";
 import BoboFlow, { type BoboPhase } from "@/components/BoboFlow";
+import Kata3DFlow, { KATA3D_WORLD } from "@/components/Kata3DFlow";
 import WorldFlow, { phaseGame, sceneFor, type WorldPhase } from "@/components/WorldFlow";
 import { gamesOf } from "@/lib/worldSpec";
 import PipPanel from "@/components/PipPanel";
@@ -32,7 +33,7 @@ type Panel =
   | { kind: "cosmetics"; slot: number }
   | { kind: "world"; info: PortalInfo }
   | null;
-type Active = { kind: "bobo" } | { kind: "gen"; id: string; spec: WorldSpec } | null;
+type Active = { kind: "bobo" } | { kind: "kata3d" } | { kind: "gen"; id: string; spec: WorldSpec } | null;
 type Phase = BoboPhase | WorldPhase;
 
 // phases where the player reads a card instead of playing
@@ -109,6 +110,7 @@ export default function Home() {
       else if (info.kind === "market") setPanel({ kind: "market" });
       else if (info.kind === "rapid") setPanel({ kind: "rapid" });
       else if (info.world?.id === "demo-bobo") enter({ kind: "bobo" });
+      else if (info.world?.id === KATA3D_WORLD) enter({ kind: "kata3d" });
       else {
         const spec = info.world && loadSpec(info.world.id);
         if (spec) enter({ kind: "gen", id: info.world!.id, spec });
@@ -136,7 +138,7 @@ export default function Home() {
     scene = s.key;
     sceneData = s.data;
   }
-  const paused = pipOpen || panel !== null || (active !== null && (isCardPhase(phase) || reviewOpen));
+  const paused = pipOpen || panel !== null || active?.kind === "kata3d" || (active !== null && (isCardPhase(phase) || reviewOpen));
 
   const save = (next: Profile) => {
     saveProfile(next);
@@ -238,6 +240,13 @@ export default function Home() {
           reward={(acc) => rewardOutcome(profile, allWorlds(profile).find((w) => w.id === "demo-bobo"), acc)}
         />
       )}
+      {active?.kind === "kata3d" && (
+        <Kata3DFlow
+          onExit={(acc) => exitWorld(KATA3D_WORLD, acc)}
+          onQuit={() => setActive(null)}
+          reward={(acc) => rewardOutcome(profile, allWorlds(profile).find((w) => w.id === KATA3D_WORLD), acc)}
+        />
+      )}
       {active?.kind === "gen" && (
         <WorldFlow
           worldId={active.id}
@@ -252,7 +261,7 @@ export default function Home() {
       {active && (
         <button
           onClick={() => {
-            track(active.kind === "bobo" ? "demo-bobo" : active.id, "world_quit", { phase });
+            track(active.kind === "gen" ? active.id : active.kind === "bobo" ? "demo-bobo" : KATA3D_WORLD, "world_quit", { phase });
             setActive(null);
           }}
           className="absolute left-4 top-4 z-[26] rounded-full bg-[#0b2a3d]/85 px-4 py-2 text-sm font-bold text-white shadow-lg hover:bg-[#0b2a3d]"
