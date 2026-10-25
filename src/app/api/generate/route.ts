@@ -18,7 +18,7 @@ import {
 } from "@/lib/worldSpec";
 
 export const runtime = "nodejs";
-export const maxDuration = 800;
+export const maxDuration = 300; // Vercel Hobby plan maximum
 
 // Quality first: the full Flash model writes better worlds but took 1-6 min per call on the free tier
 // during the event, so each call falls back to lite if it is too slow or fails.
