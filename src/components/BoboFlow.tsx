@@ -118,7 +118,7 @@ export default function BoboFlow({
           ))}
         </div>
         <RewardCelebration accuracy={accuracy} outcome={reward(accuracy)} />
-        <p className="mt-3 text-sm opacity-80">Your oasis has been watered — this island&apos;s recall is restored.</p>
+        <p className="mt-3 text-sm opacity-80">Your oasis has been watered — this Kata&apos;s recall is restored.</p>
         <button
           className={btn}
           onClick={() => {
@@ -126,7 +126,7 @@ export default function BoboFlow({
             onExit(accuracy);
           }}
         >
-          Back to the islands
+          Back to the Katas
         </button>
       </Card>
     );

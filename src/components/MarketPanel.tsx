@@ -139,7 +139,7 @@ export default function MarketPanel({
       };
       const placed = addWorld({ ...profile, moe: profile.moe - price }, world);
       onProfile(placed.profile);
-      const where = placed.slot >= 0 ? `on island ${placed.slot + 1}` : "in your library (all 3 islands are full)";
+      const where = placed.slot >= 0 ? `on Kata ${placed.slot + 1}` : "in your library (all 3 Katas are full)";
       return `✔ ${check} "${c.title}" is ${where}. −${formatMoe(price)} MOE.`;
     });
 
@@ -353,7 +353,7 @@ function Listings({ profile, busy, onBuy }: { profile: Profile; busy: string | n
 function Mine({ profile, onProfile, busy, run }: { profile: Profile; onProfile: (p: Profile) => void; busy: string | null; run: Run }) {
   const [prices, setPrices] = useState<Record<string, string>>({});
   const worlds = allWorlds(profile);
-  if (!worlds.length) return <p className="text-sm opacity-70">You don&apos;t own any worlds yet. Grow one on an empty island or buy one in the shop.</p>;
+  if (!worlds.length) return <p className="text-sm opacity-70">You don&apos;t own any worlds yet. Grow one on an empty Kata or buy one in the shop.</p>;
 
   return (
     <div className="space-y-3">
@@ -374,7 +374,7 @@ function Mine({ profile, onProfile, busy, run }: { profile: Profile; onProfile: 
               <div>
                 <div className="font-bold">{w.title}</div>
                 <div className="text-xs opacity-70">
-                  {slot >= 0 ? `On island ${slot + 1}` : "In your library"} · {mine ? "made by you" : `bought · by ${w.creator}`}
+                  {slot >= 0 ? `On Kata ${slot + 1}` : "In your library"} · {mine ? "made by you" : `bought · by ${w.creator}`}
                 </div>
               </div>
               {w.nftId && <span className="rounded bg-[#0b2a3d]/10 px-2 py-0.5 font-mono text-[10px] font-bold">NFT {w.nftId}</span>}

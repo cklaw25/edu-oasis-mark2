@@ -50,7 +50,7 @@ export default function RapidMarketPanel({ profile, actions }: { profile: Profil
       </div>
       {usedOnIslands && (
         <p className="mb-3 text-xs opacity-70">
-          Use these on your islands: right-click an island to open its cosmetics page.
+          Use these on your Katas: right-click a Kata to open its cosmetics page.
         </p>
       )}
       <div className="grid max-h-[55vh] grid-cols-2 gap-3 overflow-y-auto pr-1">
@@ -130,7 +130,7 @@ function Preview({ item }: { item: ShopItem }) {
   if (item.category === "font") {
     return (
       <div className="flex h-12 items-center justify-center rounded-lg bg-[#2a6f97] text-lg text-white" style={{ fontFamily: LABEL_FONTS[item.id] }}>
-        Home Island
+        Home Kata
       </div>
     );
   }

@@ -95,7 +95,7 @@ export const CATEGORIES: { id: ShopCategory; label: string }[] = [
   { id: "pip", label: "Pip" },
   { id: "world", label: "World map" },
   { id: "font", label: "Fonts" },
-  { id: "island", label: "Islands" },
+  { id: "island", label: "Katas" },
   { id: "object", label: "Objects" },
 ];
 

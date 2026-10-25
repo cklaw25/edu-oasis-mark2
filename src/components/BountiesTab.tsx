@@ -88,7 +88,7 @@ function BountyCard({
       bounty.joinBounty(b.id, amount, profile.name);
       chain.recordMoe("join-bounty", `Staked in the "${b.title}" bounty pool`, -amount);
       onProfile({ ...profile, moe: profile.moe - amount });
-      return `Staked ${formatMoe(amount)} MOE. You get it back in full, plus a time-weighted bonus when someone masters this island.`;
+      return `Staked ${formatMoe(amount)} MOE. You get it back in full, plus a time-weighted bonus when someone masters this Kata.`;
     });
 
   const demoSolve = () =>
@@ -169,12 +169,12 @@ function BountyCard({
           {canAttempt && (
             <span className="text-xs opacity-70">
               {owns
-                ? `Play this island and score ${pct(bounty.PASS_SCORE)}+ to win it (each try costs ${bounty.ATTEMPT_FEE}). The higher your score, the bigger the prize:`
+                ? `Play this Kata and score ${pct(bounty.PASS_SCORE)}+ to win it (each try costs ${bounty.ATTEMPT_FEE}). The higher your score, the bigger the prize:`
                 : "Buy this world in the Shop, then pass it to win the solver prize. The higher your score, the bigger the prize:"}
             </span>
           )}
           {(mine > 0 || b.ownerIsMe) && (
-            <button disabled={!!busy} onClick={demoSolve} className={ghost} title="Demo control: another learner passes this island with a Silver score">
+            <button disabled={!!busy} onClick={demoSolve} className={ghost} title="Demo control: another learner passes this Kata with a Silver score">
               ▶ Demo: a learner passes it
             </button>
           )}
@@ -233,7 +233,7 @@ function RankPanel() {
             ))}
           </div>
         ) : (
-          <div className="mt-1 text-xs opacity-60">Pass a bounty island to earn your first badge.</div>
+          <div className="mt-1 text-xs opacity-60">Pass a bounty Kata to earn your first badge.</div>
         )}
         <div className="mt-2 text-xs text-orange-700">🔥 {formatMoe(bounty.totalBurned())} MOE burned by bounties so far</div>
       </div>
@@ -272,7 +272,7 @@ export default function BountiesTab({
   const open = () =>
     run("open-bounty", async () => {
       const w = mineToOpen.find((x) => x.id === pick);
-      if (!w) throw new Error("Pick one of your islands");
+      if (!w) throw new Error("Pick one of your Katas");
       if (profile.moe < stake) throw new Error(`You need ${formatMoe(stake - profile.moe)} more MOE`);
       bounty.openBounty({ id: w.id, title: w.title, icon: iconFor(w.id), creatorName: w.creator ?? profile.name }, stake, profile.name);
       chain.recordMoe("open-bounty", `Opened a bounty pool on "${w.title}"`, -stake);
@@ -284,7 +284,7 @@ export default function BountiesTab({
   return (
     <>
       <p className="text-sm opacity-80">
-        Hard islands become <b>bounty pools</b>. Stakers lock MOE, and the pool grows with every attempt ({bounty.ATTEMPT_FEE} MOE each) and a
+        Hard Katas become <b>bounty pools</b>. Stakers lock MOE, and the pool grows with every attempt ({bounty.ATTEMPT_FEE} MOE each) and a
         daily top-up from the learning pool. The first learner to <b>pass</b> ({pct(bounty.PASS_SCORE)}+ in one run) settles it: every
         staker gets their stake back in full, stakers share {pct(bounty.SPLIT_SOLVED.stakers)} of the growth (weighted by{" "}
         <b>stake × time staked</b>), the creator gets {pct(bounty.SPLIT_SOLVED.creator)}, and the solver wins up to{" "}
@@ -312,16 +312,16 @@ export default function BountiesTab({
       </div>
 
       <div className="mt-5 rounded-xl border-2 border-dashed border-[#0b2a3d]/20 p-4">
-        <div className="font-bold">Open a bounty on one of your islands</div>
+        <div className="font-bold">Open a bounty on one of your Katas</div>
         <p className="text-xs opacity-70">
-          Got an island people find hard? Lock a stake to attract learners. You can still sell or swap the island: the pool stays with it.
+          Got a Kata people find hard? Lock a stake to attract learners. You can still sell or swap the Kata: the pool stays with it.
           Minimum {formatMoe(bounty.MIN_STAKE)} MOE, open for {bounty.BOUNTY_DAYS} days. If nobody passes it, you get your stake back plus{" "}
           {pct(bounty.SPLIT_EXPIRED.stakers)} of the growth.
         </p>
         {mineToOpen.length ? (
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <select value={pick} onChange={(e) => setPick(e.target.value)} className="rounded-lg border px-2 py-1.5 text-sm">
-              <option value="">Choose an island…</option>
+              <option value="">Choose a Kata…</option>
               {mineToOpen.map((w) => (
                 <option key={w.id} value={w.id}>
                   {w.title}
@@ -340,7 +340,7 @@ export default function BountiesTab({
             </button>
           </div>
         ) : (
-          <p className="mt-2 text-sm opacity-70">You don&apos;t own an island without a bounty yet. Buy or grow one first.</p>
+          <p className="mt-2 text-sm opacity-70">You don&apos;t own a Kata without a bounty yet. Buy or grow one first.</p>
         )}
       </div>
 

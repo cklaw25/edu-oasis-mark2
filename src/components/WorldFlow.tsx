@@ -235,7 +235,7 @@ export default function WorldFlow({
           {games.includes("inspect") && <Stat label="Hearts" value={"❤️".repeat(hearts) || "0"} />}
         </div>
         <RewardCelebration accuracy={accuracy} outcome={reward(accuracy)} />
-        <p className="mt-3 text-sm opacity-80">Your oasis has been watered — this island&apos;s lifespan is restored.</p>
+        <p className="mt-3 text-sm opacity-80">Your oasis has been watered — this Kata&apos;s lifespan is restored.</p>
         <button
           className={btn}
           onClick={() => {
@@ -243,7 +243,7 @@ export default function WorldFlow({
             onExit(accuracy);
           }}
         >
-          Back to the islands
+          Back to the Katas
         </button>
       </Card>
     );

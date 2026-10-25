@@ -80,7 +80,7 @@ export default function PipPanel({
 const CHAT_KEY = "eo2.pip.chat";
 const GREETING: Msg = {
   role: "pip",
-  text: "Hi! Ask me anything about your islands — I can recap, quiz you, or tell you what to revisit.",
+  text: "Hi! Ask me anything about your Katas — I can recap, quiz you, or tell you what to revisit.",
 };
 
 function loadChat(): Msg[] {
@@ -281,7 +281,7 @@ function Data({ profile, onClockChange }: { profile: Profile; onClockChange: () 
   return (
     <div className="space-y-5 text-sm">
       <section>
-        <h3 className="mb-2 font-bold">Prediction · memory per island</h3>
+        <h3 className="mb-2 font-bold">Prediction · memory per Kata</h3>
         <p className="mb-2 text-xs opacity-70">
           <b>Lifespan</b> (big): how much of your review interval is left — 0% means review now. Intervals grow 2 → 4 → 6
           days with each good session (≥60%), and reset to 2 days after a weak one. <b>Recall</b> (small): predicted chance
@@ -385,7 +385,7 @@ function Data({ profile, onClockChange }: { profile: Profile; onClockChange: () 
           <Box label="answers" value={String(ins.totalAnswers)} />
           <Box label="accuracy" value={pct(ins.accuracy)} />
           <Box label="median answer" value={ins.medianMs ? `${(ins.medianMs / 1000).toFixed(1)}s` : "—"} />
-          <Box label="islands" value={String(ins.worlds.length)} />
+          <Box label="Katas" value={String(ins.worlds.length)} />
           <Box label="sessions" value={String(ins.worlds.reduce((n, w) => n + w.sessions, 0))} />
         </div>
       </section>

@@ -151,11 +151,11 @@ export function pipContext(profile: Profile, focusId: string | null): string {
   const lines = ["LEARNER DATA:"];
   for (const w of ins.worlds)
     lines.push(
-      `- Island "${w.world.title}" (${w.world.topic}): lifespan ${Math.round(w.lifespan * 100)}% (review every ${w.intervalDays} days, due in ${w.daysUntilDue.toFixed(1)} days), predicted recall ${Math.round(w.recall * 100)}%, ${w.sessions} sessions`,
+      `- Kata "${w.world.title}" (${w.world.topic}): lifespan ${Math.round(w.lifespan * 100)}% (review every ${w.intervalDays} days, due in ${w.daysUntilDue.toFixed(1)} days), predicted recall ${Math.round(w.recall * 100)}%, ${w.sessions} sessions`,
     );
   if (ins.weakSpots.length)
     lines.push(`Weak spots: ${ins.weakSpots.map((s) => `${s.label}${s.wrong ? ` (wrong ${s.wrong}x)` : " (hesitated)"}`).join("; ")}`);
-  if (ins.nextIsland) lines.push(`Recommended next island: ${ins.nextIsland.world.title}`);
+  if (ins.nextIsland) lines.push(`Recommended next Kata: ${ins.nextIsland.world.title}`);
 
   const worlds = profile.worlds.filter((w): w is WorldSummary => !!w);
   const ordered = focusId ? [...worlds].sort((a) => (a.id === focusId ? -1 : 1)) : worlds;

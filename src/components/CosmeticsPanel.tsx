@@ -39,7 +39,7 @@ export default function CosmeticsPanel({
   return (
     <div className="max-h-[65vh] overflow-y-auto pr-1">
       <p className="text-sm opacity-80">
-        Change how this island looks. Locked styles are sold in the ⚡ Rapid Fire Market.
+        Change how this Kata looks. Locked styles are sold in the ⚡ Rapid Fire Market.
       </p>
 
       <h3 className="mt-4 text-sm font-bold uppercase tracking-wide opacity-70">Trees</h3>
@@ -60,7 +60,7 @@ export default function CosmeticsPanel({
           );
         })}
       </div>
-      {!hasWorld && <p className="mt-2 text-xs opacity-60">Trees appear once a world grows on this island.</p>}
+      {!hasWorld && <p className="mt-2 text-xs opacity-60">Trees appear once a world grows on this Kata.</p>}
 
       <h3 className="mt-4 text-sm font-bold uppercase tracking-wide opacity-70">Flag</h3>
       <div className="mt-2 flex gap-2">

@@ -309,7 +309,7 @@ export function openBounty(world: { id: string; title: string; icon: string; cre
   if (stake < MIN_STAKE) throw new Error(`The minimum stake is ${MIN_STAKE.toLocaleString("en-US")} MOE`);
   const t = now();
   const all = loadBounties(t);
-  if (all.some((b) => b.worldId === world.id && b.status === "open")) throw new Error("This island already has an open bounty");
+  if (all.some((b) => b.worldId === world.id && b.status === "open")) throw new Error("This Kata already has an open bounty");
   const b: Bounty = {
     id: `bounty-${world.id}-${t}`,
     worldId: world.id,

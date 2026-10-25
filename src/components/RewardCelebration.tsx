@@ -59,10 +59,10 @@ export default function RewardCelebration({ accuracy, outcome }: { accuracy: num
       </div>
       <div className="relative mt-2 text-xs opacity-80">
         {outcome.why === "capped"
-          ? `You've already earned from this island ${MAX_REWARDED_PLAYS} times. Play on for practice!`
+          ? `You've already earned from this Kata ${MAX_REWARDED_PLAYS} times. Play on for practice!`
           : outcome.why === "below"
             ? `Score ${Math.round(PASS_MARK * 100)}% or more to earn MOE.`
-            : `${outcome.playsLeft} of ${MAX_REWARDED_PLAYS} earning plays left on this island.`}
+            : `${outcome.playsLeft} of ${MAX_REWARDED_PLAYS} earning plays left on this Kata.`}
       </div>
     </div>
   );

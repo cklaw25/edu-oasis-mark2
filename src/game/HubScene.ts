@@ -80,7 +80,7 @@ export class HubScene extends Phaser.Scene {
     this.drawOcean();
     this.bridges.forEach((b) => this.drawBridge(b));
 
-    this.drawIsland(MAIN, 0x5cbf68, "Home Island");
+    this.drawIsland(MAIN, 0x5cbf68, "Home Kata");
     SLOTS.forEach((c, i) => {
       const world = this.profile.worlds[i];
       const look = cosmeticsFor(this.profile, i);
@@ -90,7 +90,7 @@ export class HubScene extends Phaser.Scene {
         // blue portal = bought on the World Market, white = grown from your own notes
         this.addPortal(c, { kind: "world", slot: i, world }, world.bought ? 0x7fe0ff : 0xffffff);
       } else {
-        this.drawIsland(c, 0xd8c79a, "Empty island", 0, true, undefined, look);
+        this.drawIsland(c, 0xd8c79a, "Empty Kata", 0, true, undefined, look);
         this.addPortal(c, { kind: "empty", slot: i, world: null }, 0xffffff);
       }
     });

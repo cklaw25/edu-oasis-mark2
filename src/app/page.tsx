@@ -251,7 +251,7 @@ export default function Home() {
           }}
           className="absolute left-4 top-4 z-[26] rounded-full bg-[#0b2a3d]/85 px-4 py-2 text-sm font-bold text-white shadow-lg hover:bg-[#0b2a3d]"
         >
-          ← Back to islands
+          ← Back to Katas
         </button>
       )}
 
@@ -346,7 +346,7 @@ export default function Home() {
       )}
 
       {panel?.kind === "cosmetics" && (
-        <Overlay title={`🎨 ${profile.worlds[panel.slot]?.title ?? "Empty island"}`} onClose={() => setPanel(null)}>
+        <Overlay title={`🎨 ${profile.worlds[panel.slot]?.title ?? "Empty Kata"}`} onClose={() => setPanel(null)}>
           <CosmeticsPanel
             profile={profile}
             slot={panel.slot}
@@ -464,7 +464,7 @@ function Library({
               )}
             </div>
           ))}
-          {profile.library.length > 0 && <div className="pt-1 opacity-60">Library: pick an island to show it on</div>}
+          {profile.library.length > 0 && <div className="pt-1 opacity-60">Library: pick a Kata to show it on</div>}
           {profile.library.map((w) => (
             <div key={w.id} className="flex items-center gap-1 rounded-lg bg-white/5 px-2 py-1">
               <span className="min-w-0 flex-1 truncate">{w.title}</span>
@@ -473,14 +473,14 @@ function Library({
                   key={slot}
                   onClick={() => onShow(w.id, slot)}
                   className="rounded bg-white/20 px-1.5 hover:bg-white/40"
-                  title={profile.worlds[slot] ? `Swap with ${profile.worlds[slot]!.title}` : `Put on island ${slot + 1}`}
+                  title={profile.worlds[slot] ? `Swap with ${profile.worlds[slot]!.title}` : `Put on Kata ${slot + 1}`}
                 >
                   {slot + 1}
                 </button>
               ))}
             </div>
           ))}
-          {count === 0 && <div className="opacity-60">No worlds yet: grow one on an island or buy one in the World Market.</div>}
+          {count === 0 && <div className="opacity-60">No worlds yet: grow one on a Kata or buy one in the World Market.</div>}
         </div>
       )}
     </div>
