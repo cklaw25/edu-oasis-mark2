@@ -18,20 +18,21 @@ How much MOE DONE a player earns for finishing a game on an island. Code: `src/l
 Formula: `reward = min + (max − min) × (score − 55%) / 45%`, where `min = 20% of max`, rounded to the nearest 10 MOE.
 
 - **10 earning plays per island.** Each island pays MOE for its first 10 *paying* games. After that the island can still be played for practice, and recall still improves, but it pays nothing. A failed game (under 55%) pays nothing and **does not** use up one of the 10.
-- **Membership** (90,000 MOE for 30 days) adds +50% on top of any paying game.
 - The island prompt shows how many earning plays are left, e.g. `E — enter Bobo Doll Experiment · 7/10 MOE plays left`.
+- Paying games are logged in the wallet history as `reward`, next to the completion badge each game mints.
+- Membership (the World Market's 90,000 MOE pass) unlocks every market world; it doesn't change game rewards.
 
 ### Example: a Medium island (max 2,000 MOE)
 
-| Score | Normal | Member (+50%) |
-|---|---|---|
-| 50% | 0 | 0 |
-| 55% | 400 | 600 |
-| 70% | 930 | 1,400 |
-| 85% | 1,470 | 2,210 |
-| 100% | 2,000 | 3,000 |
+| Score | MOE |
+|---|---|
+| 50% | 0 |
+| 55% | 400 |
+| 70% | 930 |
+| 85% | 1,470 |
+| 100% | 2,000 |
 
-Most a player can earn from one Medium island: 10 × 2,000 = **20,000 MOE** (30,000 as a member).
+Most a player can earn from one Medium island: 10 × 2,000 = **20,000 MOE**.
 
 ---
 
@@ -66,4 +67,4 @@ A good approach: start from the creator's level (1), then let real play data (2)
 
 - Should the cap reset (e.g. monthly, or once recall has dropped below 50%) so players are paid again for *reviewing* an island they've forgotten?
 - Should the first ever 100% on an island pay a one-off bonus?
-- Should members get more than 10 earning plays per island instead of (or as well as) +50%?
+- Should members get more than 10 earning plays per island?

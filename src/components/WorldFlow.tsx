@@ -1,20 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { btn, Card, Stat } from "./BoboFlow";
-import type { ArenaResult } from "@/game/ArenaScene";
+import { HowToArena, HowToBoard, HowToInspect, HowToRunner, HowToShooter, HowToShowdown } from "./HowToPlay";
+import SlideScene from "./SlideScene";
 import { bus } from "@/game/bus";
 import { layoutObjects } from "@/game/layout";
 import { track } from "@/lib/telemetry";
-import type { WorldSpec } from "@/lib/worldSpec";
+import { gamesOf, type GameId, type WorldSpec } from "@/lib/worldSpec";
 
-export type WorldPhase = "intro" | "arena" | "arenaDone" | "inspect" | "summary";
+// Phases: "intro" → for each game i: "how:i" → "play:i" → "done:i" → "summary". (inspect goes straight to summary)
+export type WorldPhase = "intro" | "summary" | `how:${number}` | `play:${number}` | `done:${number}`;
 
 export function labClues(spec: WorldSpec) {
   return layoutObjects(spec.inspect.clues);
 }
 
-// React side of a generated world: intro slides, arena result, inspect cards, summary.
+export function phaseGame(phase: string): number | null {
+  const m = phase.match(/^(how|play|done):(\d+)$/);
+  return m ? Number(m[2]) : null;
+}
+
+/** Which Phaser scene shows a game, and the data it needs. */
+export function sceneFor(spec: WorldSpec, game: GameId, autoStart: boolean) {
+  switch (game) {
+    case "runner":
+      return { key: "runner" as const, data: { sequence: spec.sequence, theme: spec.theme, autoStart } };
+    case "shooter":
+      return { key: "shooter" as const, data: { arena: spec.arena, theme: spec.theme, autoStart } };
+    case "arena":
+      return { key: "arena" as const, data: { arena: spec.arena, autoStart } };
+    case "inspect":
+      return { key: "lab" as const, data: { clues: labClues(spec), title: spec.inspect.room } };
+    case "board":
+      return { key: "board" as const, data: { board: spec.board, theme: spec.theme, autoStart } };
+    case "showdown":
+      return { key: "showdown" as const, data: { showdown: spec.showdown, theme: spec.theme, autoStart } };
+  }
+}
+
+const GAME_NAMES: Record<GameId, string> = {
+  runner: "Timeline Run",
+  shooter: "Hold the Line",
+  arena: "Sort Storm",
+  inspect: "Inspect Room",
+  board: "Squad Board",
+  showdown: "Showdown",
+};
+
+type Result = { correct: number; mistakes: number; answers: { label: string; correct: boolean }[] };
+
+// React side of a generated world: intro slides, how-to + result cards per game, inspect cards, summary.
 export default function WorldFlow({
   worldId,
   spec,
@@ -28,31 +64,46 @@ export default function WorldFlow({
   setPhase: (p: WorldPhase) => void;
   onExit: (accuracy: number) => void;
 }) {
+  const games = gamesOf(spec);
   const [slide, setSlide] = useState(0);
-  const [arena, setArena] = useState<ArenaResult | null>(null);
+  const [results, setResults] = useState<Record<number, Result>>({});
   const [inspecting, setInspecting] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
   const [hearts, setHearts] = useState(3);
   const clues = labClues(spec);
+  const gi = phaseGame(phase);
+  const phaseRef = useRef(phase); // latest phase for bus handlers registered once
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
 
   useEffect(() => {
-    const offArena = bus.on("arena:done", (r) => {
-      const res = r as ArenaResult;
-      setArena(res);
-      track(worldId, "arena_done", { correct: res.correct, mistakes: res.mistakes, answers: res.answers });
-      setPhase("arenaDone");
-    });
-    const offInspect = bus.on("lab:inspect", (id) => setInspecting(id as string));
-    const offDone = bus.on("lab:done", (p) => {
-      setHearts((p as { hearts: number }).hearts);
-      setPhase("summary");
-    });
-    return () => {
-      offArena();
-      offInspect();
-      offDone();
+    const finished = (game: GameId) => (r: unknown) => {
+      const i = phaseGame(phaseRef.current);
+      if (i === null || games[i] !== game) return;
+      const res = r as Result;
+      setResults((all) => ({ ...all, [i]: res }));
+      track(worldId, `${game}_done`, { correct: res.correct, mistakes: res.mistakes, answers: res.answers });
+      setPhase(`done:${i}`);
     };
-  }, [setPhase, worldId]);
+    const offs = [
+      bus.on("runner:done", finished("runner")),
+      bus.on("shooter:done", finished("shooter")),
+      bus.on("arena:done", finished("arena")),
+      bus.on("board:done", finished("board")),
+      bus.on("showdown:done", finished("showdown")),
+      bus.on("lab:inspect", (id) => setInspecting(id as string)),
+      bus.on("lab:done", (p) => {
+        setHearts((p as { hearts: number }).hearts);
+        setPhase("summary");
+      }),
+    ];
+    return () => offs.forEach((off) => off());
+    // games is derived from spec
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setPhase, worldId, spec]);
+
+  const next = (i: number) => (i + 1 < games.length ? setPhase(`how:${i + 1}`) : setPhase("summary"));
 
   if (phase === "intro") {
     const s = spec.intro[slide];
@@ -68,11 +119,15 @@ export default function WorldFlow({
             <div className="inline-block rounded-full bg-[#ffd166] px-2 py-0.5 text-xs font-bold">{s.keyword}</div>
           </div>
         </div>
-        <p className="leading-relaxed">{s.text}</p>
+        <SlideScene key={slide} scene={s.scene} theme={spec.theme} />
+        <p className="text-lg leading-relaxed">{s.text}</p>
         {last && (
-          <div className="mt-4 rounded-lg bg-white p-3 text-sm">
-            <b>Next: {spec.arena.title}.</b> {spec.arena.instructions} The wanted category flips every 10 seconds —
-            touch only the matching labels!
+          <div className="mt-4 flex flex-wrap gap-2 text-xs">
+            {games.map((g, i) => (
+              <span key={g + i} className="rounded-full bg-white px-3 py-1">
+                {i + 1}. {GAME_NAMES[g]}
+              </span>
+            ))}
           </div>
         )}
         <div className="flex gap-2">
@@ -81,22 +136,43 @@ export default function WorldFlow({
               Back
             </button>
           )}
-          <button className={btn} onClick={() => (last ? setPhase("arena") : setSlide(slide + 1))}>
-            {last ? "Start" : "Next"}
+          <button className={btn} onClick={() => (last ? setPhase("how:0") : setSlide(slide + 1))}>
+            {last ? "Let's play →" : "Next"}
           </button>
         </div>
       </Card>
     );
   }
 
-  if (phase === "arenaDone" && arena) {
-    const missed = [...new Set(arena.answers.filter((a) => !a.correct).map((a) => a.label))];
+  if (gi !== null && phase.startsWith("how:")) {
+    const g = games[gi];
     return (
       <Card>
-        <h2 className="text-xl font-bold">All sorted!</h2>
+        <div className="mb-1 text-xs opacity-60">
+          Game {gi + 1} of {games.length}
+        </div>
+        {g === "runner" && <HowToRunner spec={spec} />}
+        {g === "shooter" && <HowToShooter spec={spec} />}
+        {g === "arena" && <HowToArena spec={spec} />}
+        {g === "inspect" && <HowToInspect spec={spec} />}
+        {g === "board" && <HowToBoard spec={spec} />}
+        {g === "showdown" && <HowToShowdown spec={spec} />}
+        <button className={btn} onClick={() => setPhase(`play:${gi}`)}>
+          Start {GAME_NAMES[g]}
+        </button>
+      </Card>
+    );
+  }
+
+  if (gi !== null && phase.startsWith("done:")) {
+    const r = results[gi];
+    const missed = [...new Set((r?.answers ?? []).filter((a) => !a.correct).map((a) => a.label))];
+    return (
+      <Card>
+        <h2 className="text-xl font-bold">{GAME_NAMES[games[gi]]} — done!</h2>
         <div className="mt-3 grid grid-cols-2 gap-2 text-center text-sm">
-          <Stat label="Sorted" value={String(arena.correct)} />
-          <Stat label="Mistakes" value={String(arena.mistakes)} />
+          <Stat label="Correct" value={String(r?.correct ?? 0)} />
+          <Stat label="Mistakes" value={String(r?.mistakes ?? 0)} />
         </div>
         {missed.length > 0 && (
           <div className="mt-3 text-sm">
@@ -108,18 +184,14 @@ export default function WorldFlow({
             </ul>
           </div>
         )}
-        <p className="mt-3 text-sm opacity-80">
-          Next: explore <b>{spec.inspect.room}</b>. Inspect every object and judge it — {spec.inspect.choiceA} or{" "}
-          {spec.inspect.choiceB}? Watch out for Prof. Skeptic.
-        </p>
-        <button className={btn} onClick={() => setPhase("inspect")}>
-          Enter {spec.inspect.room} →
+        <button className={btn} onClick={() => next(gi)}>
+          {gi + 1 < games.length ? `Next: ${GAME_NAMES[games[gi + 1]]} →` : "Finish"}
         </button>
       </Card>
     );
   }
 
-  if (phase === "inspect" && inspecting) {
+  if (gi !== null && phase.startsWith("play:") && games[gi] === "inspect" && inspecting) {
     const clue = clues.find((c) => c.id === inspecting)!;
     return (
       <InspectCard
@@ -138,18 +210,26 @@ export default function WorldFlow({
   }
 
   if (phase === "summary") {
-    const correct = Object.values(answers).filter(Boolean).length;
-    const arenaAcc = arena ? arena.correct / Math.max(1, arena.correct + arena.mistakes) : 1;
-    const accuracy = (correct / Math.max(1, clues.length) + arenaAcc) / 2;
+    const scores = Object.values(results).map((r) => r.correct / Math.max(1, r.correct + r.mistakes));
+    if (games.includes("inspect")) scores.push(Object.values(answers).filter(Boolean).length / Math.max(1, clues.length));
+    const accuracy = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 1;
     return (
       <Card>
         <h2 className="text-xl font-bold">World complete! 🌴</h2>
-        <div className="mt-3 grid grid-cols-3 gap-2 text-center text-sm">
-          <Stat label="Sorting" value={`${Math.round(arenaAcc * 100)}%`} />
-          <Stat label="Inspect" value={`${correct}/${clues.length}`} />
-          <Stat label="Hearts" value={"❤️".repeat(hearts) || "0"} />
+        <div className="mt-3 grid grid-cols-2 gap-2 text-center text-sm sm:grid-cols-3">
+          {games.map((g, i) => {
+            const r = results[i];
+            const value =
+              g === "inspect"
+                ? `${Object.values(answers).filter(Boolean).length}/${clues.length}`
+                : r
+                  ? `${Math.round((r.correct / Math.max(1, r.correct + r.mistakes)) * 100)}%`
+                  : "—";
+            return <Stat key={g + i} label={GAME_NAMES[g]} value={value} />;
+          })}
+          {games.includes("inspect") && <Stat label="Hearts" value={"❤️".repeat(hearts) || "0"} />}
         </div>
-        <p className="mt-3 text-sm opacity-80">Your oasis has been watered — this island&apos;s recall is restored.</p>
+        <p className="mt-3 text-sm opacity-80">Your oasis has been watered — this island&apos;s lifespan is restored.</p>
         <button
           className={btn}
           onClick={() => {

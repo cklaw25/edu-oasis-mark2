@@ -1,15 +1,15 @@
 // Turns the raw interaction log + recall model into what the Data tab shows and what Pip is told.
 import { boboKnowledge, type NoteItem } from "@/content/boboKnowledge";
 import { CLUES } from "@/content/bobo";
-import { halfLifeH, hoursUntil, recallAt } from "./recall";
+import { daysUntilDue, halfLifeH, hoursUntil, intervalDays, lifespanAt, recallAt } from "./recall";
 import { readEvents, type TelemetryEvent } from "./telemetry";
 import type { Profile, WorldSummary } from "./types";
 import { loadSpec } from "./worldStore";
-import type { WorldSpec } from "./worldSpec";
+import { GAME_IDS, type GameId, type WorldSpec } from "./worldSpec";
 
 export interface Answer {
   world: string;
-  mode: "experiment" | "arena" | "inspect";
+  mode: "experiment" | GameId;
   label: string;
   correct: boolean;
   ms?: number;
@@ -25,9 +25,11 @@ export function answersFrom(events: TelemetryEvent[]): Answer[] {
       out.push({ world: e.world, mode: "inspect", label: clue?.label ?? String(d.id), correct: !!d.correct, ms: Number(d.ms), t: e.t });
     } else if (e.type === "inspect_answer") {
       out.push({ world: e.world, mode: "inspect", label: String(d.label), correct: !!d.correct, ms: Number(d.ms), t: e.t });
-    } else if (e.type === "arena_done") {
+    } else if (GAME_IDS.some((g) => e.type === `${g}_done`)) {
+      // every action game logs its answers the same way
+      const mode = e.type.replace(/_done$/, "") as GameId;
       for (const a of (d.answers as { label: string; correct: boolean }[]) ?? [])
-        out.push({ world: e.world, mode: "arena", label: a.label, correct: a.correct, t: e.t });
+        out.push({ world: e.world, mode, label: a.label, correct: a.correct, t: e.t });
     } else if (e.type === "experiment_done") {
       // each strike = a broken condition, each round survived = kept it
       const strikes = Number(d.strikes ?? 0);
@@ -40,6 +42,9 @@ export function answersFrom(events: TelemetryEvent[]): Answer[] {
 
 export interface WorldInsight {
   world: WorldSummary;
+  lifespan: number;
+  intervalDays: number;
+  daysUntilDue: number;
   recall: number;
   halfLifeH: number;
   hoursTo50: number;
@@ -66,6 +71,9 @@ export function computeInsights(profile: Profile): Insights {
     .filter((w): w is WorldSummary => !!w)
     .map((w) => ({
       world: w,
+      lifespan: lifespanAt(w),
+      intervalDays: intervalDays(w),
+      daysUntilDue: daysUntilDue(w),
       recall: recallAt(w),
       halfLifeH: halfLifeH(w),
       hoursTo50: hoursUntil(w),
@@ -98,7 +106,8 @@ export function computeInsights(profile: Profile): Insights {
   }
   const weakSpots = [...spots.values()].sort((a, b) => b.wrong - a.wrong || Number(b.slow) - Number(a.slow)).slice(0, 8);
 
-  const nextIsland = [...worlds].sort((a, b) => a.recall - b.recall)[0] ?? null;
+  // most overdue first, ties broken by weakest predicted recall
+  const nextIsland = [...worlds].sort((a, b) => a.lifespan - b.lifespan || a.recall - b.recall)[0] ?? null;
   const bestMode = byMode.filter((m) => m.n >= 3).sort((a, b) => b.accuracy - a.accuracy)[0]?.mode ?? null;
 
   return {
@@ -128,13 +137,21 @@ export function worldNotes(w: WorldSummary): { items: NoteItem[]; spec: WorldSpe
   return { items: spec.knowledge.map((k) => ({ ...k, taughtIn: places.get(k.id) ?? [] })), spec };
 }
 
+export function readMyNotes(worldId: string) {
+  try {
+    return localStorage.getItem(`eo2.notes.${worldId}`) ?? "";
+  } catch {
+    return "";
+  }
+}
+
 /** Compact context string for Pip. */
 export function pipContext(profile: Profile, focusId: string | null): string {
   const ins = computeInsights(profile);
   const lines = ["LEARNER DATA:"];
   for (const w of ins.worlds)
     lines.push(
-      `- Island "${w.world.title}" (${w.world.topic}): predicted recall ${Math.round(w.recall * 100)}%, falls to 50% in ${w.hoursTo50.toFixed(1)}h, ${w.sessions} sessions`,
+      `- Island "${w.world.title}" (${w.world.topic}): lifespan ${Math.round(w.lifespan * 100)}% (review every ${w.intervalDays} days, due in ${w.daysUntilDue.toFixed(1)} days), predicted recall ${Math.round(w.recall * 100)}%, ${w.sessions} sessions`,
     );
   if (ins.weakSpots.length)
     lines.push(`Weak spots: ${ins.weakSpots.map((s) => `${s.label}${s.wrong ? ` (wrong ${s.wrong}x)` : " (hesitated)"}`).join("; ")}`);
@@ -146,6 +163,9 @@ export function pipContext(profile: Profile, focusId: string | null): string {
   for (const w of ordered) {
     lines.push(`# ${w.title}${w.id === focusId ? " (the learner is in this world now)" : ""}`);
     for (const k of worldNotes(w).items) lines.push(`[${k.id} · ${k.source}] ${k.text}`);
+    const mine = readMyNotes(w.id);
+    if (mine.trim()) lines.push(`Learner's own notes for this world:
+${mine.slice(0, 4000)}`);
   }
   return lines.join("\n");
 }

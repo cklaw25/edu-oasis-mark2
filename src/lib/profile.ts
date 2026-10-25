@@ -3,79 +3,45 @@ import type { Profile, WorldSummary } from "./types";
 
 const KEY = "eo2.profile";
 
+// The hand-built Bobo world (BoboFlow). Sold in the World Market like the generated sample worlds.
 export const DEMO_WORLD: WorldSummary = {
   id: "demo-bobo",
   title: "Bobo Doll Experiment",
   topic: "IB Psychology — Bandura, Ross & Ross (1961)",
   creator: "EduOasis",
-  createdAt: Date.now() - 3 * 86400_000,
-  lastVisitedAt: Date.now() - 2 * 86400_000,
-  halfLifeH: 48, // two days since the last visit → recall 50%
-  recall: 0.5,
+  createdAt: 0,
+  lastVisitedAt: 0,
+  recall: 1,
   gameType: "rpg-experiment",
 };
 
-/** Island slot every learner gets for free; the other slots are claimed by buying worlds. */
-export const FREE_SLOT = 0;
-
-/** A slot is yours if it's your free island or it holds a world you own. */
-export function isClaimed(p: Profile, slot: number) {
-  return slot === FREE_SLOT || p.worlds[slot] !== null;
-}
-
-/** Where the next bought world goes: the first unclaimed island, or -1 if every island is claimed. */
-export function nextIslandSlot(p: Profile) {
-  return p.worlds.findIndex((_, i) => !isClaimed(p, i));
-}
-
-/** A brand-new learner: one free empty island and 30,000 MOE to buy their first island. */
+/** A brand-new learner: 3 empty islands, 2 free generations and 30,000 MOE to buy a world. */
 export function defaultProfile(): Profile {
   return {
     name: "Learner",
     generationsLeft: 2,
     worlds: [null, null, null],
+    library: [],
     moe: STARTING_MOE,
-    owned: [],
     listings: [],
-    boughtListings: [],
     cosmetics: {},
     rewardedPlays: {},
-    ...STARTER_LOOK,
+    // free Rapid Fire Market starter look
+    ownedItems: [],
+    avatar: { shirt: "shirt-blue", hat: "hat-none" },
+    pip: "pip-classic",
+    theme: "theme-classic",
+    font: "font-mono",
   };
 }
-
-/** Free Rapid Fire Market items everyone starts with. */
-const STARTER_LOOK = {
-  ownedItems: [] as string[],
-  avatar: { shirt: "shirt-blue", hat: "hat-none" },
-  pip: "pip-classic",
-  theme: "theme-classic",
-  font: "font-mono",
-};
-
-const DEMO_BOBO_NFT = "EO-BOBO01";
 
 export function loadProfile(): Profile {
   try {
     const raw = localStorage.getItem(KEY);
     if (raw) {
-      // profiles saved before the market existed: give them MOE and record Bobo as bought
-      const p = JSON.parse(raw) as Profile;
-      const owned = p.worlds?.some((w) => w?.id === DEMO_WORLD.id) ? ["bobo"] : [];
-      const worlds = p.worlds.map((w) =>
-        w?.id === DEMO_WORLD.id && !w.nftId ? { ...w, bought: true, nftId: DEMO_BOBO_NFT } : w,
-      );
-      return {
-        ...STARTER_LOOK,
-        ...p,
-        worlds,
-        moe: p.moe ?? STARTING_MOE,
-        owned: p.owned ?? owned,
-        listings: p.listings ?? [],
-        boughtListings: p.boughtListings ?? [],
-        cosmetics: p.cosmetics ?? {},
-        rewardedPlays: p.rewardedPlays ?? {},
-      };
+      // profiles saved before the MOE market: give them a balance and an empty library
+      const p = JSON.parse(raw) as Partial<Profile>;
+      return { ...defaultProfile(), ...p, library: p.library ?? [], moe: p.moe ?? STARTING_MOE, listings: p.listings ?? [] };
     }
   } catch {}
   return defaultProfile();
@@ -85,4 +51,60 @@ export function saveProfile(p: Profile) {
   try {
     localStorage.setItem(KEY, JSON.stringify(p));
   } catch {}
+}
+
+/** Every world the player owns: the 3 islands first, then the library. */
+export function allWorlds(p: Profile): WorldSummary[] {
+  return [...p.worlds.filter((w): w is WorldSummary => !!w), ...p.library];
+}
+
+export function ownsWorld(p: Profile, id: string) {
+  return allWorlds(p).some((w) => w.id === id);
+}
+
+/** Put a new world on the given island (or the first empty one); with every island full it goes to the library. */
+export function addWorld(p: Profile, world: WorldSummary, slot?: number): { profile: Profile; slot: number } {
+  const at = slot !== undefined && !p.worlds[slot] ? slot : p.worlds.indexOf(null);
+  if (at < 0) return { profile: { ...p, library: [world, ...p.library] }, slot: -1 };
+  const worlds = [...p.worlds];
+  worlds[at] = world;
+  return { profile: { ...p, worlds }, slot: at };
+}
+
+/** Show a library world on an island; whatever was there goes back to the library. */
+export function showOnIsland(p: Profile, id: string, slot: number): Profile {
+  const world = p.library.find((w) => w.id === id);
+  if (!world) return p;
+  const worlds = [...p.worlds];
+  const old = worlds[slot];
+  worlds[slot] = world;
+  return { ...p, worlds, library: [...(old ? [old] : []), ...p.library.filter((w) => w.id !== id)] };
+}
+
+/** Move an island's world into the library, freeing the island. */
+export function storeWorld(p: Profile, slot: number): Profile {
+  const old = p.worlds[slot];
+  if (!old) return p;
+  const worlds = [...p.worlds];
+  worlds[slot] = null;
+  return { ...p, worlds, library: [old, ...p.library] };
+}
+
+/** Remove a world entirely (it was sold). */
+export function removeWorld(p: Profile, id: string): Profile {
+  return {
+    ...p,
+    worlds: p.worlds.map((w) => (w?.id === id ? null : w)),
+    library: p.library.filter((w) => w.id !== id),
+    listings: p.listings.filter((l) => l.worldId !== id),
+  };
+}
+
+/** Apply a change to an owned world wherever it lives (island or library). */
+export function updateWorld(p: Profile, id: string, fn: (w: WorldSummary) => WorldSummary): Profile {
+  return {
+    ...p,
+    worlds: p.worlds.map((w) => (w?.id === id ? fn(w) : w)),
+    library: p.library.map((w) => (w.id === id ? fn(w) : w)),
+  };
 }

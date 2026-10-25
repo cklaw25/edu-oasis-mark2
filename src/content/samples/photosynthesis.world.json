@@ -1,0 +1,467 @@
+{
+  "title": "Biology Photosynthesis Knowledge Base",
+  "topic": "Photosynthesis",
+  "summary": "Comprehensive extraction of examinable knowledge regarding photosynthesis, including equations, locations, light-dependent and light-independent reactions, limiting factors, uses of glucose, and common misconceptions.",
+  "knowledge": [
+    {
+      "id": "K1",
+      "kind": "fact",
+      "text": "Overall equation for photosynthesis: 6CO2 + 6H2O -> C6H12O6 + 6O2, using light energy absorbed by chlorophyll.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K2",
+      "kind": "term",
+      "text": "Location of photosynthesis: chloroplasts.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K3",
+      "kind": "fact",
+      "text": "Thylakoid membranes are stacked into grana and hold chlorophyll.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K4",
+      "kind": "fact",
+      "text": "The fluid around the thylakoid membranes is the stroma.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K5",
+      "kind": "process",
+      "text": "Light-dependent reaction (thylakoid membranes): light excites electrons in chlorophyll (photosystems II and I).",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K6",
+      "kind": "process",
+      "text": "Photolysis splits water into H+ ions, electrons, and oxygen, with oxygen released as a by-product.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K7",
+      "kind": "process",
+      "text": "Electron transport chain pumps H+ and drives ATP synthase to make ATP (photophosphorylation).",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K8",
+      "kind": "process",
+      "text": "NADP is reduced to NADPH during the light-dependent reaction.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K9",
+      "kind": "process",
+      "text": "Light-independent reaction / Calvin cycle (stroma): enzyme RuBisCO fixes CO2 onto RuBP (5C) making two GP (3C).",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K10",
+      "kind": "process",
+      "text": "GP is reduced to TP (triose phosphate) using ATP and NADPH in the Calvin cycle.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K11",
+      "kind": "process",
+      "text": "Some TP makes glucose and other organic molecules, while most regenerates RuBP using ATP.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K12",
+      "kind": "fact",
+      "text": "Limiting factors of photosynthesis include light intensity, CO2 concentration, and temperature.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K13",
+      "kind": "evaluation",
+      "text": "Temperature affects enzymes in photosynthesis; temperatures that are too high denature the enzymes.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K14",
+      "kind": "fact",
+      "text": "The factor in shortest supply limits the rate of photosynthesis.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K15",
+      "kind": "fact",
+      "text": "Uses of glucose produced in plants: respiration, starch for storage, cellulose for cell walls, sucrose for transport, and amino acids/proteins with nitrates.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K16",
+      "kind": "fact",
+      "text": "Common misconception: plants also respire all the time.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K17",
+      "kind": "fact",
+      "text": "Common misconception: oxygen comes from water, not CO2.",
+      "source": "photosynthesis.txt"
+    },
+    {
+      "id": "K18",
+      "kind": "fact",
+      "text": "Common misconception: the Calvin cycle does not need light directly but needs products of the light-dependent reaction.",
+      "source": "photosynthesis.txt"
+    }
+  ],
+  "theme": "nature",
+  "games": [
+    "runner",
+    "arena",
+    "inspect"
+  ],
+  "intro": [
+    {
+      "keyword": "Equation",
+      "text": "You turn carbon dioxide and water into glucose and oxygen using light energy absorbed by chlorophyll.",
+      "refs": [
+        "K1"
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "💨",
+            "label": "CO₂"
+          },
+          {
+            "emoji": "💧",
+            "label": "water"
+          },
+          {
+            "emoji": "☀️",
+            "label": "light"
+          },
+          {
+            "emoji": "🍬",
+            "label": "glucose"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "Chloroplasts",
+      "text": "You explore chloroplasts containing thylakoid membranes stacked into grana holding chlorophyll, surrounded by the fluid stroma.",
+      "refs": [
+        "K2",
+        "K3",
+        "K4"
+      ],
+      "scene": {
+        "style": "group",
+        "actors": [
+          {
+            "emoji": "🟢",
+            "label": "chloroplast"
+          },
+          {
+            "emoji": "🥞",
+            "label": "grana"
+          },
+          {
+            "emoji": "🫧",
+            "label": "stroma"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "Reactions",
+      "text": "You power the light-dependent reaction in thylakoids and the light-independent Calvin cycle in the stroma.",
+      "refs": [
+        "K5",
+        "K9"
+      ],
+      "scene": {
+        "style": "versus",
+        "actors": [
+          {
+            "emoji": "☀️",
+            "label": "light-dependent"
+          },
+          {
+            "emoji": "🔄",
+            "label": "Calvin cycle"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "Limiting Factors",
+      "text": "You see how light intensity, carbon dioxide concentration, temperature, and shortage dictate the rate.",
+      "refs": [
+        "K12",
+        "K14"
+      ],
+      "scene": {
+        "style": "group",
+        "actors": [
+          {
+            "emoji": "💡",
+            "label": "light"
+          },
+          {
+            "emoji": "💨",
+            "label": "CO₂"
+          },
+          {
+            "emoji": "🌡️",
+            "label": "temperature"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "Glucose Uses",
+      "text": "You utilize produced glucose for respiration, starch storage, cellulose walls, sucrose transport, and amino acids.",
+      "refs": [
+        "K15"
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "🍬",
+            "label": "glucose"
+          },
+          {
+            "emoji": "🏃",
+            "label": "respiration"
+          },
+          {
+            "emoji": "🥔",
+            "label": "starch"
+          },
+          {
+            "emoji": "🧱",
+            "label": "cellulose"
+          }
+        ]
+      }
+    }
+  ],
+  "sequence": {
+    "title": "Photosynthesis Flow",
+    "instructions": "Jump through the correct stages in order!",
+    "steps": [
+      {
+        "label": "Light hits chlorophyll",
+        "icon": "☀️",
+        "detail": "Light excites electrons in chlorophyll within photosystems II and I on thylakoid membranes.",
+        "refs": [
+          "K5"
+        ]
+      },
+      {
+        "label": "Water photolysis",
+        "icon": "💧",
+        "detail": "Photolysis splits water into H+ ions, electrons, and oxygen, releasing oxygen as a by-product.",
+        "refs": [
+          "K6"
+        ]
+      },
+      {
+        "label": "Electron transport chain",
+        "icon": "⚡",
+        "detail": "The electron transport chain pumps H+ and drives ATP synthase to make ATP via photophosphorylation.",
+        "refs": [
+          "K7"
+        ]
+      },
+      {
+        "label": "NADP reduction",
+        "icon": "🔋",
+        "detail": "NADP is reduced to NADPH during the light-dependent reaction.",
+        "refs": [
+          "K8"
+        ]
+      },
+      {
+        "label": "Carbon fixation",
+        "icon": "🌱",
+        "detail": "In the stroma, enzyme RuBisCO fixes CO2 onto RuBP making two GP.",
+        "refs": [
+          "K9"
+        ]
+      },
+      {
+        "label": "GP reduction",
+        "icon": "🔄",
+        "detail": "GP is reduced to triose phosphate using ATP and NADPH in the Calvin cycle.",
+        "refs": [
+          "K10"
+        ]
+      },
+      {
+        "label": "RuBP regeneration",
+        "icon": "🔁",
+        "detail": "Some triose phosphate makes glucose while most regenerates RuBP using ATP.",
+        "refs": [
+          "K11"
+        ]
+      }
+    ]
+  },
+  "arena": {
+    "title": "Reaction Sorter",
+    "instructions": "Sort items into Light-Dependent or Calvin Cycle!",
+    "categoryA": {
+      "name": "Light-Dependent",
+      "hint": "Happens in thylakoids with light"
+    },
+    "categoryB": {
+      "name": "Calvin Cycle",
+      "hint": "Happens in stroma"
+    },
+    "items": [
+      {
+        "label": "Thylakoid membranes",
+        "category": "A",
+        "icon": "🍃",
+        "refs": [
+          "K3",
+          "K5"
+        ]
+      },
+      {
+        "label": "Photolysis of water",
+        "category": "A",
+        "icon": "💧",
+        "refs": [
+          "K6"
+        ]
+      },
+      {
+        "label": "ATP synthase action",
+        "category": "A",
+        "icon": "⚡",
+        "refs": [
+          "K7"
+        ]
+      },
+      {
+        "label": "NADP reduction",
+        "category": "A",
+        "icon": "🔋",
+        "refs": [
+          "K8"
+        ]
+      },
+      {
+        "label": "Stroma fluid",
+        "category": "B",
+        "icon": "🌊",
+        "refs": [
+          "K4",
+          "K9"
+        ]
+      },
+      {
+        "label": "Enzyme RuBisCO",
+        "category": "B",
+        "icon": "🧬",
+        "refs": [
+          "K9"
+        ]
+      },
+      {
+        "label": "Fixing CO2 onto RuBP",
+        "category": "B",
+        "icon": "📥",
+        "refs": [
+          "K9"
+        ]
+      },
+      {
+        "label": "GP reduced to TP",
+        "category": "B",
+        "icon": "🔄",
+        "refs": [
+          "K10"
+        ]
+      },
+      {
+        "label": "Regenerating RuBP",
+        "category": "B",
+        "icon": "🔁",
+        "refs": [
+          "K11"
+        ]
+      },
+      {
+        "label": "Oxygen release",
+        "category": "A",
+        "icon": "💨",
+        "refs": [
+          "K6"
+        ]
+      }
+    ]
+  },
+  "inspect": {
+    "title": "Plant Lab Inspection",
+    "room": "Greenhouse",
+    "choiceA": "True",
+    "choiceB": "Myth",
+    "clues": [
+      {
+        "icon": "🌡️",
+        "label": "Enzyme Heat",
+        "claim": "High temperatures denature enzymes in photosynthesis.",
+        "answer": "A",
+        "why": "Temperature affects enzymes, and temperatures that are too high denature them.",
+        "refs": [
+          "K13"
+        ]
+      },
+      {
+        "icon": "🌙",
+        "label": "Night Respiration",
+        "claim": "Plants only respire when it is dark.",
+        "answer": "B",
+        "why": "Plants also respire all the time as a common fact.",
+        "refs": [
+          "K16"
+        ]
+      },
+      {
+        "icon": "💧",
+        "label": "Oxygen Source",
+        "claim": "Oxygen comes from splitting carbon dioxide.",
+        "answer": "B",
+        "why": "Oxygen comes from water during photolysis, not CO2.",
+        "refs": [
+          "K17"
+        ]
+      },
+      {
+        "icon": "☀️",
+        "label": "Calvin Light Need",
+        "claim": "The Calvin cycle needs direct light to function.",
+        "answer": "B",
+        "why": "The Calvin cycle does not need light directly, but needs products of the light-dependent reaction.",
+        "refs": [
+          "K18"
+        ]
+      },
+      {
+        "icon": "📉",
+        "label": "Limiting Shortage",
+        "claim": "The factor in shortest supply sets the rate.",
+        "answer": "A",
+        "why": "The factor in shortest supply limits the rate of photosynthesis.",
+        "refs": [
+          "K14"
+        ]
+      }
+    ]
+  }
+}

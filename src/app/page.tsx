@@ -4,37 +4,38 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import GameCanvas, { type SceneKey } from "@/components/GameCanvas";
 import CreateWorldModal from "@/components/CreateWorldModal";
 import BoboFlow, { type BoboPhase } from "@/components/BoboFlow";
-import WorldFlow, { labClues, type WorldPhase } from "@/components/WorldFlow";
+import WorldFlow, { phaseGame, sceneFor, type WorldPhase } from "@/components/WorldFlow";
+import { gamesOf } from "@/lib/worldSpec";
 import PipPanel from "@/components/PipPanel";
-import MoeCoin from "@/components/MoeCoin";
 import MarketPanel from "@/components/MarketPanel";
 import RapidMarketPanel from "@/components/RapidMarketPanel";
-import { ownsItem, shopItem, type ShopItem } from "@/lib/shop";
 import CosmeticsPanel from "@/components/CosmeticsPanel";
+import MoeCoin from "@/components/MoeCoin";
+import { ownsItem, shopItem, type ShopItem } from "@/lib/shop";
+import { MAX_REWARDED_PLAYS, PASS_MARK, difficultyOf, rewardedPlaysLeft, sessionReward } from "@/lib/rewards";
+import { mintBadge, recordMoe, resetChain } from "@/lib/solana";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
-import { newNftId, topicForWorld, type MarketTopic, type PlayerListing } from "@/lib/market";
-import { MEMBERSHIP_PRICE_MOE, WORLD_PRICE_MOE, formatMoe } from "@/lib/moe";
-import { MAX_REWARDED_PLAYS, PASS_MARK, difficultyOf, rewardedPlaysLeft, sessionReward } from "@/lib/rewards";
-import { extendMembership, isMember, memberBonus, memberDaysLeft } from "@/lib/membership";
-import { nextHalfLife, recallAt } from "@/lib/recall";
-import { defaultProfile, isClaimed, loadProfile, nextIslandSlot, saveProfile } from "@/lib/profile";
+import { track } from "@/lib/telemetry";
+import { lifespanAt, nextHalfLife, nextStreak, recallAt } from "@/lib/recall";
+import { GENERATE_PRICE_MOE, formatMoe } from "@/lib/moe";
+import { addWorld, allWorlds, defaultProfile, loadProfile, saveProfile, showOnIsland, storeWorld, updateWorld } from "@/lib/profile";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
 import type { WorldSpec } from "@/lib/worldSpec";
-import type { PortalInfo, Profile, WorldSummary } from "@/lib/types";
+import type { PortalInfo, Profile } from "@/lib/types";
 
 type Panel =
   | { kind: "create"; slot: number }
   | { kind: "market" }
   | { kind: "rapid" }
-  | { kind: "world"; info: PortalInfo }
   | { kind: "cosmetics"; slot: number }
+  | { kind: "world"; info: PortalInfo }
   | null;
 type Active = { kind: "bobo" } | { kind: "gen"; id: string; spec: WorldSpec } | null;
 type Phase = BoboPhase | WorldPhase;
 
 // phases where the player reads a card instead of playing
-const CARD_PHASES: Phase[] = ["intro", "results", "summary", "arenaDone"];
+const isCardPhase = (p: string) => ["intro", "results", "summary"].includes(p) || /^(how|done):/.test(p);
 
 export default function Home() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -48,9 +49,9 @@ export default function Home() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [pipOpen, setPipOpen] = useState(false);
   const [clockTick, setClockTick] = useState(0);
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const [earned, setEarned] = useState<{
     amount: number;
-    bonus: number;
     accuracy: number;
     playsLeft: number;
     /** why nothing was paid: under the pass mark, or the island's earning plays are used up */
@@ -66,7 +67,7 @@ export default function Home() {
 
   // recall is derived from the forgetting curve at the current (possibly time-travelled) clock
   const view = useMemo(
-    () => profile && { ...profile, worlds: profile.worlds.map((w) => w && { ...w, recall: recallAt(w) }) },
+    () => profile && { ...profile, worlds: profile.worlds.map((w) => w && { ...w, recall: recallAt(w), lifespan: lifespanAt(w) }) },
     // clockTick: re-derive after a demo time jump
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [profile, clockTick],
@@ -81,13 +82,19 @@ export default function Home() {
         setNonce((n) => n + 1);
       }
     }
-    if (p === "arena") bus.emit("arena:begin");
+    // generated worlds: a fresh, waiting scene for each how-to; start it when play begins
+    if (p.startsWith("how:")) {
+      setAutoStart(false);
+      setNonce((n) => n + 1);
+    }
+    if (p.startsWith("play:")) ["runner", "shooter", "arena", "board", "showdown"].forEach((k) => bus.emit(`${k}:begin`));
     phaseRef.current = p;
     setPhaseState(p);
   }, []);
 
   const enter = useCallback((world: Active) => {
     setPanel(null);
+    setReviewOpen(false); // may be left set if the player quit mid-card
     setAutoStart(false);
     phaseRef.current = "intro";
     setPhaseState("intro");
@@ -130,13 +137,13 @@ export default function Home() {
   let sceneData: Record<string, unknown> = { autoStart };
   if (active?.kind === "bobo") scene = phase === "review" || phase === "summary" ? "lab" : "experiment";
   if (active?.kind === "gen") {
-    const inLab = phase === "inspect" || phase === "summary";
-    scene = inLab ? "lab" : "arena";
-    sceneData = inLab
-      ? { clues: labClues(active.spec), title: active.spec.inspect.room }
-      : { arena: active.spec.arena, autoStart };
+    const games = gamesOf(active.spec);
+    const i = phaseGame(phase) ?? (phase === "summary" ? games.length - 1 : 0);
+    const s = sceneFor(active.spec, games[i], autoStart);
+    scene = s.key;
+    sceneData = s.data;
   }
-  const paused = pipOpen || panel !== null || (active !== null && (CARD_PHASES.includes(phase) || reviewOpen));
+  const paused = pipOpen || panel !== null || (active !== null && (isCardPhase(phase) || reviewOpen));
 
   const save = (next: Profile) => {
     saveProfile(next);
@@ -145,51 +152,38 @@ export default function Home() {
 
   const exitWorld = (id: string, accuracy: number) => {
     const t = now();
-    const played = profile.worlds.find((w) => w?.id === id);
+    const played = allWorlds(profile).find((w) => w.id === id);
+    const title = played?.title ?? id;
+    // learn-to-earn: MOE by score, for an island's first 10 paying games (see src/lib/rewards.ts)
     const left = rewardedPlaysLeft(profile, id);
-    const base = played && left > 0 ? sessionReward(accuracy, difficultyOf(played)) : 0;
-    const bonus = memberBonus(profile, base, t);
-    const reward = base + bonus;
-    // only games that pay use up one of the island's 10 earning plays
-    const rewardedPlays = base > 0 ? { ...profile.rewardedPlays, [id]: (profile.rewardedPlays[id] ?? 0) + 1 } : profile.rewardedPlays;
-    const worlds = profile.worlds.map((w) =>
-      w?.id === id
-        ? {
-            ...w,
-            halfLifeH: nextHalfLife(w, accuracy),
-            lastVisitedAt: t,
-            recall: 1,
-            sessions: [...(w.sessions ?? []), { t, accuracy }],
-          }
-        : w,
-    );
-    save({ ...profile, worlds, moe: profile.moe + reward, rewardedPlays });
+    const reward = played && left > 0 ? sessionReward(accuracy, difficultyOf(played)) : 0;
+    const rewardedPlays = reward > 0 ? { ...profile.rewardedPlays, [id]: (profile.rewardedPlays[id] ?? 0) + 1 } : profile.rewardedPlays;
+    if (reward > 0) recordMoe("reward", `Learned "${title}" · ${Math.round(accuracy * 100)}% correct`, reward);
+    save({
+      ...updateWorld(profile, id, (w) => ({
+        ...w,
+        halfLifeH: nextHalfLife(w, accuracy),
+        streak: nextStreak(w, accuracy),
+        lastVisitedAt: t,
+        recall: 1,
+        sessions: [...(w.sessions ?? []), { t, accuracy }],
+      })),
+      moe: profile.moe + reward,
+      rewardedPlays,
+    });
     setActive(null);
     if (played) {
-      const why = left === 0 ? "capped" : base === 0 ? "below" : null;
-      setEarned({ amount: reward, bonus, accuracy, playsLeft: base > 0 ? left - 1 : left, why });
+      const why = left === 0 ? "capped" : reward === 0 ? "below" : null;
+      setEarned({ amount: reward, accuracy, playsLeft: reward > 0 ? left - 1 : left, why });
     }
-  };
-
-  // a bought world claims the next unclaimed island as a fresh island NFT
-  const place = (world: WorldSummary, price: number, extra: Partial<Profile>) => {
-    const slot = nextIslandSlot(profile);
-    if (slot < 0 || profile.moe < price) return;
-    const worlds = [...profile.worlds];
-    worlds[slot] = {
-      ...world,
-      bought: true,
-      nftId: world.nftId ?? newNftId(),
-      createdAt: Date.now(),
-      lastVisitedAt: now(),
-      recall: 1,
-    };
-    save({ ...profile, ...extra, worlds, moe: profile.moe - price });
+    // proof-of-learning badge in the learner's wallet
+    void mintBadge(id, title, accuracy);
   };
 
   const rapid = {
     buy: (item: ShopItem) => {
       if (ownsItem(profile, item.id) || profile.moe < item.price) return;
+      recordMoe("shop", `Bought ${item.name} in the Rapid Fire Market`, -item.price);
       save({ ...profile, moe: profile.moe - item.price, ownedItems: [...profile.ownedItems, item.id] });
     },
     equip: (item: ShopItem) => {
@@ -198,40 +192,6 @@ export default function Home() {
       else if (item.category === "pip") save({ ...profile, pip: item.id });
       else if (item.category === "world") save({ ...profile, theme: item.id });
       else if (item.category === "font") save({ ...profile, font: item.id });
-    },
-  };
-
-  const market = {
-    buyMembership: () => {
-      if (profile.moe < MEMBERSHIP_PRICE_MOE) return;
-      save({ ...profile, moe: profile.moe - MEMBERSHIP_PRICE_MOE, membershipUntil: extendMembership(profile) });
-    },
-    buyTopic: (topic: MarketTopic) => {
-      if (profile.owned.includes(topic.id)) return;
-      place(topic.world, WORLD_PRICE_MOE, { owned: [...profile.owned, topic.id] });
-    },
-    buyListing: (listing: PlayerListing) => {
-      if (profile.boughtListings.includes(listing.id)) return;
-      place(listing.world, listing.price, { boughtListings: [...profile.boughtListings, listing.id] });
-    },
-    list: (worldId: string, price: number) => {
-      const worlds = profile.worlds.map((w) => (w?.id === worldId && !w.nftId ? { ...w, nftId: newNftId() } : w));
-      const listings = [...profile.listings.filter((l) => l.worldId !== worldId), { worldId, price }];
-      save({ ...profile, worlds, listings });
-    },
-    unlist: (worldId: string) => save({ ...profile, listings: profile.listings.filter((l) => l.worldId !== worldId) }),
-    // demo stand-in for another player buying your listing: the island leaves, the MOE arrives
-    sell: (worldId: string) => {
-      const listing = profile.listings.find((l) => l.worldId === worldId);
-      if (!listing) return;
-      const topic = topicForWorld(worldId);
-      save({
-        ...profile,
-        worlds: profile.worlds.map((w) => (w?.id === worldId ? null : w)),
-        moe: profile.moe + listing.price,
-        listings: profile.listings.filter((l) => l.worldId !== worldId),
-        owned: topic ? profile.owned.filter((id) => id !== topic.id) : profile.owned,
-      });
     },
   };
 
@@ -265,6 +225,18 @@ export default function Home() {
           setPhase={setPhase}
           onExit={(acc) => exitWorld(active.id, acc)}
         />
+      )}
+
+      {active && (
+        <button
+          onClick={() => {
+            track(active.kind === "bobo" ? "demo-bobo" : active.id, "world_quit", { phase });
+            setActive(null);
+          }}
+          className="absolute left-4 top-4 z-[26] rounded-full bg-[#0b2a3d]/85 px-4 py-2 text-sm font-bold text-white shadow-lg hover:bg-[#0b2a3d]"
+        >
+          ← Back to islands
+        </button>
       )}
 
       {/* map zoom (also mouse wheel and +/- keys) */}
@@ -312,13 +284,21 @@ export default function Home() {
       >
         <div className="text-lg font-bold">EduOasis</div>
         <div className="text-xs opacity-80">{profile.name}</div>
-        <div className="mt-1 text-xs">🌱 {profile.generationsLeft} free generations</div>
+        <div className="mt-1 text-xs">
+          🌱 {profile.generationsLeft > 0 ? `${profile.generationsLeft} free generations` : `new worlds cost ${formatMoe(GENERATE_PRICE_MOE)} MOE`}
+        </div>
+        <Library
+          profile={profile}
+          open={libraryOpen}
+          setOpen={setLibraryOpen}
+          onShow={(id, slot) => save(showOnIsland(profile, id, slot))}
+          onStore={(slot) => save(storeWorld(profile, slot))}
+        />
         <button
-          className="mt-2 text-[10px] underline opacity-50"
+          className="mt-2 block text-[10px] underline opacity-50"
           onClick={() => {
-            const p = defaultProfile();
-            saveProfile(p);
-            setProfile(p);
+            resetChain();
+            save(defaultProfile());
           }}
         >
           reset demo
@@ -327,25 +307,12 @@ export default function Home() {
 
       <div hidden={active !== null} className="absolute right-4 top-4 z-10">
         <div className="flex flex-col items-end gap-2">
-          <div
-            className="flex items-center gap-2 rounded-full bg-[#0b2a3d]/80 py-1.5 pl-1.5 pr-4 text-white"
-            title="Your MOE DONE balance"
-          >
+          <div className="flex items-center gap-2 rounded-full bg-[#0b2a3d]/80 py-1.5 pl-1.5 pr-4 text-white" title="Your MOE balance">
             <MoeCoin size={28} />
             <span className="text-base font-bold text-[#ffd166]">{formatMoe(profile.moe)}</span>
             <span className="text-xs opacity-70">MOE</span>
           </div>
-          {isMember(profile) && (
-            <div
-              className="rounded-full bg-[#ffd166] px-3 py-1 text-xs font-bold text-[#2b2118]"
-              title="Members earn +50% MOE from every game"
-            >
-              ★ Member · +50% MOE · {memberDaysLeft(profile)}d left
-            </div>
-          )}
-          <div className="rounded-xl bg-[#0b2a3d]/80 px-3 py-2 text-xs text-white">
-            WASD / arrows to move · E to interact
-          </div>
+          <div className="rounded-xl bg-[#0b2a3d]/80 px-3 py-2 text-xs text-white">WASD / arrows to move · E to interact</div>
         </div>
       </div>
 
@@ -357,11 +324,6 @@ export default function Home() {
               <div className="text-lg font-bold text-[#ffd166]">+{formatMoe(earned.amount)} MOE earned!</div>
             ) : (
               <div className="text-lg font-bold">No MOE this time</div>
-            )}
-            {earned.bonus > 0 && (
-              <div className="text-xs font-bold text-[#ffd166]">
-                ★ includes +{formatMoe(earned.bonus)} member bonus
-              </div>
             )}
             <div className="text-xs opacity-80">
               {Math.round(earned.accuracy * 100)}% correct.{" "}
@@ -381,61 +343,14 @@ export default function Home() {
         </div>
       )}
 
-      {panel?.kind === "create" && (
-        <CreateWorldModal
-          generationsLeft={profile.generationsLeft}
-          onClose={() => setPanel(null)}
-          onSubmit={async (req) => {
-            const form = new FormData();
-            form.set("topic", req.topic);
-            form.set("description", req.description);
-            form.set("requests", req.requests);
-            form.set("gameType", req.gameType);
-            req.files.forEach((f) => form.append("files", f));
-            const res = await fetch("/api/generate", { method: "POST", body: form });
-            const body = await res.json();
-            if (!res.ok) throw new Error(body.error ?? "Generation failed");
-            const spec = body.spec as WorldSpec;
-
-            const id = crypto.randomUUID();
-            saveSpec(id, spec);
-            const worlds = [...profile.worlds];
-            worlds[panel.slot] = {
-              id,
-              title: spec.title.slice(0, 32),
-              topic: spec.topic,
-              creator: profile.name,
-              createdAt: Date.now(),
-              lastVisitedAt: now(),
-              recall: 1,
-              gameType: "explore-collect",
-              coverage: body.coverage,
-            };
-            const next = { ...profile, worlds, generationsLeft: profile.generationsLeft - 1 };
-            saveProfile(next);
-            setProfile(next);
-            setPanel(null);
-          }}
-        />
-      )}
-
       {panel?.kind === "rapid" && (
         <Overlay title="⚡ Rapid Fire Market" onClose={() => setPanel(null)}>
           <RapidMarketPanel profile={profile} actions={rapid} />
         </Overlay>
       )}
 
-      {panel?.kind === "market" && (
-        <Overlay title="World Market" onClose={() => setPanel(null)}>
-          <MarketPanel profile={profile} actions={market} />
-        </Overlay>
-      )}
-
       {panel?.kind === "cosmetics" && (
-        <Overlay
-          title={`🎨 ${profile.worlds[panel.slot]?.title ?? (isClaimed(profile, panel.slot) ? "Your free island" : "Unclaimed island")}`}
-          onClose={() => setPanel(null)}
-        >
+        <Overlay title={`🎨 ${profile.worlds[panel.slot]?.title ?? "Empty island"}`} onClose={() => setPanel(null)}>
           <CosmeticsPanel
             profile={profile}
             slot={panel.slot}
@@ -444,17 +359,126 @@ export default function Home() {
         </Overlay>
       )}
 
+      {panel?.kind === "create" && (
+        <CreateWorldModal
+          generationsLeft={profile.generationsLeft}
+          price={GENERATE_PRICE_MOE}
+          moe={profile.moe}
+          onClose={() => setPanel(null)}
+          onSubmit={async (req) => {
+            const form = new FormData();
+            form.set("topic", req.topic);
+            form.set("description", req.description);
+            form.set("requests", req.requests);
+            form.set("gameType", req.gameType);
+            // game mixes of my islands, so the new one plays differently
+            const recent = allWorlds(profile).flatMap((w) => {
+              const sp = loadSpec(w.id);
+              return sp ? [gamesOf(sp)] : [];
+            });
+            form.set("recentGames", JSON.stringify(recent));
+            req.files.forEach((f) => form.append("files", f));
+            const res = await fetch("/api/generate", { method: "POST", body: form });
+            const body = await res.json();
+            if (!res.ok) throw new Error(body.error ?? "Generation failed");
+            const spec = body.spec as WorldSpec;
+
+            const id = crypto.randomUUID();
+            saveSpec(id, spec);
+            const world = {
+              id,
+              title: spec.title.slice(0, 32),
+              topic: spec.topic,
+              creator: profile.name,
+              createdAt: Date.now(),
+              lastVisitedAt: now(),
+              recall: 1,
+              gameType: "explore-collect" as const,
+              coverage: body.coverage,
+            };
+            // the first 2 worlds are free, then each one costs MOE
+            const free = profile.generationsLeft > 0;
+            if (!free) recordMoe("generate", `Grew a new world "${world.title}"`, -GENERATE_PRICE_MOE);
+            const paid = free
+              ? { ...profile, generationsLeft: profile.generationsLeft - 1 }
+              : { ...profile, moe: profile.moe - GENERATE_PRICE_MOE };
+            save(addWorld(paid, world, panel.slot).profile);
+            setPanel(null);
+          }}
+        />
+      )}
+
+      {panel?.kind === "market" && (
+        <MarketPanel
+          profile={profile}
+          onProfile={save}
+          onClose={() => setPanel(null)}
+        />
+      )}
+
       {panel?.kind === "world" && (
         <Overlay title={panel.info.world!.title} onClose={() => setPanel(null)}>
           <p className="text-sm opacity-80">{panel.info.world!.topic}</p>
-          <p className="mt-2 text-sm">
-            {panel.info.world!.bought
-              ? "You own this world. Its game is still being built, so check back soon."
-              : "This world's file isn't on this device."}
-          </p>
+          <p className="mt-2 text-sm">This world&apos;s file isn&apos;t on this device. Buy it again in the World Market.</p>
         </Overlay>
       )}
     </main>
+  );
+}
+
+// Every owned world, collapsed by default: choose which 3 sit on the islands.
+function Library({
+  profile,
+  open,
+  setOpen,
+  onShow,
+  onStore,
+}: {
+  profile: Profile;
+  open: boolean;
+  setOpen: (o: boolean) => void;
+  onShow: (id: string, slot: number) => void;
+  onStore: (slot: number) => void;
+}) {
+  const count = profile.worlds.filter(Boolean).length + profile.library.length;
+  return (
+    <div className="mt-2 text-xs">
+      <button onClick={() => setOpen(!open)} className="rounded-full bg-white/15 px-2 py-0.5 font-bold hover:bg-white/25">
+        📚 My worlds ({count}) {open ? "▴" : "▾"}
+      </button>
+      {open && (
+        <div className="mt-2 max-h-[50vh] w-64 space-y-1 overflow-y-auto">
+          {profile.worlds.map((w, i) => (
+            <div key={`island-${i}`} className="flex items-center gap-2 rounded-lg bg-white/10 px-2 py-1">
+              <span className="opacity-60">🏝{i + 1}</span>
+              <span className="min-w-0 flex-1 truncate">{w ? w.title : <i className="opacity-50">empty</i>}</span>
+              {w && (
+                <button onClick={() => onStore(i)} className="underline opacity-70 hover:opacity-100" title="Move to the library">
+                  store
+                </button>
+              )}
+            </div>
+          ))}
+          {profile.library.length > 0 && <div className="pt-1 opacity-60">Library: pick an island to show it on</div>}
+          {profile.library.map((w) => (
+            <div key={w.id} className="flex items-center gap-1 rounded-lg bg-white/5 px-2 py-1">
+              <span className="min-w-0 flex-1 truncate">{w.title}</span>
+              {[0, 1, 2].map((slot) => (
+                <button
+                  key={slot}
+                  onClick={() => onShow(w.id, slot)}
+                  className="rounded bg-white/20 px-1.5 hover:bg-white/40"
+                  title={profile.worlds[slot] ? `Swap with ${profile.worlds[slot]!.title}` : `Put on island ${slot + 1}`}
+                >
+                  {slot + 1}
+                </button>
+              ))}
+            </div>
+          ))}
+          {count === 0 && <div className="opacity-60">No worlds yet: grow one on an island or buy one in the World Market.</div>}
+        </div>
+      )}
+    </div>
   );
 }
 

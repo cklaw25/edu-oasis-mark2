@@ -2,7 +2,6 @@
 
 import { FLAG_COLORS, TREE_STYLES, cosmeticsFor } from "@/lib/cosmetics";
 import { formatMoe } from "@/lib/moe";
-import { isClaimed } from "@/lib/profile";
 import { MAX_OBJECTS_PER_ISLAND, OBJECT_COLORS, OBJECT_SPOTS, SHOP_ITEMS, ownsItem, shopItem } from "@/lib/shop";
 import type { IslandCosmetics, Profile } from "@/lib/types";
 
@@ -17,14 +16,6 @@ export default function CosmeticsPanel({
   slot: number;
   onChange: (look: IslandCosmetics) => void;
 }) {
-  if (!isClaimed(profile, slot)) {
-    return (
-      <p className="text-sm opacity-80">
-        This island isn&apos;t yours yet. Buy a world in the World Market to claim it, then come back to decorate it.
-      </p>
-    );
-  }
-
   const look = cosmeticsFor(profile, slot);
   const hasWorld = profile.worlds[slot] !== null;
   const option = (selected: boolean, locked: boolean) =>

@@ -67,7 +67,7 @@ export class LabScene extends Phaser.Scene {
     this.hint = this.add.text(500, 610, "", style).setOrigin(0.5).setDepth(1000);
     this.heartsText = this.add.text(20, 14, "", style).setDepth(1000);
     this.add
-      .text(980, 14, "PEER REVIEW — inspect every object", { ...style, fontSize: "15px" })
+      .text(980, 14, "INSPECT — judge every object", { ...style, fontSize: "15px" })
       .setOrigin(1, 0)
       .setDepth(1000);
     this.updateHud();

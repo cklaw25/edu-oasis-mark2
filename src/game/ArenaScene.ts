@@ -3,7 +3,8 @@ import { bus } from "./bus";
 import { makeTextures } from "./textures";
 import type { Arena } from "@/lib/worldSpec";
 
-// Generic sorting arena: the wanted category flips every 10s; touch labels that match it, dodge the rest.
+// Generic sorting arena: the wanted category flips every 10s; walk up to a label (it lights up) and press
+// SPACE to sort it into the wanted category. Wrong calls come back later.
 // No fail state: the round ends once every item is sorted, mistakes are counted.
 const ROOM = { w: 960, h: 600 };
 const FLOOR = { x: 40, y: 110, w: 880, h: 450 };
@@ -16,7 +17,13 @@ export interface ArenaResult {
   answers: { label: string; correct: boolean }[];
 }
 
-type Bubble = Phaser.GameObjects.Container & { item: Arena["items"][number]; vx: number; vy: number };
+type Bubble = Phaser.GameObjects.Container & {
+  item: Arena["items"][number];
+  vx: number;
+  vy: number;
+  bg: Phaser.GameObjects.Rectangle;
+};
+const REACH = 70;
 
 export class ArenaScene extends Phaser.Scene {
   private arena!: Arena;
@@ -33,6 +40,8 @@ export class ArenaScene extends Phaser.Scene {
   private result: ArenaResult = { correct: 0, mistakes: 0, answers: [] };
   private total = 0;
   private cooldownUntil = 0;
+  private target: Bubble | null = null;
+  private hint!: Phaser.GameObjects.Text;
 
   constructor() {
     super("arena");
@@ -48,6 +57,7 @@ export class ArenaScene extends Phaser.Scene {
     this.timeLeft = SWAP_SECONDS;
     this.running = false;
     this.result = { correct: 0, mistakes: 0, answers: [] };
+    this.target = null;
   }
 
   create() {
@@ -63,7 +73,12 @@ export class ArenaScene extends Phaser.Scene {
     const style = { fontFamily: "monospace", fontSize: "18px", color: "#ffffff", stroke: "#000", strokeThickness: 5 };
     this.add.text(ROOM.w / 2, 22, this.arena.title, { ...style, fontSize: "20px" }).setOrigin(0.5, 0);
     this.banner = this.add.text(ROOM.w / 2, 62, "", style).setOrigin(0.5, 0).setDepth(1000);
-    this.status = this.add.text(56, 528, "", style).setDepth(1000);
+    // below the floor so it never covers a label
+    this.status = this.add.text(FLOOR.x, FLOOR.y + FLOOR.h + 8, "", { ...style, fontSize: "15px" }).setDepth(1000);
+    this.hint = this.add
+      .text(FLOOR.x + FLOOR.w, FLOOR.y + FLOOR.h + 8, "", { ...style, fontSize: "15px", color: "#fff3b0" })
+      .setOrigin(1, 0)
+      .setDepth(1000);
 
     this.player = this.add.sprite(ROOM.w / 2, FLOOR.y + FLOOR.h / 2, "player").setDepth(500);
 
@@ -76,7 +91,13 @@ export class ArenaScene extends Phaser.Scene {
     this.scale.on("resize", fit);
     this.events.once("shutdown", () => this.scale.off("resize", fit));
 
-    this.keys = this.input.keyboard!.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT") as Record<string, Phaser.Input.Keyboard.Key>;
+    this.keys = this.input.keyboard!.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,SPACE") as Record<
+      string,
+      Phaser.Input.Keyboard.Key
+    >;
+    this.keys.SPACE.on("down", () => {
+      if (this.running && this.target && this.time.now > this.cooldownUntil) this.collect(this.target, this.time.now);
+    });
 
     this.banner.setText(this.arena.instructions);
     if (this.autoStart) this.begin();
@@ -103,7 +124,7 @@ export class ArenaScene extends Phaser.Scene {
     this.cameras.main.flash(200, c === "A" ? 255 : 120, c === "A" ? 210 : 220, c === "A" ? 100 : 255);
   }
 
-  update(time: number, dtMs: number) {
+  update(_time: number, dtMs: number) {
     const dt = dtMs / 1000;
     const k = this.keys;
     let vx = (k.D.isDown || k.RIGHT.isDown ? 1 : 0) - (k.A.isDown || k.LEFT.isDown ? 1 : 0);
@@ -117,15 +138,29 @@ export class ArenaScene extends Phaser.Scene {
 
     if (!this.running) return;
 
-    for (const b of [...this.bubbles]) {
-      b.x += b.vx * dt;
-      b.y += b.vy * dt;
+    let nearest: Bubble | null = null;
+    let best = REACH;
+    for (const b of this.bubbles) {
+      // labels drift slowly, and stop while you're reading them
+      const d = Phaser.Math.Distance.Between(b.x, b.y, this.player.x, this.player.y);
+      if (d >= REACH) {
+        b.x += b.vx * dt;
+        b.y += b.vy * dt;
+      }
       if (b.x < FLOOR.x + 70 || b.x > FLOOR.x + FLOOR.w - 70) b.vx *= -1;
       if (b.y < FLOOR.y + 20 || b.y > FLOOR.y + FLOOR.h - 20) b.vy *= -1;
-      if (time > this.cooldownUntil && Phaser.Math.Distance.Between(b.x, b.y, this.player.x, this.player.y) < 40) {
-        this.collect(b, time);
+      if (d < best) {
+        best = d;
+        nearest = b;
       }
     }
+    if (nearest !== this.target) {
+      this.target?.bg.setStrokeStyle(2, 0x0b2a3d).setFillStyle(0xfff8e7);
+      nearest?.bg.setStrokeStyle(4, 0xffd166).setFillStyle(0xfffbe0);
+      this.target = nearest;
+    }
+    const wantedName = (this.wanted === "A" ? this.arena.categoryA : this.arena.categoryB).name;
+    this.hint.setText(this.target ? `SPACE — sort into ${wantedName.toUpperCase()}` : "walk up to a label");
 
     this.timeLeft -= dt;
     if (this.timeLeft <= 0) this.setWanted(this.wanted === "A" ? "B" : "A");
@@ -138,6 +173,7 @@ export class ArenaScene extends Phaser.Scene {
     const ok = b.item.category === this.wanted;
     this.result.answers.push({ label: b.item.label, correct: ok });
     this.bubbles = this.bubbles.filter((x) => x !== b);
+    if (this.target === b) this.target = null;
     b.destroy();
     if (ok) {
       this.result.correct++;
@@ -173,11 +209,12 @@ export class ArenaScene extends Phaser.Scene {
     const bg = this.add
       .rectangle(0, 0, text.width + 20, text.height + 12, 0xfff8e7)
       .setStrokeStyle(2, 0x0b2a3d);
-    const c = this.add.container(x, y, [bg, text]).setDepth(400) as Bubble;
+    const c = this.add.container(x, y, [bg, text]).setDepth(600) as Bubble; // above the player so it stays readable
     c.item = item;
+    c.bg = bg;
     const a = Phaser.Math.FloatBetween(0, Math.PI * 2);
-    c.vx = Math.cos(a) * 40;
-    c.vy = Math.sin(a) * 40;
+    c.vx = Math.cos(a) * 28;
+    c.vy = Math.sin(a) * 28;
     c.setScale(0);
     this.tweens.add({ targets: c, scale: 1, duration: 250, ease: "Back.easeOut" });
     this.bubbles.push(c);

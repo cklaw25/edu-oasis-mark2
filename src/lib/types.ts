@@ -1,8 +1,8 @@
 // Shared types. The GameSpec is the contract between the generator, the game engine and the Solana side.
 
-export type Difficulty = "easy" | "medium" | "hard" | "expert";
-
 export type GameType = "rpg-experiment" | "explore-collect" | "sort-match" | "boss-quiz";
+
+export type Difficulty = "easy" | "medium" | "hard" | "expert";
 
 export interface WorldSummary {
   id: string;
@@ -13,6 +13,10 @@ export interface WorldSummary {
   lastVisitedAt: number;
   /** 0..1 predicted recall right now (derived from halfLifeH + lastVisitedAt); drives how green the island looks */
   recall: number;
+  /** 0..1 share of the current review interval left (derived); 0 = review due */
+  lifespan?: number;
+  /** good reviews in a row; review interval = 2 days × streak (min 2 days) */
+  streak?: number;
   /** hours until recall falls to 50% */
   halfLifeH?: number;
   /** accuracy of each completed session, oldest first */
@@ -30,31 +34,31 @@ export interface WorldSummary {
 
 export interface Profile {
   name: string;
+  /** free generations left; after that each new world costs GENERATE_PRICE_MOE */
   generationsLeft: number;
-  /** island slots 0..2; null = empty slot */
+  /** the 3 islands shown in the hub (slots 0..2); null = empty island */
   worlds: (WorldSummary | null)[];
+  /** owned worlds that aren't on an island right now (swap them in from the library) */
+  library: WorldSummary[];
   /** demo MOE balance (whole tokens) */
   moe: number;
-  /** World Market topic ids this player has bought */
-  owned: string[];
-  /** my islands listed for sale on the World Market */
+  /** my worlds listed for sale on the World Market */
   listings: { worldId: string; price: number }[];
-  /** other players' listings this player has bought */
-  boughtListings: string[];
-  /** look of each outer island, keyed by slot */
+  /** look of each of the 3 islands, keyed by slot */
   cosmetics: Record<string, IslandCosmetics>;
-  /** app-clock time (ms) the membership runs until; unset = never a member */
-  membershipUntil?: number;
   /** games that have paid MOE so far, per world id (each island pays for 10) */
   rewardedPlays: Record<string, number>;
   /** Rapid Fire Market items bought (free starter items aren't listed) */
   ownedItems: string[];
-  /** equipped shop item ids */
+  /** equipped Rapid Fire Market items */
   avatar: { shirt: string; hat: string };
   pip: string;
   theme: string;
   font: string;
 }
+
+export type TreeStyle = "palm" | "pine" | "blossom";
+export type FlagColor = "none" | "red" | "blue" | "gold";
 
 /** A shop object placed on an island: which item, its paint colour, and which edge spot it stands on. */
 export interface PlacedObject {
@@ -62,9 +66,6 @@ export interface PlacedObject {
   color: string;
   spot: number;
 }
-
-export type TreeStyle = "palm" | "pine" | "blossom";
-export type FlagColor = "none" | "red" | "blue" | "gold";
 
 export interface IslandCosmetics {
   trees: TreeStyle;

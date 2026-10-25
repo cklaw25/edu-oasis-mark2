@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Profile } from "@/lib/types";
 
-export type SceneKey = "hub" | "experiment" | "lab" | "arena";
+export type SceneKey = "hub" | "experiment" | "lab" | "arena" | "shooter" | "runner" | "board" | "showdown";
 
 // Mounts Phaser on the client only (Phaser touches window at import time).
 export default function GameCanvas({
@@ -45,12 +45,17 @@ export default function GameCanvas({
     let destroyed = false;
     (async () => {
       const Phaser = await import("phaser");
-      const [{ HubScene }, { ExperimentScene }, { LabScene }, { ArenaScene }] = await Promise.all([
-        import("@/game/HubScene"),
-        import("@/game/ExperimentScene"),
-        import("@/game/LabScene"),
-        import("@/game/ArenaScene"),
-      ]);
+      const [{ HubScene }, { ExperimentScene }, { LabScene }, { ArenaScene }, { ShooterScene }, { RunnerScene }, { BoardScene }, { ShowdownScene }] =
+        await Promise.all([
+          import("@/game/HubScene"),
+          import("@/game/ExperimentScene"),
+          import("@/game/LabScene"),
+          import("@/game/ArenaScene"),
+          import("@/game/ShooterScene"),
+          import("@/game/RunnerScene"),
+          import("@/game/BoardScene"),
+          import("@/game/ShowdownScene"),
+        ]);
       if (destroyed || !host.current) return;
       game.current = new Phaser.Game({
         type: Phaser.AUTO,
@@ -58,6 +63,7 @@ export default function GameCanvas({
         backgroundColor: "#2a6f97",
         scale: { mode: Phaser.Scale.RESIZE, width: "100%", height: "100%" },
         scene: [],
+        physics: { default: "arcade", arcade: { gravity: { x: 0, y: 0 } } }, // only the runner uses it
       });
       // dev-only handle for automated play-testing
       if (process.env.NODE_ENV !== "production") (window as unknown as { __game: unknown }).__game = game.current;
@@ -65,7 +71,11 @@ export default function GameCanvas({
       game.current.scene.add("experiment", ExperimentScene, false);
       game.current.scene.add("lab", LabScene, false);
       game.current.scene.add("arena", ArenaScene, false);
-      // a scene restarted while a panel is open (e.g. buying in the market) loses the pause applied before
+      game.current.scene.add("shooter", ShooterScene, false);
+      game.current.scene.add("runner", RunnerScene, false);
+      game.current.scene.add("board", BoardScene, false);
+      game.current.scene.add("showdown", ShowdownScene, false);
+      // a scene restarted while a panel is open (e.g. buying in a market) loses the pause applied before
       // the restart, so re-check every frame that the current scene's pause matches `paused`
       game.current.events.on("poststep", () => {
         const s = game.current?.scene.getScene(latest.current.scene);
@@ -75,7 +85,29 @@ export default function GameCanvas({
       });
       startScene();
     })();
+
+    // Phaser tracks keys by keyCode. With an input method (e.g. Chinese IME) a release can arrive as "Process"
+    // (keyCode 229), or never arrive if focus moves away, so a key stays "held" forever (stuck on a wall).
+    // Release keys by their physical code instead, and drop everything when the window loses focus.
+    const codeToKeyCode = (code: string) => {
+      if (/^Key[A-Z]$/.test(code)) return code.charCodeAt(3);
+      return ({ Space: 32, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40 } as Record<string, number>)[code];
+    };
+    const scenesWithKeys = () => game.current?.scene.getScenes(false).flatMap((sc) => (sc.input?.keyboard ? [sc.input.keyboard] : [])) ?? [];
+    const onKeyUp = (e: KeyboardEvent) => {
+      const kc = codeToKeyCode(e.code);
+      if (kc === undefined || e.keyCode === kc) return; // Phaser handled a normal release itself
+      scenesWithKeys().forEach((kb) => kb.keys[kc]?.reset());
+    };
+    const releaseAll = () => scenesWithKeys().forEach((kb) => kb.resetKeys());
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", releaseAll);
+    document.addEventListener("visibilitychange", releaseAll);
+
     return () => {
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", releaseAll);
+      document.removeEventListener("visibilitychange", releaseAll);
       destroyed = true;
       game.current?.destroy(true);
       game.current = null;

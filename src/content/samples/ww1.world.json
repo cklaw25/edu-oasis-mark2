@@ -1,0 +1,527 @@
+{
+  "title": "Causes of the First World War Knowledge Base",
+  "topic": "History - Causes of World War One",
+  "summary": "Comprehensive atomic breakdown of the long-term causes (Militarism, Alliances, Imperialism, Nationalism), the trigger event, the July Crisis escalation timeline, and major historical interpretations surrounding the outbreak of World War One.",
+  "knowledge": [
+    {
+      "id": "K1",
+      "kind": "term",
+      "text": "MAIN is the acronym for the four long-term causes of the First World War: Militarism, Alliances, Imperialism, and Nationalism.",
+      "source": "ww1.txt - Long-term causes"
+    },
+    {
+      "id": "K2",
+      "kind": "term",
+      "text": "Militarism before World War One manifested as an arms race, particularly the Anglo-German naval race.",
+      "source": "ww1.txt - Long-term causes"
+    },
+    {
+      "id": "K3",
+      "kind": "number",
+      "text": "The Dreadnought battleship was launched in 1906.",
+      "source": "ww1.txt - Long-term causes"
+    },
+    {
+      "id": "K4",
+      "kind": "process",
+      "text": "The Schlieffen Plan was Germany's military plan to attack France by invading through neutral Belgium.",
+      "source": "ww1.txt - Long-term causes"
+    },
+    {
+      "id": "K5",
+      "kind": "fact",
+      "text": "The Triple Alliance was formed between Germany, Austria-Hungary, and Italy.",
+      "source": "ww1.txt - Long-term causes"
+    },
+    {
+      "id": "K6",
+      "kind": "fact",
+      "text": "The Triple Entente was formed between Britain, France, and Russia.",
+      "source": "ww1.txt - Long-term causes"
+    },
+    {
+      "id": "K7",
+      "kind": "fact",
+      "text": "The alliance system posed the danger of escalating a local conflict into a general European war.",
+      "source": "ww1.txt - Long-term causes"
+    },
+    {
+      "id": "K8",
+      "kind": "fact",
+      "text": "Imperialism created friction among European powers through intense rivalry for overseas colonies.",
+      "source": "ww1.txt - Long-term causes"
+    },
+    {
+      "id": "K9",
+      "kind": "number",
+      "text": "The Moroccan Crises took place in 1905 and 1911.",
+      "source": "ww1.txt - Long-term causes"
+    },
+    {
+      "id": "K10",
+      "kind": "fact",
+      "text": "Nationalist tensions prior to 1914 included Slav nationalism in the Balkans and Serbian expansionist ambitions.",
+      "source": "ww1.txt - Long-term causes"
+    },
+    {
+      "id": "K11",
+      "kind": "number",
+      "text": "France harboured nationalist desire to regain Alsace-Lorraine, which had been lost to Germany in 1871.",
+      "source": "ww1.txt - Long-term causes"
+    },
+    {
+      "id": "K12",
+      "kind": "number",
+      "text": "Archduke Franz Ferdinand was assassinated on 28 June 1914 in Sarajevo.",
+      "source": "ww1.txt - Short-term / trigger"
+    },
+    {
+      "id": "K13",
+      "kind": "fact",
+      "text": "Archduke Franz Ferdinand was assassinated by Gavrilo Princip.",
+      "source": "ww1.txt - Short-term / trigger"
+    },
+    {
+      "id": "K14",
+      "kind": "term",
+      "text": "Gavrilo Princip was a member of the Black Hand, a Serbian nationalist group.",
+      "source": "ww1.txt - Short-term / trigger"
+    },
+    {
+      "id": "K15",
+      "kind": "quote",
+      "text": "Germany issued the 'blank cheque' of unconditional support to Austria-Hungary on 5-6 July 1914.",
+      "source": "ww1.txt - July Crisis"
+    },
+    {
+      "id": "K16",
+      "kind": "number",
+      "text": "Austria-Hungary issued an ultimatum to Serbia on 23 July 1914.",
+      "source": "ww1.txt - July Crisis"
+    },
+    {
+      "id": "K17",
+      "kind": "number",
+      "text": "Austria declared war on Serbia on 28 July 1914.",
+      "source": "ww1.txt - July Crisis"
+    },
+    {
+      "id": "K18",
+      "kind": "process",
+      "text": "In response to Austria's declaration of war on Serbia, Russia mobilised its armed forces.",
+      "source": "ww1.txt - July Crisis"
+    },
+    {
+      "id": "K19",
+      "kind": "number",
+      "text": "Germany declared war on Russia on 1 August 1914.",
+      "source": "ww1.txt - July Crisis"
+    },
+    {
+      "id": "K20",
+      "kind": "number",
+      "text": "Germany declared war on France on 3 August 1914.",
+      "source": "ww1.txt - July Crisis"
+    },
+    {
+      "id": "K21",
+      "kind": "process",
+      "text": "Germany invaded Belgium as part of its strategic offensive.",
+      "source": "ww1.txt - July Crisis"
+    },
+    {
+      "id": "K22",
+      "kind": "number",
+      "text": "Britain declared war on Germany on 4 August 1914.",
+      "source": "ww1.txt - July Crisis"
+    },
+    {
+      "id": "K23",
+      "kind": "fact",
+      "text": "Britain justified entering the war by citing the 1839 Treaty of London, which guaranteed Belgian neutrality.",
+      "source": "ww1.txt - July Crisis"
+    },
+    {
+      "id": "K24",
+      "kind": "evaluation",
+      "text": "The Fischer thesis (1961) argues that Germany bore the main responsibility for World War One because it deliberately sought expansion.",
+      "source": "ww1.txt - Interpretations"
+    },
+    {
+      "id": "K25",
+      "kind": "evaluation",
+      "text": "Christopher Clark (2012) argues for shared responsibility among powers, putting forward the thesis that European nations were 'sleepwalking' into war.",
+      "source": "ww1.txt - Interpretations"
+    },
+    {
+      "id": "K26",
+      "kind": "term",
+      "text": "Article 231 of the Treaty of Versailles was known as the 'war guilt clause' and placed sole blame for the war on Germany.",
+      "source": "ww1.txt - Interpretations"
+    }
+  ],
+  "theme": "war",
+  "games": [
+    "runner",
+    "shooter",
+    "inspect"
+  ],
+  "intro": [
+    {
+      "keyword": "MAIN Causes",
+      "text": "Militarism, alliances, imperialism, and nationalism set the stage for World War One.",
+      "refs": [
+        "K1",
+        "K8",
+        "K10"
+      ],
+      "scene": {
+        "style": "group",
+        "actors": [
+          {
+            "emoji": "💣",
+            "label": "militarism"
+          },
+          {
+            "emoji": "🤝",
+            "label": "alliances"
+          },
+          {
+            "emoji": "🗺️",
+            "label": "empire"
+          },
+          {
+            "emoji": "📣",
+            "label": "nationalism"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "Armies & Pacts",
+      "text": "An arms race and rival alliance blocs made Europe a ticking time bomb.",
+      "refs": [
+        "K2",
+        "K5",
+        "K6",
+        "K7"
+      ],
+      "scene": {
+        "style": "versus",
+        "actors": [
+          {
+            "emoji": "🚢",
+            "label": "arms race"
+          },
+          {
+            "emoji": "⚔️",
+            "label": "rival blocs"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "The Spark",
+      "text": "The assassination of Archduke Franz Ferdinand triggered the July Crisis in 1914.",
+      "refs": [
+        "K12",
+        "K13",
+        "K14"
+      ],
+      "scene": {
+        "style": "crash",
+        "actors": [
+          {
+            "emoji": "🔫",
+            "label": "assassin"
+          },
+          {
+            "emoji": "👑",
+            "label": "Franz Ferdinand"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "Escalation",
+      "text": "Blank cheques, ultimatums, and mobilization quickly cascaded into a continent-wide war.",
+      "refs": [
+        "K15",
+        "K16",
+        "K17",
+        "K18"
+      ],
+      "scene": {
+        "style": "flow",
+        "actors": [
+          {
+            "emoji": "📝",
+            "label": "blank cheque"
+          },
+          {
+            "emoji": "⏰",
+            "label": "ultimatum"
+          },
+          {
+            "emoji": "🪖",
+            "label": "mobilise"
+          }
+        ]
+      }
+    },
+    {
+      "keyword": "War Declaration on France",
+      "text": "Germany declared war on France on 3 August 1914.",
+      "refs": [
+        "K20"
+      ],
+      "scene": {
+        "style": "crash",
+        "actors": [
+          {
+            "emoji": "🪖",
+            "label": "Germany"
+          },
+          {
+            "emoji": "🏰",
+            "label": "France"
+          }
+        ]
+      }
+    }
+  ],
+  "sequence": {
+    "title": "Road to War 1914",
+    "instructions": "Follow the chain of events that led to global conflict.",
+    "steps": [
+      {
+        "label": "Alsace-Lorraine Loss",
+        "icon": "📍",
+        "detail": "In 1871, France lost Alsace-Lorraine to Germany, fuelling a nationalist desire to regain it.",
+        "refs": [
+          "K11"
+        ]
+      },
+      {
+        "label": "First Moroccan Crisis",
+        "icon": "🌍",
+        "detail": "In 1905, rivalry for colonies flared over Morocco (a second crisis followed in 1911).",
+        "refs": [
+          "K9"
+        ]
+      },
+      {
+        "label": "Dreadnought Launch",
+        "icon": "🚢",
+        "detail": "The Dreadnought battleship was launched in 1906, accelerating the naval arms race.",
+        "refs": [
+          "K3"
+        ]
+      },
+      {
+        "label": "Assassination in Sarajevo",
+        "icon": "🎯",
+        "detail": "Archduke Franz Ferdinand was assassinated on 28 June 1914 by Gavrilo Princip.",
+        "refs": [
+          "K12",
+          "K13",
+          "K14"
+        ]
+      },
+      {
+        "label": "The Blank Cheque",
+        "icon": "📜",
+        "detail": "Germany issued unconditional support to Austria-Hungary on 5-6 July 1914.",
+        "refs": [
+          "K15"
+        ]
+      },
+      {
+        "label": "Ultimatum Issued",
+        "icon": "⏰",
+        "detail": "Austria-Hungary issued an ultimatum to Serbia on 23 July 1914.",
+        "refs": [
+          "K16"
+        ]
+      },
+      {
+        "label": "War Declared on Serbia",
+        "icon": "⚔️",
+        "detail": "Austria declared war on Serbia on 28 July 1914, prompting Russian mobilization.",
+        "refs": [
+          "K17",
+          "K18"
+        ]
+      },
+      {
+        "label": "Schlieffen Plan Activation",
+        "icon": "🗺️",
+        "detail": "In August 1914, Germany invaded neutral Belgium to attack France, bringing Britain into the war.",
+        "refs": [
+          "K4",
+          "K21",
+          "K22",
+          "K23"
+        ]
+      }
+    ]
+  },
+  "arena": {
+    "title": "Long-term vs July Crisis",
+    "instructions": "Shoot items belonging to the Long-term causes category and let others pass.",
+    "categoryA": {
+      "name": "Long-Term Cause",
+      "hint": "Underlying tensions before 1914"
+    },
+    "categoryB": {
+      "name": "July Crisis Event",
+      "hint": "Immediate actions in 1914"
+    },
+    "items": [
+      {
+        "label": "Anglo-German naval race",
+        "category": "A",
+        "icon": "⚓",
+        "refs": [
+          "K2"
+        ]
+      },
+      {
+        "label": "Triple Alliance formed",
+        "category": "A",
+        "icon": "🤝",
+        "refs": [
+          "K5"
+        ]
+      },
+      {
+        "label": "Triple Entente formed",
+        "category": "A",
+        "icon": "🤝",
+        "refs": [
+          "K6"
+        ]
+      },
+      {
+        "label": "Imperial rivalries for colonies",
+        "category": "A",
+        "icon": "🏴",
+        "refs": [
+          "K8"
+        ]
+      },
+      {
+        "label": "Balkan Slav nationalism",
+        "category": "A",
+        "icon": "🔥",
+        "refs": [
+          "K10"
+        ]
+      },
+      {
+        "label": "Desire for Alsace-Lorraine",
+        "category": "A",
+        "icon": "📍",
+        "refs": [
+          "K11"
+        ]
+      },
+      {
+        "label": "Germany's blank cheque",
+        "category": "B",
+        "icon": "📝",
+        "refs": [
+          "K15"
+        ]
+      },
+      {
+        "label": "Ultimatum to Serbia",
+        "category": "B",
+        "icon": "📨",
+        "refs": [
+          "K16"
+        ]
+      },
+      {
+        "label": "Austria declares war",
+        "category": "B",
+        "icon": "⚔️",
+        "refs": [
+          "K17"
+        ]
+      },
+      {
+        "label": "Russia mobilises forces",
+        "category": "B",
+        "icon": "📍",
+        "refs": [
+          "K18"
+        ]
+      },
+      {
+        "label": "Germany declares war on Russia",
+        "category": "B",
+        "icon": "📍",
+        "refs": [
+          "K19"
+        ]
+      },
+      {
+        "label": "Britain enters over Belgium",
+        "category": "B",
+        "icon": "📍",
+        "refs": [
+          "K22"
+        ]
+      }
+    ]
+  },
+  "inspect": {
+    "title": "Historians' Archive",
+    "room": "Analysis Room",
+    "choiceA": "Fischer Thesis",
+    "choiceB": "Clark Thesis",
+    "clues": [
+      {
+        "icon": "📚",
+        "label": "Fischer Book",
+        "claim": "Germany bore main responsibility for the war.",
+        "answer": "A",
+        "why": "The Fischer thesis argues Germany deliberately sought expansion.",
+        "refs": [
+          "K24"
+        ]
+      },
+      {
+        "icon": "😴",
+        "label": "Sleepwalker Clock",
+        "claim": "Powers sleepwalked into war with shared responsibility.",
+        "answer": "B",
+        "why": "Christopher Clark argues for shared responsibility and sleepwalking.",
+        "refs": [
+          "K25"
+        ]
+      },
+      {
+        "icon": "⚖️",
+        "label": "Article 231",
+        "claim": "Placed sole blame for the war strictly on Germany.",
+        "answer": "A",
+        "why": "Article 231 of the Treaty of Versailles is known as the war guilt clause.",
+        "refs": [
+          "K26"
+        ]
+      },
+      {
+        "icon": "⚠️",
+        "label": "Escalation Danger",
+        "claim": "The alliance system risked turning local conflicts general.",
+        "answer": "B",
+        "why": "The alliance system posed the clear danger of escalating conflicts.",
+        "refs": [
+          "K7"
+        ]
+      }
+    ]
+  }
+}

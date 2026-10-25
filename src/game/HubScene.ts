@@ -2,7 +2,6 @@ import * as Phaser from "phaser";
 import { bus } from "./bus";
 import { makeAvatar, makePip, makeTextures } from "./textures";
 import { FLAG_COLORS, cosmeticsFor } from "@/lib/cosmetics";
-import { FREE_SLOT } from "@/lib/profile";
 import { LABEL_FONTS, OBJECT_SPOTS, SHIRT_COLORS, WORLD_THEMES, type WorldTheme } from "@/lib/shop";
 import type { IslandCosmetics, PlacedObject, PortalInfo, Profile, TreeStyle } from "@/lib/types";
 
@@ -70,10 +69,10 @@ export class HubScene extends Phaser.Scene {
     this.land = [MAIN, ...SLOTS, MARKET, RAPID];
     this.bridges = [...SLOTS, MARKET].map((c) => ({ ax: MAIN.x, ay: MAIN.y, bx: c.x, by: c.y }));
     this.bridges.push({ ax: MARKET.x, ay: MARKET.y, bx: RAPID.x, by: RAPID.y });
-    this.theme = WORLD_THEMES[data.profile.theme] ?? WORLD_THEMES["theme-classic"];
-    this.font = LABEL_FONTS[data.profile.font] ?? "monospace";
     this.portals = [];
     this.nearPortal = null;
+    this.theme = WORLD_THEMES[data.profile.theme] ?? WORLD_THEMES["theme-classic"];
+    this.font = LABEL_FONTS[data.profile.font] ?? "monospace";
   }
 
   create() {
@@ -86,14 +85,13 @@ export class HubScene extends Phaser.Scene {
       const world = this.profile.worlds[i];
       const look = cosmeticsFor(this.profile, i);
       if (world) {
-        this.drawIsland(c, lerpColor(world.recall), world.title, world.recall, false, look);
+        const life = world.lifespan ?? world.recall;
+        this.drawIsland(c, lerpColor(life), world.title, life, false, { lifespan: life, recall: world.recall }, look);
+        // blue portal = bought on the World Market, white = grown from your own notes
         this.addPortal(c, { kind: "world", slot: i, world }, world.bought ? 0x7fe0ff : 0xffffff);
-      } else if (i === FREE_SLOT) {
-        this.drawIsland(c, 0xd8c79a, "Your free island", 0, true, look);
-        this.addPortal(c, { kind: "empty", slot: i, world: null }, 0xffffff);
       } else {
-        // claimed by buying a world in the World Market
-        this.drawIsland(c, 0x9fb4bf, "Unclaimed island", 0, true);
+        this.drawIsland(c, 0xd8c79a, "Empty island", 0, true, undefined, look);
+        this.addPortal(c, { kind: "empty", slot: i, world: null }, 0xffffff);
       }
     });
     this.drawIsland(MARKET, 0x9d7be0, "World Market");
@@ -103,6 +101,7 @@ export class HubScene extends Phaser.Scene {
     this.drawRapidStand(RAPID);
     this.addPortal(RAPID, { kind: "rapid" }, 0xff70a6);
 
+    // the player's Rapid Fire Market outfit and Pip look
     const spawn = lastPos ?? { x: MAIN.x, y: MAIN.y + 60 };
     const { shirt, hat } = this.profile.avatar;
     const avatar = makeAvatar(this, SHIRT_COLORS[shirt] ?? SHIRT_COLORS["shirt-blue"], hat);
@@ -117,6 +116,7 @@ export class HubScene extends Phaser.Scene {
     const enter = () => this.nearPortal && bus.emit("portal:enter", this.nearPortal);
     this.keys.E.on("down", enter);
     this.keys.SPACE.on("down", enter);
+    bus.emit("portal:near", null); // clear any prompt left over from before a scene switch
 
     this.keys.PLUS.on("down", () => this.zoomBy(ZOOM_STEP));
     this.keys.NUMPAD_ADD.on("down", () => this.zoomBy(ZOOM_STEP));
@@ -127,9 +127,8 @@ export class HubScene extends Phaser.Scene {
       dir === "reset" ? this.zoomTo(ZOOM_DEFAULT) : this.zoomBy(dir === "in" ? ZOOM_STEP : 1 / ZOOM_STEP),
     );
     this.events.once("shutdown", offZoom);
-    bus.emit("portal:near", null); // clear any prompt left over from before a scene switch
 
-    // right-click an outer island (not Home or the Market) to open its cosmetics page
+    // right-click one of the 3 islands (not Home or the markets) to open its cosmetics page
     this.input.mouse?.disableContextMenu();
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
       if (!p.rightButtonDown()) return;
@@ -217,7 +216,15 @@ export class HubScene extends Phaser.Scene {
     c.add(g);
   }
 
-  private drawIsland(c: Circle, grass: number, label: string, recall = 1, empty = false, look?: IslandCosmetics) {
+  private drawIsland(
+    c: Circle,
+    grass: number,
+    label: string,
+    health = 1,
+    empty = false,
+    scores?: { lifespan: number; recall: number },
+    look?: IslandCosmetics,
+  ) {
     const g = this.add.graphics();
     g.fillStyle(this.theme.shallows, 0.5).fillCircle(c.x, c.y, c.r + 18); // shallow water
     g.fillStyle(0xf0d9a0).fillCircle(c.x, c.y, c.r); // sand
@@ -228,14 +235,14 @@ export class HubScene extends Phaser.Scene {
     for (let i = 0; i < trees; i++) {
       const a = rng.angle() * Phaser.Math.DEG_TO_RAD;
       const d = rng.between(c.r * 0.45, c.r * 0.75);
-      this.drawTree(c.x + Math.cos(a) * d, c.y + Math.sin(a) * d, recall, look?.trees ?? "palm");
+      this.drawTree(c.x + Math.cos(a) * d, c.y + Math.sin(a) * d, health, look?.trees ?? "palm");
     }
     const flag = FLAG_COLORS.find((f) => f.id === look?.flag);
     if (flag && flag.id !== "none") this.drawFlag(c.x + c.r * 0.5, c.y - c.r * 0.5, flag.hex);
     look?.objects.forEach((o) => this.drawObject(c, o));
 
     this.add
-      .text(c.x, c.y - c.r - 34, label, {
+      .text(c.x, c.y - c.r - (scores ? 76 : 34), label, {
         fontFamily: this.font,
         fontSize: "20px",
         color: "#ffffff",
@@ -243,12 +250,24 @@ export class HubScene extends Phaser.Scene {
         strokeThickness: 5,
       })
       .setOrigin(0.5);
-    if (!empty && recall < 1 && label !== "Home Island" && label !== "World Market") {
+    if (scores) {
+      // big: lifespan of the current review interval; small: predicted recall (forgetting curve)
+      const color = (x: number) => (x < 0.25 ? "#ffb4a2" : x < 0.5 ? "#ffe0a3" : "#d8ffd8");
       this.add
-        .text(c.x, c.y - c.r - 10, `recall ${Math.round(recall * 100)}%`, {
+        .text(c.x, c.y - c.r - 42, `${Math.round(scores.lifespan * 100)}%`, {
+          fontFamily: this.font,
+          fontSize: "34px",
+          fontStyle: "bold",
+          color: color(scores.lifespan),
+          stroke: "#0b2a3d",
+          strokeThickness: 6,
+        })
+        .setOrigin(0.5);
+      this.add
+        .text(c.x, c.y - c.r - 14, `recall ${Math.round(scores.recall * 100)}%`, {
           fontFamily: this.font,
           fontSize: "14px",
-          color: recall < 0.5 ? "#ffb4a2" : "#d8ffd8",
+          color: color(scores.recall),
           stroke: "#0b2a3d",
           strokeThickness: 4,
         })
@@ -273,13 +292,6 @@ export class HubScene extends Phaser.Scene {
     g.fillCircle(x, y - 34, 13).fillCircle(x - 12, y - 28, 10).fillCircle(x + 12, y - 28, 10);
   }
 
-  private drawFlag(x: number, y: number, color: number) {
-    const g = this.add.graphics().setDepth(6);
-    g.fillStyle(0x000000, 0.2).fillEllipse(x + 4, y + 2, 16, 6);
-    g.fillStyle(0x4a2f18).fillRect(x - 2, y - 56, 4, 58);
-    g.fillStyle(color).fillTriangle(x + 2, y - 56, x + 2, y - 34, x + 32, y - 45);
-  }
-
   private drawPalm(x: number, y: number, health: number) {
     const g = this.add.graphics().setDepth(5);
     g.fillStyle(0x000000, 0.2).fillEllipse(x + 6, y + 4, 34, 10);
@@ -292,27 +304,11 @@ export class HubScene extends Phaser.Scene {
     }
   }
 
-  private drawStalls(c: Circle) {
-    const colors = [0xff6b6b, 0xffd166, 0x06d6a0];
-    colors.forEach((col, i) => {
-      const x = c.x - 90 + i * 90;
-      const y = c.y + 70;
-      const g = this.add.graphics().setDepth(4);
-      g.fillStyle(0x6b4423).fillRect(x - 28, y - 10, 56, 30);
-      g.fillStyle(col).fillTriangle(x - 34, y - 10, x + 34, y - 10, x, y - 40);
-    });
-  }
-
-  // Rapid Fire Market: a striped awning stand with a lightning sign
-  private drawRapidStand(c: Circle) {
-    const g = this.add.graphics().setDepth(4);
-    const x = c.x;
-    const y = c.y + 60;
-    g.fillStyle(0x6b4423).fillRect(x - 60, y - 6, 120, 34);
-    for (let i = 0; i < 6; i++) {
-      g.fillStyle(i % 2 ? 0xffffff : 0xff70a6).fillRect(x - 66 + i * 22, y - 30, 22, 24);
-    }
-    g.fillStyle(0xffd166).fillTriangle(x + 4, y - 74, x - 14, y - 46, x, y - 46).fillTriangle(x, y - 52, x + 14, y - 52, x - 4, y - 24);
+  private drawFlag(x: number, y: number, color: number) {
+    const g = this.add.graphics().setDepth(6);
+    g.fillStyle(0x000000, 0.2).fillEllipse(x + 4, y + 2, 16, 6);
+    g.fillStyle(0x4a2f18).fillRect(x - 2, y - 56, 4, 58);
+    g.fillStyle(color).fillTriangle(x + 2, y - 56, x + 2, y - 34, x + 32, y - 45);
   }
 
   /** A Rapid Fire Market object standing on one of the island's edge spots, painted its chosen colour. */
@@ -338,6 +334,29 @@ export class HubScene extends Phaser.Scene {
       g.fillStyle(0x9e9e9e).fillRect(x - 14, y - 12, 28, 12);
       g.fillStyle(col).fillRect(x - 7, y - 40, 14, 28).fillCircle(x, y - 46, 8);
     }
+  }
+
+  private drawStalls(c: Circle) {
+    const colors = [0xff6b6b, 0xffd166, 0x06d6a0];
+    colors.forEach((col, i) => {
+      const x = c.x - 90 + i * 90;
+      const y = c.y + 70;
+      const g = this.add.graphics().setDepth(4);
+      g.fillStyle(0x6b4423).fillRect(x - 28, y - 10, 56, 30);
+      g.fillStyle(col).fillTriangle(x - 34, y - 10, x + 34, y - 10, x, y - 40);
+    });
+  }
+
+  // Rapid Fire Market: a striped awning stand with a lightning sign
+  private drawRapidStand(c: Circle) {
+    const g = this.add.graphics().setDepth(4);
+    const x = c.x;
+    const y = c.y + 60;
+    g.fillStyle(0x6b4423).fillRect(x - 60, y - 6, 120, 34);
+    for (let i = 0; i < 6; i++) {
+      g.fillStyle(i % 2 ? 0xffffff : 0xff70a6).fillRect(x - 66 + i * 22, y - 30, 22, 24);
+    }
+    g.fillStyle(0xffd166).fillTriangle(x + 4, y - 74, x - 14, y - 46, x, y - 46).fillTriangle(x, y - 52, x + 14, y - 52, x - 4, y - 24);
   }
 
   private addPortal(c: Circle, info: PortalInfo, color: number) {

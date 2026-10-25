@@ -26,6 +26,29 @@ export function nextHalfLife(w: WorldSummary, accuracy: number) {
   return Math.min(MAX_H, Math.max(MIN_H, halfLifeH(w) * factor));
 }
 
+// ---- Lifespan: spaced-review schedule (2 → 4 → 6 → 8… days) ----
+const DAY = 24 * HOUR;
+export const GOOD_SESSION = 0.6;
+
+export function intervalDays(w: WorldSummary) {
+  return 2 * Math.max(1, w.streak ?? 0);
+}
+
+/** share of the current review interval left: 1 right after a review, 0 when the review is due */
+export function lifespanAt(w: WorldSummary, t = now()) {
+  const elapsed = Math.max(0, t - w.lastVisitedAt);
+  return Math.max(0, 1 - elapsed / (intervalDays(w) * DAY));
+}
+
+export function daysUntilDue(w: WorldSummary, t = now()) {
+  return Math.max(0, intervalDays(w) - Math.max(0, t - w.lastVisitedAt) / DAY);
+}
+
+/** a good session extends the schedule, a weak one resets it to 2 days */
+export function nextStreak(w: WorldSummary, accuracy: number) {
+  return accuracy >= GOOD_SESSION ? (w.streak ?? 0) + 1 : 0;
+}
+
 /** hours until recall falls to `target` */
 export function hoursUntil(w: WorldSummary, target = 0.5, t = now()) {
   const h = halfLifeH(w);
