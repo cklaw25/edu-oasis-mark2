@@ -14,15 +14,17 @@ import type { SentTx } from "@/lib/solana/demoWallet";
 import type { Profile, WorldSummary } from "@/lib/types";
 import { loadSpec, saveSpec } from "@/lib/worldStore";
 import { coverage } from "@/lib/worldSpec";
+import BountiesTab from "@/components/BountiesTab";
 
 // World Market: buy worlds by subject, buy worlds other players are reselling, sell your own, all in MOE.
 // Every generated world is an NFT holding the SHA-256 fingerprint of its world file, re-checked on purchase.
-type Tab = "shop" | "listings" | "mine" | "membership" | "wallet";
+type Tab = "shop" | "listings" | "bounties" | "mine" | "membership" | "wallet";
 type Run = (label: string, fn: () => Promise<string | void>) => void;
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "shop", label: "Shop" },
   { id: "listings", label: "Player listings" },
+  { id: "bounties", label: "Bounties" },
   { id: "mine", label: "My worlds" },
   { id: "membership", label: "Membership" },
   { id: "wallet", label: "Wallet & history" },
@@ -187,6 +189,7 @@ export default function MarketPanel({
               }}
             />
           )}
+          {tab === "bounties" && <BountiesTab profile={profile} onProfile={onProfile} busy={busy} run={run} />}
           {tab === "mine" && <Mine profile={profile} onProfile={onProfile} busy={busy} run={run} />}
           {tab === "membership" && <Membership profile={profile} onProfile={onProfile} busy={busy} run={run} />}
           {tab === "wallet" && <Wallet profile={profile} />}

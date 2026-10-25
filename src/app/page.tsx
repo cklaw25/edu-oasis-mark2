@@ -13,7 +13,8 @@ import CosmeticsPanel from "@/components/CosmeticsPanel";
 import MoeCoin from "@/components/MoeCoin";
 import { ownsItem, shopItem, type ShopItem } from "@/lib/shop";
 import { MAX_REWARDED_PLAYS, PASS_MARK, difficultyOf, rewardedPlaysLeft, sessionReward } from "@/lib/rewards";
-import { mintBadge, recordMoe, resetChain } from "@/lib/solana";
+import { mintBadge, mintBountyBadge, recordMoe, resetChain } from "@/lib/solana";
+import { ATTEMPT_FEE, PASS_SCORE, recordRun, resetBounties } from "@/lib/bounty";
 import { bus } from "@/game/bus";
 import { now } from "@/lib/clock";
 import { track } from "@/lib/telemetry";
@@ -48,6 +49,12 @@ export default function Home() {
   const [autoStart, setAutoStart] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [pipOpen, setPipOpen] = useState(false);
+  const [bountyMsg, setBountyMsg] = useState<string | null>(null);
+  useEffect(() => {
+    if (!bountyMsg) return;
+    const id = setTimeout(() => setBountyMsg(null), 9000);
+    return () => clearTimeout(id);
+  }, [bountyMsg]);
   const [clockTick, setClockTick] = useState(0);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [earned, setEarned] = useState<{
@@ -159,6 +166,27 @@ export default function Home() {
     const reward = played && left > 0 ? sessionReward(accuracy, difficultyOf(played)) : 0;
     const rewardedPlays = reward > 0 ? { ...profile.rewardedPlays, [id]: (profile.rewardedPlays[id] ?? 0) + 1 } : profile.rewardedPlays;
     if (reward > 0) recordMoe("reward", `Learned "${title}" · ${Math.round(accuracy * 100)}% correct`, reward);
+    // bounty pool on this island? the run counts as an attempt; a 60%+ run passes it, and a higher score wins a bigger prize
+    const run = recordRun(id, accuracy, profile.name);
+    if (run) {
+      const b = run.bounty;
+      const pctScore = Math.round(accuracy * 100);
+      if (run.solved && run.tier) {
+        const tier = run.tier;
+        recordMoe("bounty-payout", `${tier.icon} ${tier.name} pass on "${b.title}" (${pctScore}%): solver prize from its bounty pool`, run.delta + ATTEMPT_FEE);
+        void mintBountyBadge(id, b.title, accuracy, tier);
+        setBountyMsg(
+          `${tier.icon} ${tier.name}! You passed "${b.title}" with ${pctScore}% and won ${formatMoe(run.prize)} MOE plus a ${tier.name} badge. ` +
+            `${formatMoe(run.burned)} MOE was burned${tier.id === "diamond" ? "" : " (a higher score would have claimed more of it)"}.`,
+        );
+      } else {
+        recordMoe("bounty-attempt", `Bounty attempt on "${b.title}" (${pctScore}%)`, -ATTEMPT_FEE);
+        setBountyMsg(
+          `Bounty attempt on "${b.title}": ${pctScore}%. You need ${Math.round(PASS_SCORE * 100)}% to pass. ` +
+            `${ATTEMPT_FEE - run.burned} MOE of your fee grew the pool and ${run.burned} was burned.`,
+        );
+      }
+    }
     save({
       ...updateWorld(profile, id, (w) => ({
         ...w,
@@ -168,7 +196,8 @@ export default function Home() {
         recall: 1,
         sessions: [...(w.sessions ?? []), { t, accuracy }],
       })),
-      moe: profile.moe + reward,
+      // learn-to-earn reward plus any bounty fee/prize from this run
+      moe: profile.moe + reward + (run?.delta ?? 0),
       rewardedPlays,
     });
     setActive(null);
@@ -298,6 +327,7 @@ export default function Home() {
           className="mt-2 block text-[10px] underline opacity-50"
           onClick={() => {
             resetChain();
+            resetBounties();
             save(defaultProfile());
           }}
         >
@@ -421,6 +451,15 @@ export default function Home() {
           <p className="text-sm opacity-80">{panel.info.world!.topic}</p>
           <p className="mt-2 text-sm">This world&apos;s file isn&apos;t on this device. Buy it again in the World Market.</p>
         </Overlay>
+      )}
+      {bountyMsg && (
+        <div
+          role="status"
+          onClick={() => setBountyMsg(null)}
+          className="absolute bottom-6 left-1/2 z-30 max-w-lg -translate-x-1/2 cursor-pointer rounded-xl bg-[#fff8e7] px-4 py-3 text-sm text-[#2b2118] shadow-2xl"
+        >
+          {bountyMsg}
+        </div>
       )}
     </main>
   );
