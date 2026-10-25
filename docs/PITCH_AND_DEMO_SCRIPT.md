@@ -1,6 +1,6 @@
 # EduOasis: pitch script + demo video script
 
-OxHack 2026 · main theme **TIME** · tracks: Solana, HRT (data for prediction & decisions), Gemini.
+OxHack 2026 · main theme **TIME** · tracks: Solana, HRT (data for prediction & decisions), Tiger Data, Gemini.
 Team: **Team Oasis** (placeholder, may change). Written in Memphis's voice.
 Live: **https://edu-oasis-mark2.vercel.app** (public link; the long `…-cklaw25s-projects.vercel.app` links are login-only).
 
@@ -34,6 +34,7 @@ The scripts keep three things apart so judges don't mix them up:
 3. [ ] Play: intro slides → one action game (Showdown / Timeline Run / Squad Board)
 4. [ ] End card: **celebration + MOE earned** (learn-to-earn) → Back to the Katas
 5. [ ] TIME: Pip → Data → **⏩ +1 day** → Katas dry up; Pip says what to review
+5b. [ ] **🐯 Live from Tiger Data** panel (top of Pip → Data): the decision, game-type bars, your trend per Kata (play 2–3 Katas on the live site first so it has data)
 6. [ ] Pip chat answers from your own notes with a source citation
 7. [ ] World Market: buy a world with MOE → "fingerprint verified"
 8. [ ] **Real devnet transfer**: send 500 MOE to Corey → his balance updates → Solana Explorer page
@@ -71,7 +72,7 @@ The scripts keep three things apart so judges don't mix them up:
 
 ---
 
-## Part 2: Demo video script (≈2:40)
+## Part 2: Demo video script (≈2:50)
 
 Record on the live site. Start from **reset demo**. Cut any waiting (generation, devnet confirmations) in editing.
 
@@ -84,17 +85,36 @@ Record on the live site. Start from **reset demo**. Cut any waiting (generation,
 | 1:10 – 1:22 | End card: celebration + "+X MOE" → Back to the Katas. | "Finish a world and you earn MOE, scaled by how much you actually got right." |
 | 1:22 – 1:40 | Hub: Kata is green. Pip → Data → ⏩ +1 day: Katas dry. | "Every answer feeds a forgetting-curve model. Skip a day and the Kata dries up. Pip tells me what to review and when." |
 | 1:40 – 1:52 | Pip chat: "Quiz me on what I'm weakest at." Answer with citation. | "Pip answers from my own notes and shows where each fact came from." |
-| 1:52 – 2:05 | World Market → Shop → buy a world → "fingerprint verified". | "I can spend MOE on other students' worlds. Each world carries a fingerprint of its file, so I know it hasn't been tampered with." |
-| 2:05 – 2:30 | Wallet & history: send 500 MOE to Corey → his screen: refresh → +500 → Solana Explorer. | "And MOE is real on Solana devnet. I send 500 to my teammate's laptop… and there it is, on the public chain." |
-| 2:30 – 2:40 | Quick flashes: Bounties, Rapid Fire Market, then title card. | "Bounties for hard topics, cosmetics to make your Katas yours. Your notes, turned into worlds you keep alive. EduOasis." |
+| 1:52 – 2:05 | Pip → Data → the **🐯 Live from Tiger Data** panel: decision box, game-type bars, trend per Kata. | "Every answer streams into Tiger Data. SQL predicts where my score is heading, and a bandit picks the game type that teaches *me* best. That choice goes straight into my next generated world." |
+| 2:05 – 2:15 | World Market → Shop → buy a world → "fingerprint verified". | "I can spend MOE on other students' worlds. Each world carries a fingerprint of its file, so I know it hasn't been tampered with." |
+| 2:15 – 2:40 | Wallet & history: send 500 MOE to Corey → his screen: refresh → +500 → Solana Explorer. | "And MOE is real on Solana devnet. I send 500 to my teammate's laptop… and there it is, on the public chain." |
+| 2:40 – 2:50 | Quick flashes: Bounties, Rapid Fire Market, then title card. | "Bounties for hard topics, cosmetics to make your Katas yours. Your notes, turned into worlds you keep alive. EduOasis." |
 
 **Honest labels for the video:** MOE transfers between wallets are **real** on devnet (show Explorer). World purchases, NFTs, badges and bounties are **simulated** with the same interface; the 🐫 Trading tab is a **preview** with demo data. Don't claim those are on-chain.
 
 ---
 
+## Part 2b: Tiger Data, explained (data processing → prediction → decision, ~45 s)
+
+> "Every time you play a Kata, we learn something about *how* you learn: which answers you got right, how long you took, which game type you were playing. All of that streams into **Tiger Data**, a time-series database built on TimescaleDB, because learning *is* a time series: what you know changes every day.
+>
+> **One, data processing.** Every event lands in a hypertable partitioned by time, and a continuous aggregate rolls every game result up per day, automatically, as students play. The numbers are always fresh, with no batch jobs.
+>
+> **Two, prediction.** Inside the database, SQL fits a trend line through your scores on each Kata: 'you scored 70% last time, but you're dropping about 4% a day; if you played now you'd get about 62%.' We also track your answer speed per day, because slowing down can be a sign of tiredness or losing focus.
+>
+> **Three, decision making.** A **multi-armed bandit** compares how well each game type, the shooter, the platformer, the drag-and-drop board, actually teaches *you*, while still giving untried types a fair chance. When you make your next world, that decision goes straight into Gemini: 'this learner learns best from showdowns, use one.' And Pip tells you which Kata to review first.
+>
+> So the platform gets better the more students use it. For neurodivergent learners that matters, because there's no single right way to learn. **The data finds *your* way, instead of making you fit ours.**"
+
+**Under the hood:** `learning_events` hypertable · `game_daily` continuous aggregate (refreshes every 15 min, real-time) · `regr_slope` / `regr_intercept` per Kata · `time_bucket('1 day')` answer speed · UCB1 over game types · the pick is sent with every generation request.
+
+**Next (say as next):** teacher/parent alerts when a trend falls; clustering learners by which game types work for them; paying creators in MOE by the measured learning gains of their worlds.
+
+---
+
 ## Part 3: Judge table (4–5 min, live)
 
-Order: **30-second pitch** (Opening + Concept), then **live demo**: hub → one Kata → end card with MOE → Pip Data "+1 day" → send MOE + Explorer, then **questions**.
+Order: **30-second pitch** (Opening + Concept), then **live demo**: hub → one Kata → end card with MOE → Pip Data "+1 day" + 🐯 Tiger panel → send MOE + Explorer, then **questions**.
 
 Short answers to likely questions:
 - **"Isn't this just a quiz?"** No. The design pass picks a game type from the content's shape: pairs → Showdown, groups → Squad Board, order → Timeline Run, evaluation → Inspect room.
@@ -103,6 +123,9 @@ Short answers to likely questions:
 - **"How does learn-to-earn work, can't people farm it?"** Below 60% you earn nothing; from 60% to 100% the reward scales up to the Kata's maximum; each Kata pays for its first 10 completions only.
 - **"Why Solana?"** Ownership + integrity + cheap transfers: a world NFT stores the creator and the file's SHA-256, resale royalties are enforced by the chain, and fees are a fraction of a penny, so small payments between students work.
 - **"What's real on-chain today?"** The MOE token (Token-2022 on devnet) and wallet-to-wallet MOE transfers: each browser has its own wallet key, signs its own transaction, and the in-game balance follows the chain. Purchases, NFTs, badges and bounties are simulated with the same interface.
+- **"Why a time-series database and not just Postgres?"** Learning data is timestamped events. Hypertables keep time-range queries fast as data grows, and continuous aggregates keep daily roll-ups always fresh. And it's still Postgres, so it's plain SQL.
+- **"Is the prediction real ML?"** Deliberately simple and explainable: a least-squares trend and a UCB1 bandit. The same tables can feed per-learner forgetting-curve models once there's more data.
+- **"Privacy?"** Learners are anonymous IDs or devnet wallet addresses; we store how you played, not names or notes.
 - **"Running cost?"** A generation is roughly a penny on paid Gemini tiers; all art is drawn in code (no AI images); hosting is on Vercel's free tier.
 
 ---
@@ -117,6 +140,7 @@ Short answers to likely questions:
 - Pip: chat grounded in your notes, study notes, my notes, learning data + "time travel" demo
 - World Market in MOE: shop by subject, player resale listings with creator royalty, list/sell your own worlds, membership, bounties, wallet & history; SHA-256 fingerprint check on every purchase
 - **Real MOE transfers on Solana devnet** between browser wallets (starter claim from the treasury, send, Explorer links)
+- **Tiger Data (TimescaleDB):** gameplay telemetry hypertable + daily continuous aggregate; SQL trend prediction per Kata; UCB1 game-type bandit shown in Pip and fed into world generation
 - Rapid Fire Market cosmetics (avatar, Pip looks, Kata trees/flags, themes, fonts)
 - My worlds library: own any number of worlds, choose which 3 sit on the Katas; 2 free generations, then 10,000 MOE each
 
@@ -126,6 +150,6 @@ Short answers to likely questions:
 
 **Potential (next, not built)**
 - World NFTs, purchases and badges fully on-chain; escrowed player-to-player trading
-- A game-type picker that learns per learner (multi-armed bandit)
+- Teacher/parent alerts and learner clustering from the Tiger Data history
 - Pip with a voice (dyslexia / ADHD friendly), focus sensing, 3D worlds
 - Membership fees split between creators by measured learning gains
