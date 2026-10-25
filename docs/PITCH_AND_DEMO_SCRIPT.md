@@ -74,6 +74,46 @@ The scripts keep three things apart so judges don't mix them up:
 
 ---
 
+## Part 1b: How we make the most of each track (~60 s, spoken)
+
+> "We didn't just plug in sponsor tools. Each one does a job the game can't do without it.
+>
+> **TIME** is the core mechanic, not a label. Every Kata has a half-life memory model, so it visibly dries up on your own forgetting curve, and it tells you *when* to come back.
+>
+> **Solana** gives students something a card payment can't. MOE is our own Token-2022 token. You earn it by *proving* learning: nothing below 60%, and only the first 10 plays of each Kata pay. You hold it in your own wallet, and you can send it to a friend for a fraction of a cent, verifiable on Solana Explorer. Then you spend it on worlds other students made. Tiny payments between students only work because Solana's fees are almost zero.
+>
+> **Tiger Data** is our learning memory. Every answer streams into a TimescaleDB hypertable, because learning is a time series. That covers the **HRT** brief end to end: **data processing**, a continuous aggregate rolls results up every day; **prediction**, SQL fits your score trend per Kata; and **decision making**, a bandit algorithm picks the game type that teaches *you* best and tells Gemini to use it in your next world.
+>
+> And **Gemini** is the engine. It turns any slides into a whole world in three checked passes, and powers Pip, who answers only from your own notes.
+>
+> Each track feeds the next one. Gemini builds the world, you play it, Tiger Data learns from you, Solana rewards you, and TIME brings you back."
+
+## Part 1c: Technical answers (if they ask)
+
+- **Stack:** Next.js 15 + React 19 (TypeScript), Phaser 3 for the hub and games, Tailwind; Google Gemini; Tiger Data (TimescaleDB on Postgres); Solana devnet with web3.js + spl-token; Vercel. Art drawn in code. 3D test Kata: three.js + React Three Fiber.
+- **Generation:** 3 Gemini passes with JSON schemas. (1) Pull out every examinable fact as K1…Kn. (2) Design theme, intro slides and games, with every element citing the fact IDs it teaches. (3) Code checks coverage and a patch pass fills the gaps. The output is a JSON world file rendered by our fixed engine, so it can't produce broken games. About 15 s on a lighter model, down from 1–6 min.
+- **Forgetting model:** half-life regression (as in Duolingo): recall = 2^(−time since review ÷ half-life), with the half-life updated from each session's accuracy.
+- **Tiger Data:**
+  - Events are batched from the browser to `/api/telemetry` → `learning_events` **hypertable** (split up by time).
+  - The `game_daily` **continuous aggregate** rolls up correct/wrong answers per game type per day. It refreshes every 15 min and also counts rows not yet rolled up.
+  - `/api/insights` runs the SQL: `regr_slope`/`regr_intercept` for the trend per Kata, `time_bucket` for daily answer speed.
+  - A **UCB1 bandit** ranks game types (accuracy + a bonus for less-tried types). Its pick is sent with the next generation request and shown in Pip.
+  - The schema creates itself on first use.
+- **Why a time-series database:** learning is timestamped events. Hypertables keep time-range queries fast as data grows, continuous aggregates stay up to date without batch jobs, and it's still plain SQL.
+- **On-chain:**
+  - MOE is a real **SPL Token-2022** mint on devnet. The treasury is the mint authority, and its key lives only in server environment variables.
+  - Each browser generates its own keypair, and the key never leaves the device.
+  - The starter pack is MOE + a little SOL from the treasury.
+  - For a transfer, the server builds the transaction (create the receiver's token account if needed + `transferChecked` + memo), the **browser signs it**, and the server submits it and confirms it.
+  - The in-game balance syncs from the chain, and wallets with no SOL get a small fee top-up.
+- **Simulated:** world NFTs, purchases, royalties, badges and bounty pools (same interface as the real calls). **Next:** Metaplex Core NFTs with each world's SHA-256 fingerprint, on-chain royalties, soulbound badges, escrowed trading.
+- **Why Solana:** fees of a fraction of a cent and confirmation in seconds make payments of pennies between students practical. A world's fingerprint proves it hasn't been tampered with, and royalties can be paid automatically.
+- **Anti-farming:** a 60% pass mark, rewards scaled to the score, and only the first 10 paid completions per Kata.
+- **Privacy:** anonymous IDs or devnet wallet addresses; we store how you played, not names or notes; keys stay in the browser.
+- **3D:** on its own branch, loaded only when opened, with a safe fallback if WebGL isn't available; same scoring, MOE and Tiger Data.
+
+---
+
 ## Part 2: Demo video script (≈2:50)
 
 Record on the live site. Start from **reset demo**. Cut any waiting (generation, devnet confirmations) in editing.
