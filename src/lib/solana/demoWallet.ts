@@ -51,6 +51,11 @@ export async function demoBalance(): Promise<number> {
 /** Ask the server's treasury for the starter MOE. */
 export async function claimStarter(): Promise<SentTx> {
   const r = await post<{ signature: string; explorer: string; amount: number }>({ action: "fund", owner: await demoAddress() });
+  // the in-game balance already starts with the starter MOE, so the claim must not be added again
+  try {
+    const raw = localStorage.getItem(SYNC);
+    if (raw !== null) localStorage.setItem(SYNC, String(Number(raw) + r.amount));
+  } catch {}
   return remember({ signature: r.signature, explorer: r.explorer, summary: `Starter pack: +${r.amount.toLocaleString("en-US")} MOE from the treasury`, t: Date.now() });
 }
 
@@ -68,6 +73,21 @@ export async function sendMoe(to: string, amount: number, memo?: string): Promis
 }
 
 const LOG = "eo2.demoWallet.log";
+const SYNC = "eo2.demoWallet.synced"; // last on-chain balance already reflected in the in-game balance
+const STARTER = 30_000; // matches STARTER_MOE in devnet.ts
+
+/** Change in on-chain MOE since the last read that the in-game balance hasn't picked up yet (sends and receives). */
+export function chainDelta(balance: number): number {
+  try {
+    const raw = localStorage.getItem(SYNC);
+    const claimed = sentLog().some((t) => t.summary.startsWith("Starter pack"));
+    const last = raw === null ? (claimed ? STARTER : 0) : Number(raw);
+    localStorage.setItem(SYNC, String(balance));
+    return Number.isFinite(last) ? balance - last : 0;
+  } catch {
+    return 0;
+  }
+}
 
 function remember(tx: SentTx) {
   try {

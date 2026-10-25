@@ -199,7 +199,7 @@ export default function MarketPanel({
           {tab === "trading" && <TradingPanel profile={profile} />}
           {tab === "mine" && <Mine profile={profile} onProfile={onProfile} busy={busy} run={run} />}
           {tab === "membership" && <Membership profile={profile} onProfile={onProfile} busy={busy} run={run} />}
-          {tab === "wallet" && <Wallet profile={profile} />}
+          {tab === "wallet" && <Wallet profile={profile} onProfile={onProfile} />}
         </div>
       </div>
     </div>
@@ -503,7 +503,7 @@ function Membership({ profile, onProfile, busy, run }: { profile: Profile; onPro
 }
 
 // A real wallet on Solana devnet, kept in this browser: claim starter MOE, send MOE to anyone (e.g. a teammate's laptop).
-function DevnetWallet() {
+function DevnetWallet({ profile, onProfile }: { profile: Profile; onProfile: (p: Profile) => void }) {
   const [address, setAddress] = useState<string | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
   const [log, setLog] = useState<SentTx[]>([]);
@@ -514,11 +514,23 @@ function DevnetWallet() {
   const [copied, setCopied] = useState(false);
 
   const latest = useRef(0);
+  const profileRef = useRef(profile);
+  profileRef.current = profile;
+  const onProfileRef = useRef(onProfile);
+  onProfileRef.current = onProfile;
   const refresh = useCallback(async () => {
     setLog(demo.sentLog());
     const id = ++latest.current; // an older, slower read must not overwrite a newer one
     const b = await demo.demoBalance().catch(() => null);
     if (id === latest.current) setBalance(b);
+    if (b === null) return;
+    // keep the in-game balance in step with real devnet sends/receives (the starter claim is already counted)
+    const d = demo.chainDelta(b);
+    if (d) {
+      const p = profileRef.current;
+      chain.recordMoe("wallet", d > 0 ? `Received ${formatMoe(d)} MOE on devnet` : `Sent ${formatMoe(-d)} MOE on devnet`, d);
+      onProfileRef.current({ ...p, moe: p.moe + d });
+    }
   }, []);
   useEffect(() => {
     demo.demoAddress().then(setAddress);
@@ -625,7 +637,7 @@ function DevnetWallet() {
 
 type MoeInfo = { mint: string; name: string; symbol: string; decimals: number; supply: string; explorer: string };
 
-function Wallet({ profile }: { profile: Profile }) {
+function Wallet({ profile, onProfile }: { profile: Profile; onProfile: (p: Profile) => void }) {
   const w = chain.getWallet();
   const bs = chain.badges();
   const txs = chain.ledger();
@@ -664,7 +676,7 @@ function Wallet({ profile }: { profile: Profile }) {
         )}
         <p className="mt-2 text-xs opacity-60">In-game balances and purchases are simulated for now; the token itself is real.</p>
       </div>
-      <DevnetWallet />
+      <DevnetWallet profile={profile} onProfile={onProfile} />
       <section>
         <h3 className="mb-2 font-bold">Completion badges (non-transferable)</h3>
         {bs.length === 0 ? (
