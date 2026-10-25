@@ -1,3 +1,4 @@
 # EduOasis
-[eduoasis mark 2
-](https://github.com/user-attachments/assets/1b5831cf-ed6d-4513-8ddc-2b6d99b8c0fc)
+
+## Demo
+[![Watch the EduOasis Demo](https://img.youtube.com/vi/avPG4q7rlFs/0.jpg)](https://youtu.be/avPG4q7rlFs)
